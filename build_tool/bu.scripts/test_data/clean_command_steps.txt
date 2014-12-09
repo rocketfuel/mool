@@ -1,0 +1,4 @@
+mock_ls TEST_BUILD_OUT_DIR
+mock_mkdir -p TEST_BUILD_OUT_DIR
+mock_ls TEST_BUILD_WORK_DIR
+mock_mkdir -p TEST_BUILD_WORK_DIR

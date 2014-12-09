@@ -1,0 +1,52 @@
+# Build rules for common/utils/test_modules.
+
+# These build rules are all used for testing libraries in the parent directory.
+
+# Libraries.
+"validation_inner": {
+  "rule_type": "py_lib",
+  "srcs": ["validation_inner.py"],
+  "deps": [
+      ".validation_test_data_A",
+      "mool.common.utils.resource_utils"]
+},
+
+"validation_outer": {
+  "rule_type": "py_lib",
+  "srcs": ["validation_outer.py"],
+  "deps": [
+      ".validation_inner",
+      ".validation_test_data_B",
+      "mool.common.utils.resource_utils"]
+},
+
+# File collections.
+"validation_test_data_A": {
+  "rule_type": "file_coll",
+  "srcs": ["file0.txt"],
+  "file_package": "v_resources"
+},
+
+"validation_test_data_B": {
+  "rule_type": "file_coll",
+  "srcs": [
+      "file1.txt",
+      "file2.txt"],
+  "file_package": "v_resources"
+},
+
+"validation_test_data_C": {
+  "rule_type": "file_coll",
+  "srcs": ["file3.txt"],
+  "file_package": "v_resources"
+},
+
+# Binaries.
+"validation_bin": {
+  "rule_type": "py_bin",
+  "srcs": ["validation_bin.py"],
+  "main_method": "common.utils.test_modules.validation_bin.main_func",
+  "deps": [
+      ".validation_outer",
+      ".validation_test_data_C"]
+}

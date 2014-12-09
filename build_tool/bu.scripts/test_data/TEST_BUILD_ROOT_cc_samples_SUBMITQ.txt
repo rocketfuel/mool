@@ -1,0 +1,4 @@
+# Submit queue for cc/samples.
+
+mool.cc.samples.factorial_test
+mool.cc.samples.use_interface_test

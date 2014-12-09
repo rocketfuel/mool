@@ -1,0 +1,357 @@
+mock_cat TEST_BUILD_ROOT/src/main/java/some/other/work/BLD
+mock_cat TEST_BUILD_ROOT/src/test/java/some/other/work/BLD
+mock_cat TEST_BUILD_ROOT/src/main/java/some/work/BLD
+mock_cat TEST_BUILD_ROOT/src/test/java/some/work/BLD
+mock_cat TEST_BUILD_ROOT/cc/samples/BLD
+mock_cat TEST_BUILD_ROOT/cc/common/BLD
+mkdir -p TEST_BUILD_OUT_DIR/cc/common
+mkdir -p TEST_BUILD_WORK_DIR/cc/common/AddressJavaProto
+mkdir -p TEST_BUILD_WORK_DIR/cc/common/AddressJavaProto/proto_src
+mkdir -p TEST_BUILD_WORK_DIR/cc/common/AddressJavaProto/proto_outfiles
+mkdir -p TEST_BUILD_WORK_DIR/cc/common/AddressJavaProto/javac_outdir
+mock_cd TEST_BUILD_WORK_DIR/cc/common/AddressJavaProto/proto_src
+mkdir -p ./cc/common
+ln -f -s TEST_BUILD_ROOT/cc/common/address.proto ./cc/common/address.proto
+ln -f -s TEST_BUILD_ROOT/cc/common/address.proto ./cc/common/address.proto
+TEST_PROTO_COMPILER --proto_path=. --java_out=TEST_BUILD_WORK_DIR/cc/common/AddressJavaProto/proto_outfiles ./cc/common/address.proto
+mock_cd TEST_BUILD_WORK_DIR/cc/common/AddressJavaProto/proto_outfiles
+TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -nowarn -cp test_java_protobuf.jar -d TEST_BUILD_WORK_DIR/cc/common/AddressJavaProto/javac_outdir ./some/other/work/AddressProto.java
+mock_cd TEST_BUILD_WORK_DIR/cc/common/AddressJavaProto/javac_outdir
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/cc/common/AddressJavaProto/.temp.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/cc/common/AddressJavaProto/.temp.jar']), 'TEST_BUILD_OUT_DIR/cc/common/AddressJavaProto.jar', 'java_fake_main_class']
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/other/work
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/other/work/prod_files_first
+mkdir -p ./src/main/java/some/other/work
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_00.txt ./src/main/java/some/other/work/prod_data_00.txt
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_first.jar ./mock_file1 ./mock_file2
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/other/work
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/other/work/prod_files_second
+mkdir -p ./some/where
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_01.txt ./some/where/prod_data_01.txt
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_02.txt ./some/where/prod_data_02.txt
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar ./mock_file1 ./mock_file2
+mock_download_cached_item maven_repo_url_test/another/group/test/another_artifact/imaginary/another_artifact-imaginary.jar TEST_JAR_SEARCH_PATH/another/group/test/another_artifact/imaginary/another_artifact-imaginary.jar
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/AnotherMavenDep/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/AnotherMavenDep/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/AnotherMavenDep/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/AnotherMavenDep/code
+mock_jar_merger [([], [], ['TEST_JAR_SEARCH_PATH/another/group/test/another_artifact/imaginary/another_artifact-imaginary.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar', 'java_fake_main_class']
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/BinWithNoDependencies/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/BinWithNoDependencies/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/BinWithNoDependencies/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/BinWithNoDependencies/code
+mkdir -p ./src/main/java/some/work
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/BinWithNoDependencies.java ./src/main/java/some/work/BinWithNoDependencies.java
+TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -d TEST_BUILD_WORK_DIR/src/main/java/some/work/BinWithNoDependencies/target ./src/main/java/some/work/BinWithNoDependencies.java
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/BinWithNoDependencies/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/work/BinWithNoDependencies/.temp.BinWithNoDependencies.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/work/BinWithNoDependencies/.temp.BinWithNoDependencies.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/BinWithNoDependencies.jar', 'some.work.BinWithNoDependencies']
+mock_download_cached_item maven_repo_url_test/maven/group/test/maven_artifact/imaginary/maven_artifact-imaginary-maven_classifier.jar TEST_JAR_SEARCH_PATH/maven/group/test/maven_artifact/imaginary/maven_artifact-imaginary-maven_classifier.jar
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/MavenDepWithClassifier/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/MavenDepWithClassifier/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/MavenDepWithClassifier/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/MavenDepWithClassifier/code
+mock_jar_merger [([], [], ['TEST_JAR_SEARCH_PATH/maven/group/test/maven_artifact/imaginary/maven_artifact-imaginary-maven_classifier.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/MavenDepWithClassifier.jar', 'java_fake_main_class']
+mock_ls TEST_JAR_SEARCH_PATH/some/external/library.jar
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeExternalLibrary/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeExternalLibrary/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeExternalLibrary/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeExternalLibrary/code
+mock_jar_merger [(['some/external/pkg1/SomeClass1.class', 'some/external/pkg1/SomeClass2.class'], ['some/external/pkg2', 'some/external/pkg3'], ['TEST_JAR_SEARCH_PATH/some/external/library.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar', 'java_fake_main_class']
+mock_download_cached_item maven_repo_url_test/some/group/test/some_artifact/ultimate/some_artifact-ultimate.jar TEST_JAR_SEARCH_PATH/some/group/test/some_artifact/ultimate/some_artifact-ultimate.jar
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeMavenDep/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeMavenDep/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeMavenDep/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeMavenDep/code
+mock_jar_merger [([], [], ['TEST_JAR_SEARCH_PATH/some/group/test/some_artifact/ultimate/some_artifact-ultimate.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeMavenDep.jar', 'java_fake_main_class']
+mkdir -p TEST_BUILD_OUT_DIR/cc/samples
+mkdir -p TEST_BUILD_WORK_DIR/cc/samples/PersonJavaProto
+mkdir -p TEST_BUILD_WORK_DIR/cc/samples/PersonJavaProto/proto_src
+mkdir -p TEST_BUILD_WORK_DIR/cc/samples/PersonJavaProto/proto_outfiles
+mkdir -p TEST_BUILD_WORK_DIR/cc/samples/PersonJavaProto/javac_outdir
+mock_cd TEST_BUILD_WORK_DIR/cc/samples/PersonJavaProto/proto_src
+mkdir -p ./cc/samples
+ln -f -s TEST_BUILD_ROOT/cc/samples/person.proto ./cc/samples/person.proto
+mkdir -p ./cc/common
+ln -f -s TEST_BUILD_ROOT/cc/common/address.proto ./cc/common/address.proto
+ln -f -s TEST_BUILD_ROOT/cc/samples/person.proto ./cc/samples/person.proto
+TEST_PROTO_COMPILER --proto_path=. --java_out=TEST_BUILD_WORK_DIR/cc/samples/PersonJavaProto/proto_outfiles ./cc/samples/person.proto
+mock_cd TEST_BUILD_WORK_DIR/cc/samples/PersonJavaProto/proto_outfiles
+TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -nowarn -cp TEST_BUILD_OUT_DIR/cc/common/AddressJavaProto.jar:test_java_protobuf.jar -d TEST_BUILD_WORK_DIR/cc/samples/PersonJavaProto/javac_outdir ./some/other/work/PersonProto.java
+mock_cd TEST_BUILD_WORK_DIR/cc/samples/PersonJavaProto/javac_outdir
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/cc/samples/PersonJavaProto/.temp.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_OUT_DIR/cc/common/AddressJavaProto.jar', 'TEST_BUILD_WORK_DIR/cc/samples/PersonJavaProto/.temp.jar']), 'TEST_BUILD_OUT_DIR/cc/samples/PersonJavaProto.jar', 'java_fake_main_class']
+mock_java_version_comparison version1 bad_version
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/other/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/code
+mkdir -p ./src/main/java/some/other/work
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/other/work/HelloUtils.java ./src/main/java/some/other/work/HelloUtils.java
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/other/work/HelloWorld.java ./src/main/java/some/other/work/HelloWorld.java
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_first.jar TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/clsdeps/f0.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source version1 -target version1 -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -nowarn -cp TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/clsdeps/* -d TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/target ./src/main/java/some/other/work/HelloUtils.java ./src/main/java/some/other/work/HelloWorld.java
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/.temp.HelloWorld.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/.temp.HelloWorld.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_first.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar', 'java_fake_main_class']
+mock_java_version_comparison bad_version bad_version
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/other/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/code
+mkdir -p ./src/main/java/some/other/work
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/other/work/ProtoSampleUtils.java ./src/main/java/some/other/work/ProtoSampleUtils.java
+ln -f -s TEST_BUILD_OUT_DIR/cc/common/AddressJavaProto.jar TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/clsdeps/f0.jar
+ln -f -s TEST_BUILD_OUT_DIR/cc/samples/PersonJavaProto.jar TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/clsdeps/f1.jar
+ln -f -s test_java_protobuf.jar TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/clsdeps/f2.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/clsdeps/* -d TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/target ./src/main/java/some/other/work/ProtoSampleUtils.java
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/.temp.ProtoSampleUtils.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/other/work/ProtoSampleUtils/.temp.ProtoSampleUtils.jar', 'TEST_BUILD_OUT_DIR/cc/common/AddressJavaProto.jar', 'TEST_BUILD_OUT_DIR/cc/samples/PersonJavaProto.jar', 'test_java_protobuf.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/ProtoSampleUtils.jar', 'java_fake_main_class']
+mock_java_version_comparison version4 version1
+mock_java_version_comparison version4 version1
+mock_java_version_comparison version4 bad_version
+mock_java_version_comparison version4 bad_version
+mock_ls TEST_JAR_SEARCH_PATH/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/code
+mkdir -p ./src/main/java/some/work
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/Driver.java ./src/main/java/some/work/Driver.java
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java ./src/main/java/some/work/DriverUtils.java
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/clsdeps/f0.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/clsdeps/f1.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/clsdeps/f2.jar
+ln -f -s TEST_JAR_SEARCH_PATH/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/clsdeps/f3.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/clsdeps/f4.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source version4 -target version4 -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/clsdeps/* -d TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/target ./src/main/java/some/work/Driver.java ./src/main/java/some/work/DriverUtils.java
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/.temp.Driver.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/.temp.Driver.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar', 'TEST_JAR_SEARCH_PATH/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/Driver.jar', 'some.work.Driver']
+mock_java_version_comparison bad_version bad_version
+mock_java_version_comparison bad_version version1
+mock_java_version_comparison bad_version bad_version
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/code
+mkdir -p ./src/main/java/some/work
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/Driver.java ./src/main/java/some/work/Driver.java
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java ./src/main/java/some/work/DriverUtils.java
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/clsdeps/f0.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/clsdeps/f1.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeMavenDep.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/clsdeps/f2.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/clsdeps/* -d TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/target ./src/main/java/some/work/Driver.java ./src/main/java/some/work/DriverUtils.java
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/.temp.DriverFromMavenSpec.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromMavenSpec/.temp.DriverFromMavenSpec.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeMavenDep.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverFromMavenSpec.jar', 'some.work.Driver']
+mock_java_version_comparison bad_version bad_version
+mock_java_version_comparison bad_version version1
+mock_java_version_comparison bad_version version1
+mock_java_version_comparison bad_version bad_version
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/code
+mkdir -p ./src/main/java/some/work
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/Driver.java ./src/main/java/some/work/Driver.java
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java ./src/main/java/some/work/DriverUtils.java
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/clsdeps/f0.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/clsdeps/f1.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/clsdeps/f2.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/clsdeps/f3.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/clsdeps/* -d TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/target ./src/main/java/some/work/Driver.java ./src/main/java/some/work/DriverUtils.java
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/.temp.DriverLibWithExcludedCompileDeps.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps/.temp.DriverLibWithExcludedCompileDeps.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps.jar', 'java_fake_main_class']
+mock_java_version_comparison bad_version bad_version
+mock_java_version_comparison bad_version version1
+mock_java_version_comparison bad_version version1
+mock_java_version_comparison bad_version bad_version
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/code
+mkdir -p ./src/main/java/some/work
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/Driver.java ./src/main/java/some/work/Driver.java
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java ./src/main/java/some/work/DriverUtils.java
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/clsdeps/f0.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/clsdeps/f1.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/clsdeps/f2.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/clsdeps/f3.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/clsdeps/* -d TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/target ./src/main/java/some/work/Driver.java ./src/main/java/some/work/DriverUtils.java
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/.temp.DriverLibWithExcludedDeps.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithExcludedDeps/.temp.DriverLibWithExcludedDeps.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverLibWithExcludedDeps.jar', 'java_fake_main_class']
+mock_java_version_comparison version2 bad_version
+mock_java_version_comparison version2 bad_version
+mock_java_version_comparison version2 version1
+mock_java_version_comparison version2 version1
+mock_java_version_comparison version2 bad_version
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/code
+mkdir -p ./src/main/java/some/work
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/Driver.java ./src/main/java/some/work/Driver.java
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java ./src/main/java/some/work/DriverUtils.java
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/clsdeps/f0.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/MavenDepWithClassifier.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/clsdeps/f1.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/clsdeps/f2.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/clsdeps/f3.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/clsdeps/f4.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source version2 -target version2 -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/clsdeps/* -d TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/target ./src/main/java/some/work/Driver.java ./src/main/java/some/work/DriverUtils.java
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/.temp.DriverLibWithIncludedCompileDeps.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps/.temp.DriverLibWithIncludedCompileDeps.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps.jar', 'java_fake_main_class']
+mock_java_version_comparison version3 bad_version
+mock_java_version_comparison version3 version1
+mock_java_version_comparison version3 version1
+mock_java_version_comparison version3 bad_version
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/code
+mkdir -p ./src/main/java/some/work
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/Driver.java ./src/main/java/some/work/Driver.java
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java ./src/main/java/some/work/DriverUtils.java
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/clsdeps/f0.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/clsdeps/f1.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/clsdeps/f2.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/clsdeps/f3.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source version3 -target version3 -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/clsdeps/* -d TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/target ./src/main/java/some/work/Driver.java ./src/main/java/some/work/DriverUtils.java
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/.temp.DriverLibWithIncludedDeps.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverLibWithIncludedDeps/.temp.DriverLibWithIncludedDeps.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverLibWithIncludedDeps.jar', 'java_fake_main_class']
+mock_java_version_comparison bad_version version1
+mock_java_version_comparison bad_version bad_version
+mkdir -p TEST_BUILD_OUT_DIR/src/test/java/some/other/work
+mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/code
+mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/target
+mock_cd TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/code
+mkdir -p ./src/test/java/some/other/work
+ln -f -s TEST_BUILD_ROOT/src/test/java/some/other/work/HelloWorldTest.java ./src/test/java/some/other/work/HelloWorldTest.java
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/clsdeps/f0.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/clsdeps/f1.jar
+ln -f -s test_default1.jar TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/clsdeps/f2.jar
+ln -f -s test_default2.jar TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/clsdeps/f3.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/clsdeps/* -d TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/target ./src/test/java/some/other/work/HelloWorldTest.java
+mock_cd TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/.temp.HelloWorldTest.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/.temp.HelloWorldTest.jar']), 'TEST_BUILD_OUT_DIR/src/test/java/some/other/work/HelloWorldTest.jar', 'java_fake_main_class']
+TEST_BU_SCRIPT_DIR/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java/some/other/work/HelloWorldTest.jar -w TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/.test.wdir -cpd TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/clsdeps -tc some.other.work.HelloWorldTest -g unit -x TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar
+mock_java_version_comparison bad_version bad_version
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedCompileDeps/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedCompileDeps/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedCompileDeps/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedCompileDeps/code
+mock_jar_merger [([], [], ['TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverLibWithExcludedCompileDeps.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedCompileDeps.jar', 'some.work.Driver']
+mock_java_version_comparison bad_version bad_version
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedDeps/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedDeps/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedDeps/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedDeps/code
+mock_jar_merger [([], [], ['TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverLibWithExcludedDeps.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedDeps.jar', 'some.work.Driver']
+mock_java_version_comparison bad_version version2
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedCompileDeps/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedCompileDeps/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedCompileDeps/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedCompileDeps/code
+mock_jar_merger [([], [], ['TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedCompileDeps.jar', 'some.work.Driver']
+mock_java_version_comparison bad_version version3
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedDeps/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedDeps/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedDeps/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedDeps/code
+mock_jar_merger [([], [], ['TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverLibWithIncludedDeps.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedDeps.jar', 'some.work.Driver']
+mock_java_version_comparison bad_version bad_version
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/ProtoSampleMain/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/ProtoSampleMain/code
+mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/ProtoSampleMain/target
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/ProtoSampleMain/code
+mkdir -p ./src/main/java/some/work
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/ProtoSampleMain.java ./src/main/java/some/work/ProtoSampleMain.java
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/ProtoSampleUtils.jar TEST_BUILD_WORK_DIR/src/main/java/some/work/ProtoSampleMain/clsdeps/f0.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/main/java/some/work/ProtoSampleMain/clsdeps/* -d TEST_BUILD_WORK_DIR/src/main/java/some/work/ProtoSampleMain/target ./src/main/java/some/work/ProtoSampleMain.java
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/ProtoSampleMain/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/work/ProtoSampleMain/.temp.ProtoSampleMain.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/work/ProtoSampleMain/.temp.ProtoSampleMain.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/ProtoSampleUtils.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/ProtoSampleMain.jar', 'some.work.ProtoSampleMain']
+mock_java_version_comparison bad_version version4
+mock_ls TEST_JAR_SEARCH_PATH/com/beust/jcommander/1.27/jcommander-1.27.jar
+mock_ls TEST_JAR_SEARCH_PATH/org/testng/testng/6.8/testng-6.8.jar
+mkdir -p TEST_BUILD_OUT_DIR/src/test/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/code
+mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/target
+mock_cd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/code
+mkdir -p ./src/test/java/some/work
+ln -f -s TEST_BUILD_ROOT/src/test/java/some/work/DriverTest.java ./src/test/java/some/work/DriverTest.java
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f0.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f1.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/Driver.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f2.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f3.jar
+ln -f -s TEST_JAR_SEARCH_PATH/com/beust/jcommander/1.27/jcommander-1.27.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f4.jar
+ln -f -s TEST_JAR_SEARCH_PATH/org/testng/testng/6.8/testng-6.8.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f5.jar
+ln -f -s test_default1.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f6.jar
+ln -f -s test_default2.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f7.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/* -d TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/target ./src/test/java/some/work/DriverTest.java
+mock_cd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/.temp.DriverTest.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/.temp.DriverTest.jar']), 'TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar', 'java_fake_main_class']
+TEST_BU_SCRIPT_DIR/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar -w TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/.test.wdir -cpd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps -tc some.work.DriverTest -jp '-ea,-Xms6m,-Xmx80m' -g unit
+mock_java_version_comparison bad_version version4
+mkdir -p TEST_BUILD_OUT_DIR/src/test/java/some/work
+mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps
+mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/code
+mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/target
+mock_cd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/code
+mkdir -p ./src/test/java/some/work
+ln -f -s TEST_BUILD_ROOT/src/test/java/some/work/DriverTest.java ./src/test/java/some/work/DriverTest.java
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps/f0.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps/f1.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/Driver.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps/f2.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps/f3.jar
+ln -f -s test_default1.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps/f4.jar
+ln -f -s test_default2.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps/f5.jar
+TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps/* -d TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/target ./src/test/java/some/work/DriverTest.java
+mock_cd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/target
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/.temp.DriverTestIntegration.jar ./mock_file1 ./mock_file2
+mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/.temp.DriverTestIntegration.jar']), 'TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTestIntegration.jar', 'java_fake_main_class']
+TEST_BU_SCRIPT_DIR/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTestIntegration.jar -w TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/.test.wdir -cpd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps -tc some.work.DriverTest -g integration

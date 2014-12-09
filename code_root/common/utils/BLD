@@ -1,0 +1,73 @@
+# Build rules for common/utils.
+
+# Libraries.
+"file_utils": {
+  "rule_type": "py_lib",
+  "srcs": ["file_utils.py"],
+  "deps": []
+},
+
+"hive_reducer_shim": {
+  "rule_type": "py_lib",
+  "srcs": ["hive_reducer_shim.py"],
+  "deps": []
+},
+
+"hive_utils": {
+  "rule_type": "py_lib",
+  "srcs": ["hive_utils.py"],
+  "deps": [".file_utils"]
+},
+
+"mysql_utils": {
+  "rule_type": "py_lib",
+  "srcs": ["mysql_utils.py"],
+  "deps": []
+},
+
+"resource_utils": {
+  "rule_type": "py_lib",
+  "srcs": ["resource_utils.py"],
+  "deps": [".file_utils"]
+},
+
+"time_utils": {
+  "rule_type": "py_lib",
+  "srcs": ["time_utils.py"],
+  "deps": []
+},
+
+# Unit Tests.
+"file_utils_test": {
+  "rule_type": "py_test",
+  "srcs": ["file_utils_test.py"],
+  "deps": [".file_utils"]
+},
+
+"hive_reducer_shim_test": {
+  "rule_type": "py_test",
+  "srcs": ["hive_reducer_shim_test.py"],
+  "deps": [".hive_reducer_shim"]
+},
+
+"hive_utils_test": {
+  "rule_type": "py_test",
+  "srcs": ["hive_utils_test.py"],
+  "deps": [".hive_utils"]
+},
+
+"resource_utils_test": {
+  "rule_type": "py_test",
+  "srcs": ["resource_utils_test.py"],
+  "deps": [
+      ".resource_utils",
+      "mool.common.utils.test_modules.validation_outer",
+      "mool.common.utils.test_modules.validation_bin",
+      "mool.common.utils.test_modules.validation_test_data_C"]
+},
+
+"time_utils_test": {
+  "rule_type": "py_test",
+  "srcs": ["time_utils_test.py"],
+  "deps": [".time_utils"]
+}

@@ -1,0 +1,52 @@
+# Libraries.
+"factorial": {
+  "rule_type": "cc_lib",
+  "srcs": ["factorial.cc"],
+  "hdrs": ["factorial.h"],
+  "deps": ["mool.cc.common.some_lib"],
+  "sys_deps": []
+},
+
+"person_cc_proto": {
+  "rule_type": "cc_proto_lib",
+  "srcs": ["person.proto"],
+  "deps": ["mool.cc.common.address_cc_proto"]
+},
+
+"PersonJavaProto": {
+  "rule_type": "java_proto_lib",
+  "java_outer_classname": "PersonProto",
+  "java_package": "some.other.work",
+  "srcs": ["person.proto"],
+  "deps": ["mool.cc.common.AddressJavaProto"]
+},
+
+# Binaries.
+"factorial_main": {
+  "rule_type": "cc_bin",
+  "srcs": ["factorial_main.cc"],
+  "incdirs": ["/usr/include1", "/usr/include2"],
+  "deps": [
+      ".factorial",
+      "mool.cc.common.shared_headers",
+      "mool.cc.common.echo_utils"],
+  "sys_deps": ["-lre2", "-lxml2", "-pthread"]
+},
+
+"person_proto_main": {
+  "rule_type": "cc_bin",
+  "srcs": ["person_proto_main.cc"],
+  "incdirs": ["/usr/local/include"],
+  "weight": "heavy",
+  "deps": [
+      ".person_cc_proto"],
+  "sys_deps": ["-lprotobuf", "-lpthread", "-pthread"]
+},
+
+# Unit Tests.
+"factorial_test": {
+  "rule_type": "cc_test",
+  "srcs": ["factorial_test.cc"],
+  "deps": [".factorial"],
+  "precompiled_deps": ["env.GTEST_MAIN_LIB", "env.GTEST_MOCK_LIB"]
+}

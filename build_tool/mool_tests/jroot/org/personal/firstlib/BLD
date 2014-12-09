@@ -1,0 +1,50 @@
+# Build rules for jroot/org/personal/firstlib.
+
+# Libraries.
+"prod_files": {
+  "rule_type": "file_coll",
+  "srcs": ["prod_data00.txt"],
+  "file_package": "org/personal/firstlib"
+},
+
+"MainLib": {
+  "rule_type": "java_lib",
+  "srcs": ["Main.java"],
+  "deps": [".prod_files"],
+  "java_version": "1.6"
+},
+
+"test_files": {
+  "rule_type": "file_coll",
+  "srcs": [
+      "test_data01.txt",
+      "test_data02.txt"],
+  "file_package": "org/personal/firstlib"
+},
+
+"JavaVersionDep": {
+  "rule_type": "java_lib",
+  "srcs": ["EchoHelloWorld.java"],
+  "deps": [".MainLib"],
+  "java_version": "1.7"
+},
+
+# Unit Tests.
+"MainTest": {
+  "rule_type": "java_test",
+  "test_class": "org.personal.firstlib.MainTest",
+  "srcs": ["MainTest.java"],
+  "deps": [
+      ".MainLib",
+      ".test_files",
+      "mool.jroot.src.test.java.some.work.TestNgJCommander"]
+},
+
+
+# Binaries.
+"Main": {
+  "rule_type": "java_bin",
+  "main_class": "org.personal.firstlib.Main",
+  "srcs": [],
+  "deps": [".MainLib"]
+}

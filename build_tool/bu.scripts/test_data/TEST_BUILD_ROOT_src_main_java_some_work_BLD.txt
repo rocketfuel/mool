@@ -1,0 +1,188 @@
+# Build rules for src/main/java/some/work.
+
+# Libraries.
+"SomeExternalLibrary": {
+  "rule_type": "java_lib",
+  "precompiled_deps": [
+      "env.JAR_SEARCH_PATH/some/external/library.jar"],
+  "jar_include_paths": [
+      "some/external/pkg1/SomeClass1.class",
+      "some/external/pkg1/SomeClass2.class"],
+  "jar_exclude_paths": [
+      "some/external/pkg2",
+      "some/external/pkg3"],
+  "java_version": "version1"
+},
+
+"SomeMavenDep": {
+  "rule_type": "java_lib",
+  "maven_specs": {
+    "repo_url": "maven_repo_url_test",
+    "group_id": "some.group.test",
+    "artifact_id": "some_artifact",
+    "version": "ultimate"}
+},
+
+"AnotherMavenDep": {
+  "rule_type": "java_lib",
+  "maven_specs": {
+    "repo_url": "maven_repo_url_test",
+    "group_id": "another.group.test",
+    "artifact_id": "another_artifact",
+    "version": "imaginary"}
+},
+
+"MavenDepWithClassifier": {
+  "rule_type": "java_lib",
+  "maven_specs": {
+    "repo_url": "maven_repo_url_test",
+    "group_id": "maven.group.test",
+    "artifact_id": "maven_artifact",
+    "classifier": "maven_classifier",
+    "version": "imaginary"}
+},
+
+"DriverLibWithIncludedCompileDeps": {
+  "rule_type": "java_lib",
+  "srcs": [
+      "Driver.java",
+      "DriverUtils.java"],
+  "compileDeps": [
+      ".AnotherMavenDep",
+      ".MavenDepWithClassifier",
+      ".SomeExternalLibrary",
+      "mool.src.main.java.some.other.work.HelloWorld",
+      "mool.src.main.java.some.other.work.prod_files_second"],
+  "includeDeps": "True",
+  "weight": "heavy",
+  "java_version": "version2"
+},
+
+"DriverLibWithExcludedCompileDeps": {
+  "rule_type": "java_lib",
+  "srcs": [
+      "Driver.java",
+      "DriverUtils.java"],
+  "compileDeps": [
+      ".AnotherMavenDep",
+      ".SomeExternalLibrary",
+      "mool.src.main.java.some.other.work.HelloWorld",
+      "mool.src.main.java.some.other.work.prod_files_second"],
+  "weight": "heavy",
+  "includeDeps": "False"
+},
+
+"DriverLibWithIncludedDeps": {
+  "rule_type": "java_lib",
+  "srcs": [
+      "Driver.java",
+      "DriverUtils.java"],
+  "deps": [
+      ".AnotherMavenDep",
+      ".SomeExternalLibrary",
+      "mool.src.main.java.some.other.work.HelloWorld",
+      "mool.src.main.java.some.other.work.prod_files_second"],
+  "includeDeps": "True",
+  "weight": "heavy",
+  "java_version": "version3"
+},
+
+"DriverLibWithExcludedDeps": {
+  "rule_type": "java_lib",
+  "srcs": [
+      "Driver.java",
+      "DriverUtils.java"],
+  "deps": [
+      ".AnotherMavenDep",
+      ".SomeExternalLibrary",
+      "mool.src.main.java.some.other.work.HelloWorld",
+      "mool.src.main.java.some.other.work.prod_files_second"],
+  "includeDeps": "False"
+},
+
+# Binaries.
+"BinWithNoDependencies": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.BinWithNoDependencies",
+  "srcs": ["BinWithNoDependencies.java"],
+  "deps": []
+},
+
+"ProtoSampleMain": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.ProtoSampleMain",
+  "srcs": ["ProtoSampleMain.java"],
+  "deps": ["mool.src.main.java.some.other.work.ProtoSampleUtils"]
+},
+
+"Driver": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.Driver",
+  "srcs": [
+      "Driver.java",
+      "DriverUtils.java"],
+  "compileDeps": [".AnotherMavenDep"],
+  "deps": [
+      ".SomeExternalLibrary",
+      "mool.src.main.java.some.other.work.HelloWorld",
+      "mool.src.main.java.some.other.work.prod_files_second"],
+  "precompiled_deps": [
+      "env.JAR_SEARCH_PATH/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar"],
+  "java_version": "version4"
+},
+
+"DriverFromMavenSpec": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.Driver",
+  "srcs": [
+      "Driver.java",
+      "DriverUtils.java"],
+  "deps": [
+      ".SomeMavenDep",
+      "mool.src.main.java.some.other.work.HelloWorld",
+      "mool.src.main.java.some.other.work.prod_files_second"]
+},
+
+"DriverFromDriverLibWithIncludedCompileDeps": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.Driver",
+  "srcs": [],
+  "weight": "heavy",
+  "deps": [".DriverLibWithIncludedCompileDeps"]
+},
+
+"DriverFromDriverLibWithExcludedCompileDeps": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.Driver",
+  "srcs": [],
+  "weight": "heavy",
+  "deps": [".DriverLibWithExcludedCompileDeps"]
+},
+
+"DriverFromDriverLibWithIncludedDeps": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.Driver",
+  "srcs": [],
+  "weight": "heavy",
+  "deps": [".DriverLibWithIncludedDeps"]
+},
+
+"DriverFromDriverLibWithExcludedDeps": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.Driver",
+  "srcs": [],
+  "deps": [".DriverLibWithExcludedDeps"]
+},
+
+
+# Release packages.
+"complete_package": {
+  "rule_type": "release_package",
+  "package_modules": [
+      ".Driver",
+      "mool.cc.samples.factorial_main"],
+  "weight": "heavy",
+  "package_tests": [
+      "mool.cc.samples.factorial_test",
+      "mool.src.test.java.some.work.DriverTest"]
+}

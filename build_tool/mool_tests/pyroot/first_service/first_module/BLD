@@ -1,0 +1,48 @@
+# Build rules for pyroot/first_service/first_module.
+
+# Libraries.
+"address_py_proto": {
+  "rule_type": "py_proto_lib",
+  "srcs": ["address.proto"],
+  "deps": []
+},
+
+"checkstyle_lib": {
+  "rule_type": "java_lib",
+  "maven_specs": {
+      "repo_url": "http://repo1.maven.org/maven2",
+      "group_id": "clickstream",
+      "artifact_id": "clickstream",
+      "classifier": "sources",
+      "version": "1.0.2"}
+},
+
+"main_lib": {
+  "rule_type": "py_lib",
+  "srcs": [
+      "one_class.py",
+      "one_more_class.py"],
+  "deps": []
+},
+
+# Unit Tests.
+"main_lib_test": {
+  "rule_type": "py_test",
+  "srcs": ["e2e_test.py"],
+  "deps": [".main_lib"]
+},
+
+
+# Binaries.
+"first_main": {
+  "rule_type": "py_bin",
+  "main_method": "pyroot.first_service.first_module.one_more_class.main_func",
+  "deps": [".main_lib"]
+},
+
+"java_dependency_pybin": {
+  "rule_type": "py_bin",
+  "main_method": "pyroot.first_service.first_module.java_lib_dependency.main",
+  "srcs": ["java_lib_dependency.py"],
+  "deps": [".checkstyle_lib"]
+}

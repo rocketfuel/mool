@@ -1,0 +1,4 @@
+# Submit queue for cc/common.
+
+mool.cc.common.echo_utils_test
+mool.cc.common.some_lib_test

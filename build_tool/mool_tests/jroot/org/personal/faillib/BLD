@@ -1,0 +1,14 @@
+# Build rules for jroot/org/personal/faillib.
+
+# Libraries.
+"WrongJavaVersionDep": {
+  "rule_type": "java_lib",
+  "deps": ["mool.jroot.org.personal.firstlib.JavaVersionDep"],
+  "java_version": "1.6"
+},
+
+# A non test rule cannot have test dependency.
+"TestDepOfLib": {
+  "rule_type": "java_lib",
+  "deps": ["mool.jroot.org.personal.firstlib.MainTest"]
+}

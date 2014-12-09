@@ -1,0 +1,11 @@
+# Build rules for jroot/src/test/java/some/other/work.
+
+# Unit Tests.
+"HelloWorldTest": {
+  "rule_type": "java_test",
+  "test_class": "some.other.work.HelloWorldTest",
+  "srcs": ["HelloWorldTest.java"],
+  "deps": [
+      "mool.jroot.src.main.java.some.other.work.HelloWorld",
+      "mool.jroot.src.test.java.some.work.TestNgJCommander"]
+}

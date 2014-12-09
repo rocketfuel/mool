@@ -1,0 +1,12 @@
+// A protocol buffer for a Person object.
+package some_other_work;
+import "jroot/src/main/java/some/work/address.proto";
+
+option java_package = "some.other.work";
+option java_outer_classname = "PersonProto";
+
+message Person {
+  required int32 id = 1;
+  required string name = 2;
+  repeated java_some_work.Address addresses = 3;
+}

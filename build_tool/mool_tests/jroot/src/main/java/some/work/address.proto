@@ -1,0 +1,10 @@
+// A protocol buffer for an Address object.
+package java_some_work;
+
+option java_package = "some.other.work";
+option java_outer_classname = "AddressProto";
+
+message Address {
+  required string text = 1;
+  required int32 type = 2;
+}

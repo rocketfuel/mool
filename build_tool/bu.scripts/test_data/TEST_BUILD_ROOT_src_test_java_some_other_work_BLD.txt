@@ -1,0 +1,10 @@
+# Build rules for src/test/java/some/other/work.
+
+# Unit Tests.
+"HelloWorldTest": {
+  "rule_type": "java_test",
+  "test_class": "some.other.work.HelloWorldTest",
+  "srcs": ["HelloWorldTest.java"],
+  "deps": ["mool.src.main.java.some.other.work.HelloWorld"],
+  "extract_deps": ["mool.src.main.java.some.other.work.prod_files_second"]
+}

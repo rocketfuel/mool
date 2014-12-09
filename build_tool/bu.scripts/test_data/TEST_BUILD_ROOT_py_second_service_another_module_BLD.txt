@@ -1,0 +1,51 @@
+# Build rules for py/second_service/another_module.
+
+# Libraries.
+"another_lib": {
+  "rule_type": "py_lib",
+  "srcs": ["another_class.py"],
+  "deps": ["mool.py.first_service.first_module.main_lib"]
+},
+
+"person_py_proto": {
+  "rule_type": "py_proto_lib",
+  "srcs": ["person.proto"],
+  "deps": ["mool.py.first_service.first_module.address_py_proto"],
+  "precompiled_deps": ["env.PYTHON_PROTOBUF_DIR"]
+},
+
+"person_py_proto_nodeps": {
+  "rule_type": "py_proto_lib",
+  "srcs": ["person.proto"],
+  "deps": ["mool.py.first_service.first_module.address_py_proto"]
+},
+
+# Unit Tests.
+"another_lib_test": {
+  "rule_type": "py_test",
+  "srcs": ["another_class_test.py"],
+  "deps": [".another_lib"]
+},
+
+
+# Binaries.
+"second_main": {
+  "rule_type": "py_bin",
+  "main_method": "py.second_service.another_module.another_class.main_func",
+  "deps": [".another_lib"]
+},
+
+"person_main": {
+  "rule_type": "py_bin",
+  "srcs": ["person_main_class.py"],
+  "main_method": "py.second_service.another_module.person_main_class.main_func",
+  "deps": [".person_py_proto"]
+},
+
+"person_main_from_proto_nodeps": {
+  "rule_type": "py_bin",
+  "srcs": ["person_main_class.py"],
+  "main_method": "py.second_service.another_module.person_main_class.main_func",
+  "deps": [".person_py_proto_nodeps"],
+  "precompiled_deps": ["env.PYTHON_PROTOBUF_DIR"]
+}

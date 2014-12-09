@@ -1,0 +1,18 @@
+# Build rules for scalaroot/com/testTwo.
+
+# Libraries.
+"AnotherResource": {
+  "rule_type": "file_coll",
+  "srcs": ["another_resource.txt"],
+  "file_package": "com/testTwo"
+},
+
+# Unit Tests.
+"AnotherTest": {
+  "rule_type": "scala_test",
+  "test_class": "com.testTwo.AnotherTest",
+  "srcs": ["AnotherTest.scala"],
+  "deps": [
+      "mool.scalaroot.com.testOne.MainLib",
+      "mool.scalaroot.com.testOne.ScalaTestJar"]
+}

@@ -1,0 +1,29 @@
+# Build rules for src/main/java/some/other/work.
+
+# Libraries.
+"prod_files_first": {
+  "rule_type": "file_coll",
+  "srcs": ["prod_data_00.txt"]
+},
+
+"prod_files_second": {
+  "rule_type": "file_coll",
+  "srcs": ["prod_data_01.txt", "prod_data_02.txt"],
+  "file_package": "some/where"
+},
+
+"HelloWorld": {
+  "rule_type": "java_lib",
+  "srcs": [
+      "HelloUtils.java",
+      "HelloWorld.java"],
+  "deps": [".prod_files_first"],
+  "ignore_compiler_warnings": "True",
+  "java_version": "version1"
+},
+
+"ProtoSampleUtils": {
+  "rule_type": "java_lib",
+  "srcs": ["ProtoSampleUtils.java"],
+  "deps": ["mool.cc.samples.PersonJavaProto"]
+}

@@ -1,0 +1,28 @@
+# Build rules for jroot/org/personal/secondlib.
+
+# Libraries.
+"SecondMainLib": {
+  "rule_type": "java_lib",
+  "srcs": ["SecondMain.java"],
+  "deps": ["mool.jroot.org.personal.firstlib.MainLib"]
+},
+
+
+# Unit Tests.
+"SecondMainTest": {
+  "rule_type": "java_test",
+  "test_class": "org.personal.secondlib.SecondMainTest",
+  "srcs": ["SecondMainTest.java"],
+  "deps": [
+      ".SecondMainLib",
+      "mool.jroot.src.test.java.some.work.TestNgJCommander"]
+},
+
+
+# Binaries.
+"SecondMain": {
+  "rule_type": "java_bin",
+  "main_class": "org.personal.secondlib.SecondMain",
+  "srcs": [],
+  "deps": [".SecondMainLib"]
+}

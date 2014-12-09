@@ -1,0 +1,24 @@
+# Build rules for jroot/src/main/java/some/other/work.
+
+# Libraries.
+
+"HelloWorld": {
+  "rule_type": "java_lib",
+  "srcs": [
+      "HelloUtils.java",
+      "HelloWorld.java"],
+  "deps": [],
+  "ignore_compiler_warnings": "True"
+},
+
+"PersonJavaProto": {
+  "rule_type": "java_proto_lib",
+  "srcs": ["person.proto"],
+  "deps": ["mool.jroot.src.main.java.some.work.AddressJavaProto"]
+},
+
+"ProtoSampleUtils": {
+  "rule_type": "java_lib",
+  "srcs": ["ProtoSampleUtils.java"],
+  "deps": [".PersonJavaProto"]
+}

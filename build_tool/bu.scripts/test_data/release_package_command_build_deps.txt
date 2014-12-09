@@ -1,0 +1,123 @@
+mool.cc.common.echo_utils
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
+    -->FILE: TEST_BUILD_ROOT/cc/common/BLD
+    -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils.cc
+    -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils.h
+
+mool.cc.common.shared_headers
+    -->FILE: DUMMY_CC_FILE
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/shared_headers.o
+    -->FILE: TEST_BUILD_ROOT/cc/common/BLD
+    -->FILE: TEST_BUILD_ROOT/cc/common/global_macros.h
+
+mool.cc.common.some_lib
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/some_lib.o
+    -->FILE: TEST_BUILD_ROOT/cc/common/BLD
+    -->FILE: TEST_BUILD_ROOT/cc/common/some_lib.cc
+    -->FILE: TEST_BUILD_ROOT/cc/common/some_lib.h
+
+mool.cc.samples.factorial
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial.o
+    -->FILE: TEST_BUILD_ROOT/cc/common/some_lib.h
+    -->FILE: TEST_BUILD_ROOT/cc/samples/BLD
+    -->FILE: TEST_BUILD_ROOT/cc/samples/factorial.cc
+    -->FILE: TEST_BUILD_ROOT/cc/samples/factorial.h
+
+mool.cc.samples.factorial_main
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/shared_headers.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/some_lib.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial_main
+    -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils.h
+    -->FILE: TEST_BUILD_ROOT/cc/common/global_macros.h
+    -->FILE: TEST_BUILD_ROOT/cc/common/some_lib.h
+    -->FILE: TEST_BUILD_ROOT/cc/samples/BLD
+    -->FILE: TEST_BUILD_ROOT/cc/samples/factorial.h
+    -->FILE: TEST_BUILD_ROOT/cc/samples/factorial_main.cc
+
+mool.cc.samples.factorial_test
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/some_lib.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial_test
+    -->FILE: TEST_BUILD_ROOT/cc/common/some_lib.h
+    -->FILE: TEST_BUILD_ROOT/cc/samples/BLD
+    -->FILE: TEST_BUILD_ROOT/cc/samples/factorial.h
+    -->FILE: TEST_BUILD_ROOT/cc/samples/factorial_test.cc
+    -->FILE: TEST_GTEST_MAIN_LIB
+    -->FILE: TEST_GTEST_MOCK_LIB
+
+mool.src.main.java.some.other.work.HelloWorld
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_first.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/BLD
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/HelloUtils.java
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/HelloWorld.java
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_00.txt
+
+mool.src.main.java.some.other.work.prod_files_first
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_first.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_00.txt
+
+mool.src.main.java.some.other.work.prod_files_second
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_01.txt
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_02.txt
+
+mool.src.main.java.some.work.AnotherMavenDep
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
+    -->FILE: TEST_JAR_SEARCH_PATH/another/group/test/another_artifact/imaginary/another_artifact-imaginary.jar
+
+mool.src.main.java.some.work.Driver
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/Driver.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/HelloUtils.java
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/HelloWorld.java
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_01.txt
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_02.txt
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+    -->FILE: TEST_JAR_SEARCH_PATH/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar
+
+mool.src.main.java.some.work.SomeExternalLibrary
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
+    -->FILE: TEST_JAR_SEARCH_PATH/some/external/library.jar
+
+mool.src.main.java.some.work.complete_package
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/shared_headers.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/some_lib.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial_main
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial_test
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/Driver.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/complete_package.zip
+    -->FILE: TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar
+
+mool.src.test.java.some.work.DriverTest
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/Driver.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/HelloUtils.java
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/HelloWorld.java
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_01.txt
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_02.txt
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+    -->FILE: TEST_BUILD_ROOT/src/test/java/some/work/BLD
+    -->FILE: TEST_BUILD_ROOT/src/test/java/some/work/DriverTest.java
+    -->FILE: TEST_JAR_SEARCH_PATH/com/beust/jcommander/1.27/jcommander-1.27.jar
+    -->FILE: TEST_JAR_SEARCH_PATH/org/testng/testng/6.8/testng-6.8.jar
+    -->FILE: test_default1.jar
+    -->FILE: test_default2.jar

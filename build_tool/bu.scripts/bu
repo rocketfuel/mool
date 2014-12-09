@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# 'bu' is an acronym for 'Build Utility'
+
+# Ensure exit on first failure.
+set -e
+set -o pipefail
+
+if [ "${BU_SCRIPT_DIR}" == "" ]; then
+    echo 'Error: Environment has not been set up.'
+    exit 1
+fi
+
+# Make sure that script runs from ${BUILD_ROOT} directory.
+cd ${BUILD_ROOT}
+${BU_SCRIPT_DIR}/build_utils_driver.py "$@"

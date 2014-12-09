@@ -1,0 +1,7 @@
+// A protocol buffer for an Address object.
+package first_service_first_module;
+
+message Address {
+  required string text = 1;
+  required int32 type = 2;
+}

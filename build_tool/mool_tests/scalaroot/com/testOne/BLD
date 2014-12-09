@@ -1,0 +1,111 @@
+# Build rules for scalaroot/com/testOne.
+
+# Libraries.
+"res_files": {
+  "rule_type": "file_coll",
+  "srcs": ["resource_data.txt"],
+  "file_package": "com/testOne"
+},
+
+"MainLib2_11": {
+  "rule_type": "scala_lib",
+  "scala_version": "2.11",
+  "srcs": ["Main.scala"],
+  "deps": [".res_files"]
+},
+
+"MainLib": {
+  "rule_type": "scala_lib",
+  "srcs": ["Main.scala"],
+  "deps": [".res_files"]
+},
+
+"JavaDepLib": {
+  "rule_type": "java_lib",
+  "srcs": ["JavaDep.java"]
+},
+
+# One needs to include this library to run scala jars using java.
+"ScalaCoreLib": {
+  "rule_type": "scala_lib",
+  "maven_specs": {
+      "repo_url": "http://central.maven.org/maven2",
+      "group_id": "org.scala-lang",
+      "artifact_id": "scala-library",
+      "version": "2.8.2"
+    }
+},
+
+"ScalaTestJar": {
+  "rule_type": "scala_lib",
+  "maven_specs": {
+      "repo_url": "http://central.maven.org/maven2",
+      "group_id": "org.scalatest",
+      "artifact_id": "scalatest_2.8.1",
+      "version": "1.8"
+    }
+},
+
+"ScalaTestJar2_11": {
+  "rule_type": "scala_lib",
+  "maven_specs": {
+      "repo_url": "http://central.maven.org/maven2",
+      "group_id": "org.scalatest",
+      "artifact_id": "scalatest_2.11",
+      "version": "2.2.1"
+    }
+},
+
+# Unit Tests.
+"ScalaTest": {
+  "rule_type": "scala_test",
+  "test_class": "com.testOne.ScalaTest",
+  "srcs": ["ScalaTest.scala"],
+  "deps": [
+      ".JavaDepLib",
+      ".MainLib",
+      ".ScalaTestJar",
+      "mool.scalaroot.com.testTwo.AnotherResource"]
+},
+
+"ScalaTest2_11": {
+  "rule_type": "scala_test",
+  "test_class": "com.testOne.ScalaTest",
+  "srcs": ["ScalaTest.scala"],
+  "scala_version": "2.11",
+  "deps": [
+      ".JavaDepLib",
+      ".MainLib2_11",
+      ".ScalaTestJar2_11",
+      "mool.scalaroot.com.testTwo.AnotherResource"]
+},
+
+# Binaries.
+"Main": {
+  "rule_type": "scala_bin",
+  "main_class": "com.testOne.Main",
+  "deps": [".MainLib"]
+},
+
+# As of today, we are using scala-2.8.2 as default and running a scala jar
+# (with proper main class set) throws a decoding error using UTF-8 though the
+# same jar runs fine if we specify the path to main class as well.
+# This is not an issue with scala-2.11.4 and a jar executes as expected.
+# As a work around, we use java to execute the jar adding scala-library to
+# classpath.
+"MainWithScalaCore": {
+  "rule_type": "java_bin",
+  "main_class": "com.testOne.Main",
+  "deps": [
+      ".Main",
+      ".ScalaCoreLib"]
+},
+
+"ScalaDepInJavaBin": {
+  "rule_type": "java_bin",
+  "srcs": ["ScalaDep.java"],
+  "deps": [
+      ".MainLib",
+      ".ScalaCoreLib"],
+  "main_class": "com.ScalaDep.ScalaDep"
+}

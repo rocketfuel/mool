@@ -1,0 +1,73 @@
+# Build rules for jroot/src/test/java/some/work.
+
+# Libraries.
+"JCommander": {
+  "rule_type": "java_lib",
+  "maven_specs": {
+      "repo_url": "http://central.maven.org/maven2",
+      "group_id": "com.beust",
+      "artifact_id": "jcommander",
+      "version": "1.27"}
+},
+
+"TestNg": {
+  "rule_type": "java_lib",
+  "maven_specs": {
+      "repo_url": "http://central.maven.org/maven2",
+      "group_id": "org.testng",
+      "artifact_id": "testng",
+      "version": "6.8"}
+},
+
+# A combined rule to specify both TestNg and JCommand together.
+"TestNgJCommander": {
+  "rule_type": "java_lib",
+  "deps": [
+      ".JCommander",
+      ".TestNg"]
+},
+
+
+# Unit Tests.
+"DriverTest": {
+  "rule_type": "java_test",
+  "test_class": "some.work.DriverTest",
+  "srcs": ["DriverTest.java"],
+  "deps": [
+      ".TestNgJCommander",
+      "mool.jroot.src.main.java.some.work.Driver"],
+
+  # This line can be omitted in a test rule because it is added automatically.
+  "test_groups": ["unit"],
+
+  # Following dependency has been intentionally put to test precompiled_deps
+  # feature. Also you can specify other JAR dependencies using environment
+  # variables, by appending 'env.' in the beginning of variable.
+  "precompiled_deps": [
+      "env.JAR_SEARCH_PATH/com/beust/jcommander/1.27/jcommander-1.27.jar"],
+
+  # Optional mechanism to specify runtime params for unit tests.
+  "runtime_params": ["-ea", "-Xms6m", "-Xmx80m"]
+},
+
+"ResourceAccessibleTest": {
+  "rule_type": "java_test",
+  "test_class": "some.work.ResourceAccessibleTest",
+  "srcs": ["ResourceAccessibleTest.java"],
+  "deps": [".TestNgJCommander"],
+  "test_groups": ["unit"],
+  # Specify what resource files should be extracted before the tests runs.
+  # These are automatically included in build dependencies.
+  "extract_deps": ["mool.jroot.src.main.java.some.work.some_resource_files"]
+},
+
+# Integration Tests.
+"DriverTestIntegration": {
+  "rule_type": "java_test",
+  "test_class": "some.work.DriverTest",
+  "srcs": ["DriverTest.java"],
+  "deps": [
+      ".TestNgJCommander",
+      "mool.jroot.src.main.java.some.work.Driver"],
+  "test_groups": ["integration"]
+}

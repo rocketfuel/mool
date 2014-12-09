@@ -1,0 +1,9 @@
+// A protocol buffer for a Person object.
+package second_service_another_module;
+import "pyroot/first_service/first_module/address.proto";
+
+message Person {
+  required int32 id = 1;
+  required string name = 2;
+  repeated first_service_first_module.Address addresses = 3;
+}

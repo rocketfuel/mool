@@ -1,0 +1,31 @@
+# Build rules for src/test/java/some/work.
+
+# Unit Tests.
+"DriverTest": {
+  "rule_type": "java_test",
+  "test_class": "some.work.DriverTest",
+  "srcs": ["DriverTest.java"],
+  "deps": ["mool.src.main.java.some.work.Driver"],
+
+  # This line can be omitted in a test rule because it is added automatically.
+  "test_groups": ["unit"],
+
+  # The testng and jcommander deps are added automatically in a java_test rule
+  # and can be omitted.
+  "precompiled_deps": [
+      "env.JAR_SEARCH_PATH/org/testng/testng/6.8/testng-6.8.jar",
+      "env.JAR_SEARCH_PATH/com/beust/jcommander/1.27/jcommander-1.27.jar"],
+
+  # Optional mechanism to specify runtime params for unit tests.
+  "runtime_params": ["-ea", "-Xms6m", "-Xmx80m"]
+},
+
+
+# Integration Tests.
+"DriverTestIntegration": {
+  "rule_type": "java_test",
+  "test_class": "some.work.DriverTest",
+  "srcs": ["DriverTest.java"],
+  "deps": ["mool.src.main.java.some.work.Driver"],
+  "test_groups": ["integration"]
+}

@@ -1,0 +1,35 @@
+# Build rules for first_service/first_module.
+
+# Libraries.
+"main_lib": {
+  "rule_type": "py_lib",
+  "srcs": [
+      "one_class.py",
+      "one_more_class.py"],
+  "deps": [],
+  # This is not really needed, just added for testing that
+  # the step executes properly. Since no binary really
+  # gets built for these BLD files, there is no perf impact.
+  "precompiled_deps": ["env.PYTHON_PROTOBUF_DIR"]
+},
+
+"address_py_proto": {
+  "rule_type": "py_proto_lib",
+  "srcs": ["address.proto"],
+  "deps": []
+},
+
+# Unit Tests.
+"main_lib_test": {
+  "rule_type": "py_test",
+  "srcs": ["e2e_test.py"],
+  "deps": [".main_lib"]
+},
+
+
+# Binaries.
+"first_main": {
+  "rule_type": "py_bin",
+  "main_method": "py.first_service.first_module.one_more_class.main_func",
+  "deps": [".main_lib"]
+}

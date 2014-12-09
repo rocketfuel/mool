@@ -1,0 +1,46 @@
+# Libraries.
+"echo_utils": {
+  "rule_type": "cc_lib",
+  "srcs": ["echo_utils.cc"],
+  "hdrs": ["echo_utils.h"]
+},
+
+"address_cc_proto": {
+  "rule_type": "cc_proto_lib",
+  "srcs": ["address.proto"],
+  "deps": []
+},
+
+"AddressJavaProto": {
+  "rule_type": "java_proto_lib",
+  "java_outer_classname": "AddressProto",
+  "java_package": "some.other.work",
+  "srcs": ["address.proto"],
+  "deps": []
+},
+
+"shared_headers": {
+  "rule_type": "cc_lib",
+  "hdrs": ["global_macros.h"]
+},
+
+"some_lib": {
+  "rule_type": "cc_lib",
+  "srcs": ["some_lib.cc"],
+  "hdrs": ["some_lib.h"],
+  "sys_deps": ["-lm"]
+},
+
+
+# Unit Tests.
+"echo_utils_test": {
+  "rule_type": "cc_test",
+  "srcs": ["echo_utils_test.cc"],
+  "deps": [".echo_utils"]
+},
+
+"some_lib_test": {
+  "rule_type": "cc_test",
+  "srcs": ["some_lib_test.cc"],
+  "deps": [".some_lib"]
+}

@@ -1,0 +1,4 @@
+This is a resource
+file for
+Scala test
+purposes.

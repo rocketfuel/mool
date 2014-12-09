@@ -1,0 +1,82 @@
+mool.py.first_service.first_module.address_py_proto
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/address_py_proto
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/BLD
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/address.proto
+
+mool.py.first_service.first_module.first_main
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/first_main
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/main_lib
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/BLD
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_class.py
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_more_class.py
+
+mool.py.first_service.first_module.main_lib
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/main_lib
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/BLD
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_class.py
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_more_class.py
+
+mool.py.first_service.first_module.main_lib_test
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/main_lib
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/main_lib_test
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/BLD
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/e2e_test.py
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_class.py
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_more_class.py
+
+mool.py.second_service.another_module.another_lib
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/main_lib
+    -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/another_lib
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_class.py
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_more_class.py
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/BLD
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/another_class.py
+
+mool.py.second_service.another_module.another_lib_test
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/main_lib
+    -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/another_lib
+    -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/another_lib_test
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_class.py
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_more_class.py
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/BLD
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/another_class.py
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/another_class_test.py
+
+mool.py.second_service.another_module.person_main
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/address_py_proto
+    -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/person_main
+    -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/person_py_proto
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/address.proto
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/BLD
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/person.proto
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/person_main_class.py
+
+mool.py.second_service.another_module.person_main_from_proto_nodeps
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/address_py_proto
+    -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/person_main_from_proto_nodeps
+    -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/person_py_proto_nodeps
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/address.proto
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/BLD
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/person.proto
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/person_main_class.py
+
+mool.py.second_service.another_module.person_py_proto
+    -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/person_py_proto
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/address.proto
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/BLD
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/person.proto
+
+mool.py.second_service.another_module.person_py_proto_nodeps
+    -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/person_py_proto_nodeps
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/address.proto
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/BLD
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/person.proto
+
+mool.py.second_service.another_module.second_main
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/main_lib
+    -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/another_lib
+    -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/second_main
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_class.py
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_more_class.py
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/BLD
+    -->FILE: TEST_BUILD_ROOT/py/second_service/another_module/another_class.py

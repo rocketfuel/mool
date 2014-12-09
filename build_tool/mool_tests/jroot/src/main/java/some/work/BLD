@@ -1,0 +1,140 @@
+# Build rules for jroot/src/main/java/some/work.
+
+# Libraries.
+"some_resource_files": {
+   "rule_type": "file_coll",
+   "srcs": ["some_resource.txt"],
+   "file_package": "src/main/java/some/work"
+},
+
+"AddressJavaProto": {
+  "rule_type": "java_proto_lib",
+  "srcs": ["address.proto"],
+  "deps": []
+},
+
+"StrippedCommonLang": {
+  "rule_type": "java_lib",
+  # A java_lib build rule with empty or missing "srcs" list can be used for
+  # packaging jars together without compilation. Such a rule can also be used
+  # to white-list or black-list directories in the jars.
+  # "srcs": [],
+  "deps": [".ApacheCommonsCommonLang"],
+
+  # Technically it is not required to have both inclusion and exclusion rules.
+  # However, there is no harm as both are applied in parallel.
+  "jar_include_paths": ["org/apache/commons/lang3/StringUtils.class"],
+
+  "jar_exclude_paths": [
+      "org/apache/commons/lang3/event",
+      "org/apache/commons/lang3/reflect"]
+},
+
+# Demo usage of maven jars. Jars can be downloaded from maven repositories and
+# included in projects using the env.JAR_SEARCH_PATH mechanism demonstrated
+# above. They can also be included by direct specification.
+"ApacheCommonsCommonLang": {
+  "rule_type": "java_lib",
+  "maven_specs": {
+    "repo_url": "http://repo1.maven.org/maven2",
+    "group_id": "org.apache.commons",
+    "artifact_id": "commons-lang3",
+    "version": "3.0"}
+},
+
+# Some jars have a large number of compile time dependencies which do not need
+# to be copied to the final jar. For example, jars containing Hadoop mapreduce
+# code need to use Hadoop class definitions like IntWritable during compilation.
+# The actual class implementations are not needed in the final jar during
+# run-time as Hadoop framework already has them. This configuration is supported
+# by allowing the framework to specify includeDeps as false.
+#
+# A build rule specifying another java_lib build rule as a dependency gets a
+# list of all the latter's transitive dependencies at compile and link time.
+# This happens irrespective of the value of includeDeps on the java_lib build
+# rule. This process is optimized internally by pruning the dependency tree
+# any time includeDeps is set to true (which is the default for java_lib rules).
+"DriverLibWithMissingDeps": {
+  "rule_type": "java_lib",
+  "srcs": [
+      "Driver.java",
+      "DriverUtils.java"],
+  "compileDeps": [
+      ".StrippedCommonLang",
+      "mool.jroot.src.main.java.some.other.work.HelloWorld"],
+  "includeDeps": "False"
+},
+
+# Binaries.
+"BinWithNoDependencies": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.BinWithNoDependencies",
+  "srcs": ["BinWithNoDependencies.java"],
+  "deps": []
+},
+
+"Driver": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.Driver",
+  "srcs": [
+      "Driver.java",
+      "DriverUtils.java"],
+  "deps": [
+      ".some_resource_files",
+      "mool.jroot.src.main.java.some.other.work.HelloWorld"],
+  "precompiled_deps": [
+      "env.JAR_SEARCH_PATH/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar"]
+},
+
+"ProtoSampleMain": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.ProtoSampleMain",
+  "srcs": ["ProtoSampleMain.java"],
+  "deps": ["mool.jroot.src.main.java.some.other.work.ProtoSampleUtils"]
+},
+
+"DriverWithReducedDeps": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.Driver",
+  "srcs": [
+      "Driver.java",
+      "DriverUtils.java"],
+  "deps": [
+      ".StrippedCommonLang",
+      ".some_resource_files",
+      "mool.jroot.src.main.java.some.other.work.HelloWorld"]
+},
+
+"DriverFromDriverLibWithMissingDeps": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.Driver",
+  "deps": [
+      ".DriverLibWithMissingDeps",
+      ".StrippedCommonLang",
+      ".some_resource_files",
+      "mool.jroot.src.main.java.some.other.work.HelloWorld"]
+},
+
+"DriverFromMavenSpec": {
+  "rule_type": "java_bin",
+  "main_class": "some.work.Driver",
+  "srcs": [
+      "Driver.java",
+      "DriverUtils.java"],
+  "deps": [
+      ".ApacheCommonsCommonLang",
+      ".some_resource_files",
+      "mool.jroot.src.main.java.some.other.work.HelloWorld"]
+},
+
+
+# Release packages.
+"complete_package": {
+  "rule_type": "release_package",
+  "package_modules": [
+      "mool.jroot.org.personal.firstlib.Main",
+      ".DriverWithReducedDeps"],
+  "package_tests": [
+      "mool.jroot.org.personal.firstlib.MainTest",
+      "mool.jroot.src.test.java.some.work.DriverTest"]
+}

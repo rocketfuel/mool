@@ -1,0 +1,17 @@
+mock_cat TEST_BUILD_ROOT/cc/common/BLD
+mkdir -p TEST_BUILD_OUT_DIR/cc/common
+mkdir -p TEST_BUILD_WORK_DIR/cc/common/echo_utils
+mock_cd TEST_BUILD_WORK_DIR/cc/common/echo_utils
+mkdir -p ./cc/common
+ln -f -s TEST_BUILD_ROOT/cc/common/echo_utils.cc ./cc/common/echo_utils.cc
+ln -f -s TEST_BUILD_ROOT/cc/common/echo_utils.h ./cc/common/echo_utils.h
+TEST_CC_COMPILER -I. -c ./cc/common/echo_utils.cc -o TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
+mock_ls TEST_GTEST_MAIN_LIB
+mock_ls TEST_GTEST_MOCK_LIB
+mkdir -p TEST_BUILD_OUT_DIR/cc/common
+mkdir -p TEST_BUILD_WORK_DIR/cc/common/echo_utils_test
+mock_cd TEST_BUILD_WORK_DIR/cc/common/echo_utils_test
+mkdir -p ./cc/common
+ln -f -s TEST_BUILD_ROOT/cc/common/echo_utils_test.cc ./cc/common/echo_utils_test.cc
+ln -f -s TEST_BUILD_ROOT/cc/common/echo_utils.h ./cc/common/echo_utils.h
+TEST_CC_COMPILER -I. -isystem TEST_GMOCK_DIR/include -isystem TEST_GTEST_DIR/include -pthread ./cc/common/echo_utils_test.cc TEST_BUILD_OUT_DIR/cc/common/echo_utils.o TEST_GTEST_MAIN_LIB TEST_GTEST_MOCK_LIB -o TEST_BUILD_OUT_DIR/cc/common/echo_utils_test
