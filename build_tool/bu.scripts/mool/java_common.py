@@ -3,8 +3,8 @@ import logging
 import os
 import subprocess
 
-import jar_merger as jm
-import shared_utils as su
+import mool.jar_merger as jm
+import mool.shared_utils as su
 
 
 JAVA_VERSION_DEP_RULE_TYPES = [su.JAVA_BIN_TYPE, su.JAVA_LIB_TYPE,

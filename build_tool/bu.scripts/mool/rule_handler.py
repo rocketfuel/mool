@@ -1,14 +1,14 @@
 """Rule handler module."""
-import shared_utils as su
-import cc_proto as ccp
-import cc_common as ccc
-import file_collection as fc
-import java_common as jc
-import java_proto as jp
-import python_common as pc
-import python_proto as pp
-import release_package as rp
-import scala_common as sc
+import mool.shared_utils as su
+import mool.cc_proto as ccp
+import mool.cc_common as ccc
+import mool.file_collection as fc
+import mool.java_common as jc
+import mool.java_proto as jp
+import mool.python_common as pc
+import mool.python_proto as pp
+import mool.release_package as rp
+import mool.scala_common as sc
 
 
 class RuleHandler(object):

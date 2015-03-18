@@ -5,7 +5,7 @@ import os
 import subprocess
 import zipfile
 
-import shared_utils as su
+import mool.shared_utils as su
 
 MAIN_FILE_NAME = '__main__.py'
 INIT_FILE_NAME = '__init__.py'

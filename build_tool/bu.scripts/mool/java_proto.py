@@ -1,8 +1,8 @@
 """Rules for Java protocol buffers."""
 import os
 import logging
-import java_common as jc
-import shared_utils as su
+import mool.java_common as jc
+import mool.shared_utils as su
 
 
 class Error(Exception):

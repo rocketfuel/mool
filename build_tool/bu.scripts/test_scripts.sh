@@ -11,6 +11,7 @@ if [ "${BU_SCRIPT_DIR}" == "" ]; then
 fi
 
 cd ${BU_SCRIPT_DIR}
+export PYTHONPATH=${BU_SCRIPT_DIR}:$PYTHONPATH
 
 for FF in $(ls ${BU_SCRIPT_DIR}/*.py); do
   pylint --rcfile=./pylint.rc ${FF} 2>/dev/null

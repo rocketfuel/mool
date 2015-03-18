@@ -44,9 +44,10 @@ DEVELOPER_MODE = os.environ.get('DEVELOPER_MODE', 'false')
 
 # These constants are functionally dependent on the previous set of
 # environment variables.
-DUMMY_CC = os.path.join(BU_SCRIPT_DIR, 'dummy.cc')
+MOOL_SRC_DIR = os.path.join(BU_SCRIPT_DIR, 'mool')
+DUMMY_CC = os.path.join(MOOL_SRC_DIR, 'dummy.cc')
 JAR_BIN = os.path.join(JAVA_HOME, 'bin', 'jar')
-JAR_TESTER_SCRIPT = os.path.join(BU_SCRIPT_DIR, 'jar_testng_runner.py')
+JAR_TESTER_SCRIPT = os.path.join(MOOL_SRC_DIR, 'jar_testng_runner.py')
 JAVA_COMPILER = os.environ.get('JAVA_COMPILER',
                                os.path.join(JAVA_HOME, 'bin', 'javac'))
 JAVA_RUNTIME = os.path.join(JAVA_HOME, 'bin', 'java')

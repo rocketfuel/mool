@@ -146,7 +146,7 @@ mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
 echo Testing mool.cc.samples.factorial_test
 TEST_BUILD_OUT_DIR/cc/samples/factorial_test
 echo Testing mool.src.test.java.some.work.DriverTest
-TEST_BU_SCRIPT_DIR/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar -w TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/.test.wdir -cpd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps -tc some.work.DriverTest -jp '-ea,-Xms6m,-Xmx80m' -g unit
+TEST_BU_SCRIPT_DIR/mool/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar -w TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/.test.wdir -cpd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps -tc some.work.DriverTest -jp '-ea,-Xms6m,-Xmx80m' -g unit
 mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/complete_package
 mkdir -p ./src/main/java/some/work
 ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/Driver.jar ./src/main/java/some/work/Driver.jar

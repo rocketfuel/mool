@@ -8,7 +8,7 @@ if __name__ == '__main__':
   if SCRIPT_DIR != sys.path[0]:
     sys.path.insert(0, SCRIPT_DIR)
 
-import build_utils as bu
+import mool.build_utils as bu
 
 if __name__ == '__main__':
   sys.exit(bu.do_main(sys.argv[1:]))

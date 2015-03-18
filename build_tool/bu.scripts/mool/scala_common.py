@@ -1,8 +1,8 @@
 """Implement the rules of each Scala build utility type."""
 import os
 
-import java_common as jc
-import shared_utils as su
+import mool.java_common as jc
+import mool.shared_utils as su
 
 
 class Error(Exception):

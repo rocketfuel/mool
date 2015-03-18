@@ -3,8 +3,7 @@
 # tool found in https://github.com/anirban001/mooltool.
 
 # This script sets up common paths as environment variables for available
-# utilities on Jenkins machines. Consequently, it makes sense to "source" this
-# script.
+# utilities. Consequently, it makes sense to "source" this script.
 
 set -e
 set -o pipefail

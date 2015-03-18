@@ -8,15 +8,10 @@ import subprocess
 import zipfile
 import xml.etree.ElementTree as ElementTree
 
+import mool.shared_utils as su
+
 TEST_METHOD_XPATH = './suite/test/class/test-method[@status=\'FAIL\']'
 TRACE_COMMANDS = (os.environ.get('DEBUG_MODE', '') != '')
-
-if __name__ == '__main__':
-  SCRIPT_DIR = os.path.dirname(sys.argv[0])
-  if SCRIPT_DIR != sys.path[0]:
-    sys.path.insert(0, SCRIPT_DIR)
-
-import shared_utils as su
 
 
 def _display_details(result_file):

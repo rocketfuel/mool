@@ -2,7 +2,7 @@
 import logging
 import os
 
-import shared_utils as su
+import mool.shared_utils as su
 
 
 class FileCollection(object):

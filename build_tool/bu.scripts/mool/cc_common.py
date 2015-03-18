@@ -1,7 +1,7 @@
 """Implement the rules of each C++ build utility type."""
 import os
 import logging
-import shared_utils as su
+import mool.shared_utils as su
 
 
 class CplusplusCommon(object):

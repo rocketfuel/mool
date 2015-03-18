@@ -1,0 +1,3 @@
+# This file is specific to python dependencies required by sample examples in
+# this code_root directory.
+MySQL-python==1.2.3

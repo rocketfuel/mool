@@ -5,9 +5,9 @@ import os
 import subprocess
 import sys
 
-import jar_merger as jm
-import shared_utils as su
-import rule_builder as rb
+import mool.jar_merger as jm
+import mool.shared_utils as su
+import mool.rule_builder as rb
 
 
 BUILD_COMMAND = 'do_build'

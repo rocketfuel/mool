@@ -1,11 +1,10 @@
 #!/bin/bash
 
+# NOTE: For most purposes you need not touch this file.
+
 export BU_SCRIPT_DIR="${PROJECT_ROOT}/build_tool/bu.scripts"
-export JAR_SEARCH_PATH="${HOME}/.moolcache/jars"
-export JAVA_DEFAULT_VERSION="1.7"
-export PEP8_BINARY="${PEP8_PATH} --max-line-length=80 --ignore=E111"
+export PEP8_BINARY="pep8 --max-line-length=80 --ignore=E111"
 export PYLINT_RC_FILE="${BU_SCRIPT_DIR}/pylint.rc"
-export SCALA_DEFAULT_VERSION="2.8"
 
 init_working_dirs() {
   BUILD_ROOT_MOD=$(echo ${BUILD_ROOT} | sed "s|/|_|g")

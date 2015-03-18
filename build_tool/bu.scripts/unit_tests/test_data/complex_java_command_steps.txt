@@ -268,7 +268,7 @@ mock_cd TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/target
 mkdir -p ./META-INF
 TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/.temp.HelloWorldTest.jar ./mock_file1 ./mock_file2
 mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/.temp.HelloWorldTest.jar']), 'TEST_BUILD_OUT_DIR/src/test/java/some/other/work/HelloWorldTest.jar', 'java_fake_main_class']
-TEST_BU_SCRIPT_DIR/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java/some/other/work/HelloWorldTest.jar -w TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/.test.wdir -cpd TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/clsdeps -tc some.other.work.HelloWorldTest -g unit -x TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar
+TEST_BU_SCRIPT_DIR/mool/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java/some/other/work/HelloWorldTest.jar -w TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/.test.wdir -cpd TEST_BUILD_WORK_DIR/src/test/java/some/other/work/HelloWorldTest/clsdeps -tc some.other.work.HelloWorldTest -g unit -x TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar
 mock_java_version_comparison bad_version bad_version
 mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
 mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedCompileDeps/clsdeps
@@ -334,7 +334,7 @@ mock_cd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/target
 mkdir -p ./META-INF
 TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/.temp.DriverTest.jar ./mock_file1 ./mock_file2
 mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/.temp.DriverTest.jar']), 'TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar', 'java_fake_main_class']
-TEST_BU_SCRIPT_DIR/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar -w TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/.test.wdir -cpd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps -tc some.work.DriverTest -jp '-ea,-Xms6m,-Xmx80m' -g unit
+TEST_BU_SCRIPT_DIR/mool/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar -w TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/.test.wdir -cpd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps -tc some.work.DriverTest -jp '-ea,-Xms6m,-Xmx80m' -g unit
 mock_java_version_comparison bad_version version4
 mkdir -p TEST_BUILD_OUT_DIR/src/test/java/some/work
 mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps
@@ -354,4 +354,4 @@ mock_cd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/target
 mkdir -p ./META-INF
 TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/.temp.DriverTestIntegration.jar ./mock_file1 ./mock_file2
 mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/.temp.DriverTestIntegration.jar']), 'TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTestIntegration.jar', 'java_fake_main_class']
-TEST_BU_SCRIPT_DIR/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTestIntegration.jar -w TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/.test.wdir -cpd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps -tc some.work.DriverTest -g integration
+TEST_BU_SCRIPT_DIR/mool/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTestIntegration.jar -w TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/.test.wdir -cpd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTestIntegration/clsdeps -tc some.work.DriverTest -g integration

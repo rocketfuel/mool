@@ -7,6 +7,7 @@ of the rule classes.
 import os
 import pytest
 
+THIS_SCRIPT_DIR = os.path.join(os.environ['BU_SCRIPT_DIR'], 'unit_tests')
 # We need to override the environment variables before loading the shared_utils
 # module.
 MOCKED_ENVIRONS = ('BUILD_OUT_DIR', 'BUILD_ROOT', 'BUILD_WORK_DIR',
@@ -23,12 +24,12 @@ os.environ['JAVA_DEFAULT_VERSION'] = 'bad_version'
 import shutil
 import subprocess
 
-import build_utils as bu
-import jar_merger as jm
-import java_common as jc
-import python_common as pc
-import release_package as rp
-import shared_utils as su
+import mool.build_utils as bu
+import mool.jar_merger as jm
+import mool.java_common as jc
+import mool.python_common as pc
+import mool.release_package as rp
+import mool.shared_utils as su
 
 from functools import partial
 
@@ -38,7 +39,7 @@ OVERWRITE_TEST_RESOURCE = False
 
 def _get_test_resource_file(file_name):
   """Convert file name to test resource file path."""
-  return os.path.join('.', 'test_data', file_name)
+  return os.path.join(THIS_SCRIPT_DIR, 'test_data', file_name)
 
 
 def _read_test_resource(file_name):

@@ -5,7 +5,7 @@ import os
 import shutil
 import subprocess
 
-import shared_utils as su
+import mool.shared_utils as su
 
 
 # We delete a few temporary files in this module. Let's make

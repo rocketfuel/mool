@@ -4,7 +4,7 @@ import os
 import subprocess
 import zipfile
 
-import shared_utils as su
+import mool.shared_utils as su
 
 
 def zip_all_currdir(params):

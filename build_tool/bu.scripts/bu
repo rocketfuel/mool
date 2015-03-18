@@ -10,6 +10,12 @@ if [ "${BU_SCRIPT_DIR}" == "" ]; then
     exit 1
 fi
 
+# It is important to add bu.scripts directory to python path as any code
+# outside mool directory doesn't have access to mool code as such.
+# Also this solves the headache of adding bu.scripts to python path inside some
+# scripts which are invoked over command line like jar_testng_runner.py.
+export PYTHONPATH=${BU_SCRIPT_DIR}:${PYTHONPATH}
+
 # Make sure that script runs from ${BUILD_ROOT} directory.
 cd ${BUILD_ROOT}
 ${BU_SCRIPT_DIR}/build_utils_driver.py "$@"

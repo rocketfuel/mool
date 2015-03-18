@@ -4,11 +4,11 @@ import logging
 import os
 import subprocess
 
-import shared_utils as su
-import java_common as jc
-import python_common as pc
-import release_package as rp
-import rule_handler as rh
+import mool.shared_utils as su
+import mool.java_common as jc
+import mool.python_common as pc
+import mool.release_package as rp
+import mool.rule_handler as rh
 
 
 FILE_DEP_PREFIX = 'FILE: '
