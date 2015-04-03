@@ -5,19 +5,25 @@ import os
 import subprocess
 
 import mool.shared_utils as su
+import mool.file_collection as fc
 import mool.java_common as jc
 import mool.python_common as pc
-import mool.release_package as rp
 import mool.rule_handler as rh
 
 
 FILE_DEP_PREFIX = 'FILE: '
+MVN_INCL_DEP_PREFIX = 'MVNI: '
+MVN_COMPL_DEP_PREFIX = 'MVNC: '
 
 MAX_LOOP_COUNT = 5000
 TRACE_COMMANDS = (os.environ.get('DEBUG_MODE', '') != '')
 
+EXPANDABLE_KEYS = [su.COMPILE_DEPS_KEY, su.DEPS_KEY, su.EXTRACT_IN_ZIP,
+                   su.EXTRACT_RESOURCES_DEP_KEY, su.PACKAGE_MODULES_KEY,
+                   su.PACKAGE_TESTS_KEY]
 
-class Error(Exception):
+
+class Error(su.Error):
   """Generic error class."""
 
 
@@ -33,10 +39,14 @@ def _run_commands(command_list):
       pc.compile_all(command[1:])
     elif command[0] == su.CHANGE_CURR_DIR:
       su.change_dir(command[1:])
+    elif command[0] == su.EXPORT_MVN_DEPS:
+      jc.export_mvn_deps(command[1:])
     elif command[0] == su.PERFORM_JAVA_LINK_ALL_CURRDIR:
       jc.perform_java_linkall_currdir(command[1:])
-    elif command[0] == su.PERFORM_ZIP_ALL_CURRDIR:
-      rp.zip_all_currdir(command[1:])
+    elif command[0] == su.CREATE_ARCHIVE_ALL_CURRDIR:
+      fc.create_archive_all_currdir(command[1:])
+    elif command[0] == su.EXTRACT_ARCHIVE_IN_CURRDIR:
+      fc.extract_archive_in_currdir(command[1:])
     elif command[0] == su.PYTHON_EXPAND_LIB:
       pc.expand_lib(command[1:])
     elif command[0] == su.JAVA_LINK_JAR_COMMAND:
@@ -97,6 +107,9 @@ class RuleBuilder(object):
   def _load_file_cache(self, rule_file):
     """Load file contents from file cache."""
     if rule_file not in self._rule_file_cache:
+      # Optimizing run-time error message for common error case.
+      if (not su.TEST_MODE_EXECUTION) and (not su.path_exists(rule_file)):
+        raise Error('Missing rule file: ' + rule_file)
       self._rule_file_cache[rule_file] = su.read_build_file(rule_file)
     return self._rule_file_cache[rule_file]
 
@@ -107,19 +120,18 @@ class RuleBuilder(object):
     # keyword 'ALL'.
     assert rule_symbol != rule_symbol.upper()
     if rule_name not in self._load_file_cache(rule_file):
-      raise Error('Rule "{}" does not exist in {}.'
+      raise Error('Rule "{}" does not exist in {}'
                   .format(rule_name, rule_file))
     rule_details = self._load_file_cache(rule_file)[rule_name]
     assert su.PATH_KEY not in rule_details
     rule_details[su.PATH_KEY] = rule_path
     assert su.NAME_KEY not in rule_details
     rule_details[su.NAME_KEY] = rule_name
-    self._expand_symbols_in_key(rule_details, rule_path, su.DEPS_KEY)
-    self._expand_symbols_in_key(rule_details, rule_path, su.COMPILE_DEPS_KEY)
-    self._expand_symbols_in_key(rule_details, rule_path, su.PACKAGE_TESTS_KEY)
-    self._expand_symbols_in_key(rule_details, rule_path, su.PACKAGE_MODULES_KEY)
-    self._expand_symbols_in_key(rule_details, rule_path,
-                                su.EXTRACT_RESOURCES_DEP_KEY)
+    for key in EXPANDABLE_KEYS:
+      self._expand_symbols_in_key(rule_details, rule_path, key)
+    if su.TYPE_KEY not in rule_details:
+      raise Error('Rule "{}" missing rule_type in {}'.format(
+          rule_name, rule_file))
     if su.RELEASE_PACKAGE_TYPE == rule_details[su.TYPE_KEY]:
       rule_details[su.DEPS_KEY].extend(rule_details[su.PACKAGE_MODULES_KEY])
       rule_details[su.DEPS_KEY].extend(rule_details[su.PACKAGE_TESTS_KEY])
@@ -135,6 +147,7 @@ class RuleBuilder(object):
     su.check_dirname(dir_name)
     rule_details[su.DIR_ROOT_KEY] = dir_name
     rule_details[su.SYMBOL_KEY] = rule_symbol
+    rule_details[su.RULE_FILE_PATH] = rule_file
     return rule_details
 
   def _load_rules_list_to_map(self, rules_list):
@@ -247,6 +260,12 @@ class RuleBuilder(object):
         for rs in rule_details[su.COMPILE_DEPS_KEY]]
     dependency_dict[rule_symbol].extend(
         [FILE_DEP_PREFIX + f for f in rule_details[su.ALL_DEP_PATHS_KEY]])
+    maven_incl_deps, maven_compile_deps = self._rules_map[rule_symbol].get(
+        su.MAVEN_DEPS_KEY, ([], []))
+    dependency_dict[rule_symbol].extend(
+        [MVN_INCL_DEP_PREFIX + str(d) for d in maven_incl_deps])
+    dependency_dict[rule_symbol].extend(
+        [MVN_COMPL_DEP_PREFIX + str(d) for d in maven_compile_deps])
 
   def _build_rule_symbol(self, rule_symbol, run_tests, dependency_dict):
     """Build a symbol assuming all dependencies have been built."""
@@ -269,3 +288,7 @@ class RuleBuilder(object):
       for rule_symbol in build_group:
         self._build_rule_symbol(rule_symbol, run_tests, dependency_dict)
     return 0
+
+  def get_rules_map(self):
+    """Returns rules map dictionary."""
+    return self._rules_map

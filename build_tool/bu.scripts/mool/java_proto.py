@@ -1,11 +1,12 @@
 """Rules for Java protocol buffers."""
 import os
 import logging
+
 import mool.java_common as jc
 import mool.shared_utils as su
 
 
-class Error(Exception):
+class Error(su.Error):
   """The Exception class for this module."""
 
 

@@ -1,6 +1,7 @@
 """Rules for Python protocol buffers."""
 import logging
 import os
+
 import mool.shared_utils as su
 
 

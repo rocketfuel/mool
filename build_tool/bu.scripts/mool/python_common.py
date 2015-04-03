@@ -53,7 +53,7 @@ subprocess.check_call(['py.test', '-s', '.'])
 """
 
 
-class Error(Exception):
+class Error(su.Error):
   """Error class for this module."""
 
 

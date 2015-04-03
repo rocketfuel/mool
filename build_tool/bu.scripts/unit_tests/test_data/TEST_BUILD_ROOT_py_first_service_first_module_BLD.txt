@@ -19,6 +19,15 @@
   "deps": []
 },
 
+"zipped_archive": {
+  "rule_type": "file_coll",
+  "srcs": [
+      "file1.txt",
+      "resource2.txt"],
+  "file_package": "resources/text_files",
+  "archive_type": "zip"
+},
+
 # Unit Tests.
 "main_lib_test": {
   "rule_type": "py_test",

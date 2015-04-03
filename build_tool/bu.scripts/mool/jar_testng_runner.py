@@ -87,7 +87,7 @@ def do_main(args):
     if args.java_params:
       test_command.extend(args.java_params.strip('\'').split(','))
     test_command.extend(
-        ['-cp', ':'.join(class_path_list), su.JAVA_TESTNG_ROOT,
+        ['-ea', '-cp', ':'.join(class_path_list), su.JAVA_TESTNG_ROOT,
          '-d', args.results_dir, '-groups', ','.join(args.groups),
          '-testclass', ','.join(args.test_classes)])
     tracer('Command: %s', ' '.join(test_command))

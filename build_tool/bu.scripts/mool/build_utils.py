@@ -5,137 +5,117 @@ import os
 import subprocess
 import sys
 
-import mool.jar_merger as jm
+import extensions.extensions_main as em
+import mool.core_cmds as core_cmds
 import mool.shared_utils as su
-import mool.rule_builder as rb
 
-
-BUILD_COMMAND = 'do_build'
-CLEAN_COMMAND = 'do_clean'
-SHOW_ERRORS = True
-TEST_COMMAND = 'do_test'
-TEST_CHANGES_COMMAND = 'do_test_changes'
-
-
-USAGE_TEXT = """
-Build utiilty tool with rules driven by BLD files.
-
-# To clean working directories.
-    $ bu do_clean
-    Cleaning directories: ${BUILD_OUT_DIR}, ${BUILD_WORK_DIR}
-
-    # To build.
-    $ bu do_build mool.src.main.java.some.work.ProtoSampleMain
-    --> Emitting java_bin at ${BUILD_OUT_DIR}/.../ProtoSampleMain.jar
-
-    # To build and run tests.
-    $ bu do_test mool.cc.common.some_lib_test
-    --> Running test mool.cc.common.some_lib_test
-
-    # To build and run all "submit queue" tests (that have been defined by
-    # SUBMITQ files placed appropriately under code root), create a change log
-    # file with a list of changed source code files and execute:
-    $ bu do_test_changes /change/log/file
-    --> Running mool.cc.test1
-    --> Running mool.src.test2
-    --> ...
-"""
+LOG = logging.getLogger()
 
 ERROR_TEXT = 'ERROR! ERROR! ERROR! ERROR! ERROR!'
+SHOW_ERRORS = True
 
 
-class Error(Exception):
+class Error(su.Error):
   """The Error class for this module."""
 
 
-def _print_usage():
-  """Print usage text if needed.
-
-  Unit tests try out many invalid combinations. There is no need to generate
-  verbose test output for such scenarios.
-  """
-  if not su.TEST_MODE_EXECUTION:
-    print USAGE_TEXT
-
-
-def _clean_temp_dirs():
-  """Clean the output directory."""
-  logging.info('Cleaning output and working directories: {}, {}'.format(
-      su.log_normalize(su.BUILD_OUT_DIR), su.log_normalize(su.BUILD_WORK_DIR)))
-  su.cleandir(su.BUILD_OUT_DIR)
-  su.cleandir(su.BUILD_WORK_DIR)
-  return 0
+def _configure_logging(console=True):
+  """Setup logging. Enable console logging by default."""
+  level = logging.INFO
+  log_format = '%(message)s'
+  if os.environ.get('DEBUG_MODE', None):
+    level = logging.DEBUG
+    log_format = '[%(levelname)s] %(name)s: ' + log_format
+  LOG.setLevel(level)
+  if console:
+    console_handle = logging.StreamHandler(sys.stderr)
+    console_handle.setLevel(level)
+    console_handle.setFormatter(logging.Formatter(log_format))
+    LOG.addHandler(console_handle)
 
 
-def _get_affected_rules(changed_files_list_file):
-  """Get list of affected rules from file containing list of changed files."""
-  changed_files_list = [
-      f.strip() for f in su.read_file(changed_files_list_file).split('\n')
-      if f.strip()]
-  changed_files_list = [os.path.realpath(f) for f in changed_files_list]
-  affected_rules = su.get_affected_rules(changed_files_list)
-  if not affected_rules:
-    logging.info('No changes covered by SUBMITQ files or BLD files.')
-  if su.SUBMITQ_DEBUG_MODE:
-    print '\n'.join(affected_rules)
-    affected_rules = []
-  return affected_rules
+def _check_working_dirs():
+  """Ensure that out and work directories exist."""
+  su.createdir(su.BUILD_OUT_DIR)
+  su.createdir(su.BUILD_WORK_DIR)
 
 
-def _apply_rules_internal(rules_list, dependency_dict):
-  """Internal implementation of apply_rules."""
-  if 1 < len(rules_list) and BUILD_COMMAND == rules_list[0]:
-    return rb.RuleBuilder(rules_list[1:]).do_builds(False, dependency_dict)
+def _generate_help_message():
+  """Generates a help message from core and extension commands."""
+  def _format_line(cmd, text):
+    """Align command and help text."""
+    return '%20s : %s' % (cmd, text)
 
-  if 1 < len(rules_list) and TEST_COMMAND == rules_list[0]:
-    return rb.RuleBuilder(rules_list[1:]).do_builds(True, dependency_dict)
+  header = "Build utility tool with rules driven by BLD files."
+  footer = "Run 'bu <command> --help' for more help on that command."
+  core_help = []
+  for key, value in core_cmds.CORE_COMMANDS.iteritems():
+    core_help.append(_format_line(key, value[1]))
+  ext_help = []
+  for key, value in em.EXTENSION_COMMANDS.iteritems():
+    ext_help.append(_format_line(key, value[1]))
 
-  if 2 == len(rules_list) and TEST_CHANGES_COMMAND == rules_list[0]:
-    affected_rules = _get_affected_rules(rules_list[1])
-    if not affected_rules:
-      return 0
-    new_rules_list = [TEST_COMMAND]
-    new_rules_list.extend(affected_rules)
-    return _apply_rules_internal(new_rules_list, dependency_dict)
-  _print_usage()
-  raise Error('Unexpected command.')
+  message = '{}\n\nCore commands:\n{}\n\nExtensions:\n{}\n\n{}'.format(
+      header, '\n'.join(core_help), '\n'.join(ext_help), footer)
+  return message
 
 
-def apply_rules(rules_list, dependency_dict):
-  """Apply build rules from a list."""
-  if not rules_list:
-    _print_usage()
-    return 0
-  lock_file_object = None
+def _get_cmd_handler(cmd_line):
+  """Returns appropriate handler for given command line."""
+  if not cmd_line or cmd_line[0] in ['-h', '--help', 'help']:
+    if SHOW_ERRORS:
+      print _generate_help_message()
+    return (None, 0)
+
+  cmd = cmd_line[0]
+  if cmd in core_cmds.CORE_COMMANDS:
+    return (core_cmds.generic_core_cmd_handler, 0)
+  elif cmd in em.EXTENSION_COMMANDS:
+    return (em.generic_extension_handler, 0)
+  else:
+    if SHOW_ERRORS:
+      print 'Error: Unknown command "{}". Use "bu help" for more.'.format(cmd)
+    return (None, 1)
+
+
+def apply_rules(cmd_line, dependency_dict):
+  """Takes the command line arguments and appropriately calls the handler
+  function of a command, else prints the help message."""
+  handler, status = _get_cmd_handler(cmd_line)
+  if not handler:
+    return (status,)
+
   try:
-    if 1 == len(rules_list) and CLEAN_COMMAND == rules_list[0]:
-      return _clean_temp_dirs()
-    lock_file_object = su.lock_working_dir()
-    return _apply_rules_internal(rules_list, dependency_dict)
+    _check_working_dirs()
+    return handler(cmd_line, dependency_dict)
   except subprocess.CalledProcessError as error_obj:
     # Handle called-command errors in a graceful way. This is the most common
     # scenario from this module as developers make continuous changes in their
     # code.
-    logging.error(ERROR_TEXT)
-    logging.error('Current directory: %s', su.log_normalize(os.getcwd()))
+    LOG.error(ERROR_TEXT)
+    LOG.error('Current directory: %s', su.log_normalize(os.getcwd()))
     error_cmd = [su.log_normalize(x) for x in error_obj.cmd]
-    logging.error(' '.join(error_cmd))
-    return 1
-  except jm.Error as error_obj:
-    logging.error(ERROR_TEXT)
-    logging.error(str(error_obj))
-    return 1
-  except:
-    if SHOW_ERRORS:
-      logging.error('Error: {}'.format(sys.exc_info()))
-    raise
-  finally:
-    su.release_working_dir(lock_file_object)
+    LOG.error(' '.join(error_cmd))
+    return (1,)
+  except su.Error as error_obj:
+    LOG.error(ERROR_TEXT)
+    LOG.error('ERROR: %s', su.log_normalize(str(error_obj)))
+    return (1,)
 
 
 def do_main(rules_list):
   """Apply build rules from a list."""
-  logging.basicConfig(format='%(message)s', level=logging.INFO)
-  result = apply_rules(rules_list, {})
-  logging.debug('Returning %s', str(result))
-  return result
+  _configure_logging()
+  lock_file_object = None
+  result = None
+  try:
+    _check_working_dirs()
+    lock_file_object = su.lock_working_dir()
+    result = apply_rules(rules_list, {})
+  finally:
+    su.release_working_dir(lock_file_object)
+  if not isinstance(result, tuple):
+    LOG.error('Expecting a tuple return value!')
+  ret_code = result[0]
+  LOG.debug('Returning %s', str(ret_code))
+  return ret_code

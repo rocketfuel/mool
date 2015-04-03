@@ -1,5 +1,11 @@
+mock_ls TEST_BUILD_OUT_DIR
+mock_mkdir -p TEST_BUILD_OUT_DIR
+mock_ls TEST_BUILD_WORK_DIR
+mock_mkdir -p TEST_BUILD_WORK_DIR
 mock_cat TEST_BUILD_ROOT/cc/samples/BLD
 mock_cat TEST_BUILD_ROOT/cc/common/BLD
+mock_ls TEST_BUILD_ROOT/cc/common/address.proto
+mock_isfile TEST_BUILD_ROOT/cc/common/address.proto
 mkdir -p TEST_BUILD_OUT_DIR/cc/common
 mkdir -p TEST_BUILD_WORK_DIR/cc/common/address_cc_proto
 mock_cd TEST_BUILD_WORK_DIR/cc/common/address_cc_proto
@@ -7,6 +13,8 @@ mkdir -p ./cc/common
 ln -f -s TEST_BUILD_ROOT/cc/common/address.proto ./cc/common/address.proto
 ln -f -s TEST_BUILD_ROOT/cc/common/address.proto ./cc/common/address.proto
 TEST_PROTO_COMPILER --proto_path=. --cpp_out=. ./cc/common/address.proto
+mock_ls TEST_BUILD_ROOT/cc/common/echo_utils.cc
+mock_isfile TEST_BUILD_ROOT/cc/common/echo_utils.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/common
 mkdir -p TEST_BUILD_WORK_DIR/cc/common/echo_utils
 mock_cd TEST_BUILD_WORK_DIR/cc/common/echo_utils
@@ -14,12 +22,16 @@ mkdir -p ./cc/common
 ln -f -s TEST_BUILD_ROOT/cc/common/echo_utils.cc ./cc/common/echo_utils.cc
 ln -f -s TEST_BUILD_ROOT/cc/common/echo_utils.h ./cc/common/echo_utils.h
 TEST_CC_COMPILER -I. -c ./cc/common/echo_utils.cc -o TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
+mock_ls DUMMY_CC_FILE
+mock_isfile DUMMY_CC_FILE
 mkdir -p TEST_BUILD_OUT_DIR/cc/common
 mkdir -p TEST_BUILD_WORK_DIR/cc/common/shared_headers
 mock_cd TEST_BUILD_WORK_DIR/cc/common/shared_headers
 mkdir -p ./cc/common
 ln -f -s TEST_BUILD_ROOT/cc/common/global_macros.h ./cc/common/global_macros.h
 TEST_CC_COMPILER -I. -c DUMMY_CC_FILE -o TEST_BUILD_OUT_DIR/cc/common/shared_headers.o
+mock_ls TEST_BUILD_ROOT/cc/common/some_lib.cc
+mock_isfile TEST_BUILD_ROOT/cc/common/some_lib.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/common
 mkdir -p TEST_BUILD_WORK_DIR/cc/common/some_lib
 mock_cd TEST_BUILD_WORK_DIR/cc/common/some_lib
@@ -29,6 +41,8 @@ ln -f -s TEST_BUILD_ROOT/cc/common/some_lib.h ./cc/common/some_lib.h
 TEST_CC_COMPILER -I. -c ./cc/common/some_lib.cc -o TEST_BUILD_OUT_DIR/cc/common/some_lib.o
 mock_ls TEST_GTEST_MAIN_LIB
 mock_ls TEST_GTEST_MOCK_LIB
+mock_ls TEST_BUILD_ROOT/cc/common/echo_utils_test.cc
+mock_isfile TEST_BUILD_ROOT/cc/common/echo_utils_test.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/common
 mkdir -p TEST_BUILD_WORK_DIR/cc/common/echo_utils_test
 mock_cd TEST_BUILD_WORK_DIR/cc/common/echo_utils_test
@@ -37,6 +51,8 @@ ln -f -s TEST_BUILD_ROOT/cc/common/echo_utils_test.cc ./cc/common/echo_utils_tes
 ln -f -s TEST_BUILD_ROOT/cc/common/echo_utils.h ./cc/common/echo_utils.h
 TEST_CC_COMPILER -I. -isystem TEST_GMOCK_DIR/include -isystem TEST_GTEST_DIR/include -pthread ./cc/common/echo_utils_test.cc TEST_BUILD_OUT_DIR/cc/common/echo_utils.o TEST_GTEST_MAIN_LIB TEST_GTEST_MOCK_LIB -o TEST_BUILD_OUT_DIR/cc/common/echo_utils_test
 TEST_BUILD_OUT_DIR/cc/common/echo_utils_test
+mock_ls TEST_BUILD_ROOT/cc/samples/factorial.cc
+mock_isfile TEST_BUILD_ROOT/cc/samples/factorial.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/samples
 mkdir -p TEST_BUILD_WORK_DIR/cc/samples/factorial
 mock_cd TEST_BUILD_WORK_DIR/cc/samples/factorial
@@ -46,6 +62,8 @@ ln -f -s TEST_BUILD_ROOT/cc/samples/factorial.h ./cc/samples/factorial.h
 mkdir -p ./cc/common
 ln -f -s TEST_BUILD_ROOT/cc/common/some_lib.h ./cc/common/some_lib.h
 TEST_CC_COMPILER -I. -c ./cc/samples/factorial.cc -o TEST_BUILD_OUT_DIR/cc/samples/factorial.o
+mock_ls TEST_BUILD_ROOT/cc/samples/person.proto
+mock_isfile TEST_BUILD_ROOT/cc/samples/person.proto
 mkdir -p TEST_BUILD_OUT_DIR/cc/samples
 mkdir -p TEST_BUILD_WORK_DIR/cc/samples/person_cc_proto
 mock_cd TEST_BUILD_WORK_DIR/cc/samples/person_cc_proto
@@ -55,6 +73,8 @@ mkdir -p ./cc/common
 ln -f -s TEST_BUILD_ROOT/cc/common/address.proto ./cc/common/address.proto
 ln -f -s TEST_BUILD_ROOT/cc/samples/person.proto ./cc/samples/person.proto
 TEST_PROTO_COMPILER --proto_path=. --cpp_out=. ./cc/samples/person.proto
+mock_ls TEST_BUILD_ROOT/cc/samples/factorial_main.cc
+mock_isfile TEST_BUILD_ROOT/cc/samples/factorial_main.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/samples
 mkdir -p TEST_BUILD_WORK_DIR/cc/samples/factorial_main
 mock_cd TEST_BUILD_WORK_DIR/cc/samples/factorial_main
@@ -68,6 +88,8 @@ ln -f -s TEST_BUILD_ROOT/cc/common/some_lib.h ./cc/common/some_lib.h
 TEST_CC_COMPILER -I. -I/usr/include1 -I/usr/include2 ./cc/samples/factorial_main.cc TEST_BUILD_OUT_DIR/cc/common/echo_utils.o TEST_BUILD_OUT_DIR/cc/samples/factorial.o TEST_BUILD_OUT_DIR/cc/common/shared_headers.o TEST_BUILD_OUT_DIR/cc/common/some_lib.o -lm -lre2 -lxml2 -pthread -o TEST_BUILD_OUT_DIR/cc/samples/factorial_main
 mock_ls TEST_GTEST_MAIN_LIB
 mock_ls TEST_GTEST_MOCK_LIB
+mock_ls TEST_BUILD_ROOT/cc/samples/factorial_test.cc
+mock_isfile TEST_BUILD_ROOT/cc/samples/factorial_test.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/samples
 mkdir -p TEST_BUILD_WORK_DIR/cc/samples/factorial_test
 mock_cd TEST_BUILD_WORK_DIR/cc/samples/factorial_test
@@ -78,6 +100,8 @@ mkdir -p ./cc/common
 ln -f -s TEST_BUILD_ROOT/cc/common/some_lib.h ./cc/common/some_lib.h
 TEST_CC_COMPILER -I. -isystem TEST_GMOCK_DIR/include -isystem TEST_GTEST_DIR/include -pthread ./cc/samples/factorial_test.cc TEST_BUILD_OUT_DIR/cc/samples/factorial.o TEST_BUILD_OUT_DIR/cc/common/some_lib.o TEST_GTEST_MAIN_LIB TEST_GTEST_MOCK_LIB -lm -o TEST_BUILD_OUT_DIR/cc/samples/factorial_test
 TEST_BUILD_OUT_DIR/cc/samples/factorial_test
+mock_ls TEST_BUILD_ROOT/cc/samples/person_proto_main.cc
+mock_isfile TEST_BUILD_ROOT/cc/samples/person_proto_main.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/samples
 mkdir -p TEST_BUILD_WORK_DIR/cc/samples/person_proto_main
 mock_cd TEST_BUILD_WORK_DIR/cc/samples/person_proto_main

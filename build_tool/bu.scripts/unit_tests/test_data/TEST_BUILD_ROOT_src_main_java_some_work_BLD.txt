@@ -14,6 +14,15 @@
   "java_version": "version1"
 },
 
+"SomeIncludedMavenDep": {
+  "rule_type": "java_lib",
+  "maven_specs": {
+    "repo_url": "maven_repo_url_test",
+    "group_id": "some.group.test",
+    "artifact_id": "some_included_artifact",
+    "version": "awesome"}
+},
+
 "SomeMavenDep": {
   "rule_type": "java_lib",
   "maven_specs": {
@@ -47,6 +56,7 @@
   "srcs": [
       "Driver.java",
       "DriverUtils.java"],
+  "deps": [".SomeIncludedMavenDep"],
   "compileDeps": [
       ".AnotherMavenDep",
       ".MavenDepWithClassifier",
@@ -98,6 +108,41 @@
       "mool.src.main.java.some.other.work.HelloWorld",
       "mool.src.main.java.some.other.work.prod_files_second"],
   "includeDeps": "False"
+},
+
+"LibThatIncludesAMavenDep": {
+  "rule_type": "java_lib",
+  "srcs": ["SomeClass.java"],
+  "deps": [".SomeIncludedMavenDep"]
+},
+
+"LibThatUsesACompileDepWithMavenDep": {
+  "rule_type": "java_lib",
+  "srcs": ["SomeOtherClass.java"],
+  "compileDeps": [".LibThatIncludesAMavenDep"]
+},
+
+# File collections.
+"files_0": {
+  "rule_type": "file_coll",
+  "srcs": ["files_00.txt"],
+  "file_package": "some/resource/dir"
+},
+
+"files_1": {
+  "rule_type": "file_coll",
+  "srcs": [
+      "files_10.txt",
+      "files_11.txt"],
+  "file_package": "some/resource/dir"
+},
+
+"files_all": {
+  "rule_type": "file_coll",
+  "srcs": [],
+  "deps": [
+      ".files_0",
+      ".files_1"]
 },
 
 # Binaries.
@@ -180,6 +225,7 @@
   "rule_type": "release_package",
   "package_modules": [
       ".Driver",
+      ".files_all",
       "mool.cc.samples.factorial_main"],
   "weight": "heavy",
   "package_tests": [

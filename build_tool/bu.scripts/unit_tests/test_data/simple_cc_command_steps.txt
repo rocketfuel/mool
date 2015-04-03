@@ -1,4 +1,10 @@
+mock_ls TEST_BUILD_OUT_DIR
+mock_mkdir -p TEST_BUILD_OUT_DIR
+mock_ls TEST_BUILD_WORK_DIR
+mock_mkdir -p TEST_BUILD_WORK_DIR
 mock_cat TEST_BUILD_ROOT/cc/common/BLD
+mock_ls TEST_BUILD_ROOT/cc/common/echo_utils.cc
+mock_isfile TEST_BUILD_ROOT/cc/common/echo_utils.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/common
 mkdir -p TEST_BUILD_WORK_DIR/cc/common/echo_utils
 mock_cd TEST_BUILD_WORK_DIR/cc/common/echo_utils
@@ -8,6 +14,8 @@ ln -f -s TEST_BUILD_ROOT/cc/common/echo_utils.h ./cc/common/echo_utils.h
 TEST_CC_COMPILER -I. -c ./cc/common/echo_utils.cc -o TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
 mock_ls TEST_GTEST_MAIN_LIB
 mock_ls TEST_GTEST_MOCK_LIB
+mock_ls TEST_BUILD_ROOT/cc/common/echo_utils_test.cc
+mock_isfile TEST_BUILD_ROOT/cc/common/echo_utils_test.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/common
 mkdir -p TEST_BUILD_WORK_DIR/cc/common/echo_utils_test
 mock_cd TEST_BUILD_WORK_DIR/cc/common/echo_utils_test

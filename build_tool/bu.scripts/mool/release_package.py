@@ -19,6 +19,12 @@ def zip_all_currdir(params):
   subprocess.check_call(['mv', tmp_file, target_file])
 
 
+def unzip_all_currdir(file_path):
+  """Unzip the given file in current directory."""
+  with zipfile.ZipFile(file_path) as zip_obj:
+    zip_obj.extractall()
+
+
 class ReleasePackage(object):
   """Pre-release test and packaging module."""
   @classmethod
@@ -43,13 +49,19 @@ class ReleasePackage(object):
     """Setup linking final output."""
     link_commands = [[su.CHANGE_CURR_DIR, rule_details[su.WDIR_KEY]]]
     possible_prefixes = su.prefix_transform([su.BUILD_OUT_DIR])
+    extract_in_zip = rule_details.get(su.EXTRACT_IN_ZIP, [])
     for rule_symbol in rule_details.get(su.PACKAGE_MODULES_KEY, []):
+      if rule_symbol in extract_in_zip:
+        continue
       src_file = details_map[rule_symbol][su.OUT_KEY]
       dst_file = su.get_relative_path(possible_prefixes, src_file)
       link_commands.append(su.get_mkdir_command(os.path.dirname(dst_file)))
       link_commands.append(su.get_copy_command(src_file, dst_file, True))
+    for rule_symbol in extract_in_zip:
+      link_commands.append([su.EXTRACT_ARCHIVE_IN_CURRDIR,
+                            details_map[rule_symbol][su.OUT_KEY]])
     link_commands.append(
-        [su.PERFORM_ZIP_ALL_CURRDIR, rule_details[su.OUT_KEY]])
+        [su.CREATE_ARCHIVE_ALL_CURRDIR, rule_details[su.OUT_KEY]])
     rule_details[su.LINK_COMMANDS_KEY] = link_commands
 
   @classmethod

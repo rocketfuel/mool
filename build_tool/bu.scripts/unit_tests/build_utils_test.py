@@ -5,7 +5,6 @@ project starts looking more stable, we can consider adding unit tests for each
 of the rule classes.
 """
 import os
-import pytest
 
 THIS_SCRIPT_DIR = os.path.join(os.environ['BU_SCRIPT_DIR'], 'unit_tests')
 # We need to override the environment variables before loading the shared_utils
@@ -25,6 +24,7 @@ import shutil
 import subprocess
 
 import mool.build_utils as bu
+import mool.core_cmds as cc
 import mool.jar_merger as jm
 import mool.java_common as jc
 import mool.python_common as pc
@@ -65,14 +65,24 @@ def _mock_do_merge(command_list, lib_details, jar_out_file, main_class):
                        str([lib_details, jar_out_file, main_class])])
 
 
+def _mock_extract_jar(command_list, jar_path):
+  """Mock the extraction of files, used in file collection"""
+  command_list.append(['mock_extract_jar', jar_path])
+
+
 def _mock_exists(filesystem_dict, command_list, file_path):
   """Check if a path exists."""
-  assert file_path.startswith('TEST_')
   command_list.append(['mock_ls', file_path])
   if file_path.startswith('TEST_JAR_SEARCH_PATH' + os.sep):
     return True
   if file_path in ('TEST_GTEST_MAIN_LIB', 'TEST_GTEST_MOCK_LIB'):
     return True
+  return file_path in filesystem_dict
+
+
+def _mock_isfile(filesystem_dict, command_list, file_path):
+  """Check if a path is a file."""
+  command_list.append(['mock_isfile', file_path])
   return file_path in filesystem_dict
 
 
@@ -100,9 +110,14 @@ def _mock_rmtree(command_list, dir_path):
 
 
 def _mock_oslistdir(dir_path):
-  """Change current directory."""
+  """List current directory."""
   return [os.path.join(dir_path, 'mock_file1'),
           os.path.join(dir_path, 'mock_file2')]
+
+
+def _mock_osremove(command_list, file_path):
+  """Mock remove file path entry."""
+  command_list.append(['mock_remove', file_path])
 
 
 def _mock_chdir(command_list, dir_path):
@@ -170,15 +185,23 @@ def _mock_compare_java_version(command_list, rule_version, dep_version):
   return True
 
 
+def _mock_export_mvn_deps(command_list, command_parts):
+  """Mock export mvn dependencies."""
+  command_list.append(['mock_export_mvn_deps', str(command_parts)])
+
+
 def _patch_os(monkeypatch, filesystem_dict, command_list):
   """Apply monkeypatch on system libraries."""
   monkeypatch.setattr(su, 'path_exists',
                       partial(_mock_exists, filesystem_dict, command_list))
+  monkeypatch.setattr(su, 'path_isfile',
+                      partial(_mock_isfile, filesystem_dict, command_list))
   monkeypatch.setattr(os.path, 'isdir',
                       partial(_mock_isdir, filesystem_dict, command_list))
   monkeypatch.setattr(os, 'makedirs', partial(_mock_makedirs, command_list))
   monkeypatch.setattr(os, 'chdir', partial(_mock_chdir, command_list))
   monkeypatch.setattr(os, 'listdir', _mock_oslistdir)
+  monkeypatch.setattr(os, 'remove', partial(_mock_osremove, command_list))
   monkeypatch.setattr(shutil, 'rmtree', partial(_mock_rmtree, command_list))
   monkeypatch.setattr(subprocess, 'check_call',
                       partial(_mock_check_call, command_list))
@@ -186,7 +209,11 @@ def _patch_os(monkeypatch, filesystem_dict, command_list):
 
   monkeypatch.setattr(jc, 'compare_java_versions',
                       partial(_mock_compare_java_version, command_list))
+  monkeypatch.setattr(jc, 'export_mvn_deps',
+                      partial(_mock_export_mvn_deps, command_list))
   monkeypatch.setattr(jm, 'do_merge', partial(_mock_do_merge, command_list))
+  monkeypatch.setattr(su, 'extract_all_currdir',
+                      partial(_mock_extract_jar, command_list))
   monkeypatch.setattr(su, 'DUMMY_CC', 'DUMMY_CC_FILE')
   monkeypatch.setattr(su, 'check_dirname',
                       partial(_mock_check_dirname, filesystem_dict))
@@ -220,8 +247,7 @@ def _get_commands(monkeypatch, filesystem_dict, rules_list):
   _patch_os(monkeypatch, filesystem_dict, command_list)
   monkeypatch.setattr(su, 'TEST_MODE_EXECUTION', True)
   dependency_dict = {}
-  result = bu.apply_rules(rules_list, dependency_dict)
-  assert 0 == result
+  bu.apply_rules(rules_list, dependency_dict)
   actual_dep_list = []
   for rule_symbol, rule_deps in sorted(dependency_dict.iteritems()):
     actual_dep_list.append(rule_symbol)
@@ -229,6 +255,13 @@ def _get_commands(monkeypatch, filesystem_dict, rules_list):
     for dep in rule_deps:
       actual_dep_list.append('-->{}'.format(dep))
   return ('\n'.join([' '.join(c) for c in command_list]), actual_dep_list)
+
+
+def _get_return_code(monkeypatch, filesystem_dict, rules_list):
+  """Get return status of command execution."""
+  _patch_os(monkeypatch, filesystem_dict, [])
+  monkeypatch.setattr(su, 'TEST_MODE_EXECUTION', True)
+  return bu.apply_rules(rules_list, {})[0]
 
 
 def _get_filesystem_dict():
@@ -246,24 +279,22 @@ def _get_filesystem_dict():
 
 def test_null_sequence(monkeypatch):
   """Test command sequence."""
-  actual_commands, dependency_list = _get_commands(monkeypatch, {}, [])
-  assert '' == actual_commands
-  assert not dependency_list
+  assert 0 == _get_return_code(monkeypatch, {}, [])
 
 
 def test_clean(monkeypatch):
   """Test clean command sequence."""
   expected_commands = _read_test_resource('clean_command_steps.txt').strip()
-  assert (expected_commands, []) == _get_commands(monkeypatch, {},
-                                                  [bu.CLEAN_COMMAND])
+  actual_cmds, dep_list = _get_commands(monkeypatch, {}, [cc.CLEAN_COMMAND])
+  if (expected_commands, []) != (actual_cmds, dep_list):
+    _write_test_resource('clean_command_steps.txt', actual_cmds)
+    assert False
 
 
 def test_null_commands(monkeypatch):
   """Test clean command sequence."""
-  with pytest.raises(bu.Error):
-    _get_commands(monkeypatch, {}, [bu.BUILD_COMMAND])
-  with pytest.raises(bu.Error):
-    _get_commands(monkeypatch, {}, [bu.TEST_COMMAND])
+  assert 1 == _get_return_code(monkeypatch, {}, [cc.BUILD_COMMAND])
+  assert 1 == _get_return_code(monkeypatch, {}, [cc.TEST_COMMAND])
 
 
 def _test_command_utility(monkeypatch, op_command, rules_text,
@@ -297,7 +328,7 @@ def _test_command_utility(monkeypatch, op_command, rules_text,
 
 def test_simple_cc_command(monkeypatch):
   """Test simple build command for C++ rules."""
-  _test_command_utility(monkeypatch, bu.BUILD_COMMAND,
+  _test_command_utility(monkeypatch, cc.BUILD_COMMAND,
                         'mool.cc.common.echo_utils_test',
                         'simple_cc_command_build_deps.txt',
                         'simple_cc_command_steps.txt')
@@ -308,7 +339,7 @@ def test_complex_cc_command(monkeypatch):
   rules_text = """
     mool.cc.samples.factorial_test mool.cc.samples.factorial_main
     mool.cc.common.echo_utils_test mool.cc.samples.person_proto_main"""
-  _test_command_utility(monkeypatch, bu.TEST_COMMAND, rules_text,
+  _test_command_utility(monkeypatch, cc.TEST_COMMAND, rules_text,
                         'complex_cc_command_build_deps.txt',
                         'complex_cc_command_steps.txt')
 
@@ -317,22 +348,24 @@ def test_complex_java_command(monkeypatch):
   """Test complex command for Java rules."""
   rules_text = """
     mool.src.main.java.some.other.work.HelloWorld
-    mool.src.test.java.some.other.work.HelloWorldTest
+    mool.src.main.java.some.work.BinWithNoDependencies
     mool.src.main.java.some.work.Driver
+    mool.src.main.java.some.work.DriverFromDriverLibWithExcludedCompileDeps
+    mool.src.main.java.some.work.DriverFromDriverLibWithExcludedDeps
+    mool.src.main.java.some.work.DriverFromDriverLibWithIncludedCompileDeps
+    mool.src.main.java.some.work.DriverFromDriverLibWithIncludedDeps
     mool.src.main.java.some.work.DriverFromMavenSpec
     mool.src.main.java.some.work.DriverLibWithExcludedCompileDeps
     mool.src.main.java.some.work.DriverLibWithExcludedDeps
     mool.src.main.java.some.work.DriverLibWithIncludedCompileDeps
     mool.src.main.java.some.work.DriverLibWithIncludedDeps
-    mool.src.main.java.some.work.DriverFromDriverLibWithExcludedCompileDeps
-    mool.src.main.java.some.work.DriverFromDriverLibWithExcludedDeps
-    mool.src.main.java.some.work.DriverFromDriverLibWithIncludedCompileDeps
-    mool.src.main.java.some.work.DriverFromDriverLibWithIncludedDeps
-    mool.src.test.java.some.work.DriverTest
-    mool.src.main.java.some.work.BinWithNoDependencies
+    mool.src.main.java.some.work.LibThatUsesACompileDepWithMavenDep
     mool.src.main.java.some.work.ProtoSampleMain
+    mool.src.test.java.some.other.work.HelloWorldTest
+    mool.src.test.java.some.other.work.MultipleTestClasses
+    mool.src.test.java.some.work.DriverTest
     mool.src.test.java.some.work.DriverTestIntegration"""
-  _test_command_utility(monkeypatch, bu.TEST_COMMAND, rules_text,
+  _test_command_utility(monkeypatch, cc.TEST_COMMAND, rules_text,
                         'complex_java_command_build_deps.txt',
                         'complex_java_command_steps.txt')
 
@@ -340,7 +373,7 @@ def test_complex_java_command(monkeypatch):
 def test_release_package_command(monkeypatch):
   """Test release package rule."""
   rules_text = 'mool.src.main.java.some.work.complete_package'
-  _test_command_utility(monkeypatch, bu.BUILD_COMMAND, rules_text,
+  _test_command_utility(monkeypatch, cc.BUILD_COMMAND, rules_text,
                         'release_package_command_build_deps.txt',
                         'release_package_command_steps.txt')
 
@@ -350,7 +383,7 @@ def test_complex_python_command(monkeypatch):
   rules_text = """
     mool.py.first_service.first_module.ALL
     mool.py.second_service.another_module.ALL"""
-  _test_command_utility(monkeypatch, bu.TEST_COMMAND, rules_text,
+  _test_command_utility(monkeypatch, cc.TEST_COMMAND, rules_text,
                         'complex_python_command_build_deps.txt',
                         'complex_python_command_steps.txt')
 
@@ -362,7 +395,7 @@ def test_build_all(monkeypatch):
                 'mool.src.main.java.some.work.ALL '
                 'mool.py.first_service.first_module.ALL '
                 'mool.py.second_service.another_module.ALL')
-  rules_list = [bu.BUILD_COMMAND]
+  rules_list = [cc.BUILD_COMMAND]
   rules_list.extend([r for r in rules_text.split() if r])
   _, dependency_list = _get_commands(monkeypatch, filesystem_dict, rules_list)
   expected_list = _read_test_resource('all_rules_list.txt').strip().split()
@@ -377,7 +410,7 @@ def test_build_lightrules(monkeypatch):
                 'mool.src.main.java.some.work.LIGHTRULES '
                 'mool.py.first_service.first_module.LIGHTRULES '
                 'mool.py.second_service.another_module.LIGHTRULES')
-  rules_list = [bu.BUILD_COMMAND]
+  rules_list = [cc.BUILD_COMMAND]
   rules_list.extend([r for r in rules_text.split() if r])
   _, dependency_list = _get_commands(monkeypatch, filesystem_dict, rules_list)
   expected_list = _read_test_resource('light_rules_list.txt').strip().split()

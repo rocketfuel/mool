@@ -13,9 +13,9 @@ fi
 cd ${BU_SCRIPT_DIR}
 export PYTHONPATH=${BU_SCRIPT_DIR}:$PYTHONPATH
 
-for FF in $(ls ${BU_SCRIPT_DIR}/*.py); do
+for FF in $(find . -type f -name '*.py'); do
   pylint --rcfile=./pylint.rc ${FF} 2>/dev/null
   pep8 --max-line-length=80 --ignore=E111 ${FF}
 done
 
-py.test -s .
+py.test -s unit_tests/build_utils_test.py

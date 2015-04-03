@@ -1,4 +1,6 @@
 """Rule handler module."""
+import os
+
 import mool.shared_utils as su
 import mool.cc_proto as ccp
 import mool.cc_common as ccc
@@ -9,6 +11,10 @@ import mool.python_common as pc
 import mool.python_proto as pp
 import mool.release_package as rp
 import mool.scala_common as sc
+
+
+class Error(su.Error):
+  """The error class for this module."""
 
 
 class RuleHandler(object):
@@ -33,13 +39,30 @@ class RuleHandler(object):
         su.SCALA_BIN_TYPE: sc.ScalaBinary(),
         su.SCALA_LIB_TYPE: sc.ScalaLibrary(),
         su.SCALA_TEST_TYPE: sc.ScalaTest()}
+    self._lookup_menu_message = 'Valid choices are: {}'.format(
+        ', '.join([k for k in sorted(self._lookup)]))
 
   def rule_setup(self, rule_details, details_map):
     """Full setup using details map."""
+    if rule_details[su.TYPE_KEY] not in self._lookup:
+      raise Error('Unexpected rule type "{}" in {}\n{}'.format(
+          rule_details[su.TYPE_KEY], rule_details[su.RULE_FILE_PATH],
+          self._lookup_menu_message))
+    # Maintain code sanity by enforcing path separation characters is not
+    # present in source files.
+    for src_file in rule_details.get(su.SRCS_KEY, []):
+      if os.path.sep in src_file:
+        raise Error('Unexpected separator in source file for: {}'.format(
+            rule_details[su.RULE_FILE_PATH]))
     self._lookup[rule_details[su.TYPE_KEY]].setup(rule_details, details_map)
 
   def rule_build_commands(self, rule_details):
     """Generate build command line."""
+    for src_file in rule_details.get(su.SRCS_KEY, []):
+      if not su.path_exists(src_file):
+        raise Error('File does not exist: {}'.format(src_file))
+      if not su.path_isfile(src_file):
+        raise Error('Souce file is not a file: {}'.format(src_file))
     return self._lookup[rule_details[su.TYPE_KEY]].build_commands(rule_details)
 
   def rule_include_deps_recursively(self, rule_details):

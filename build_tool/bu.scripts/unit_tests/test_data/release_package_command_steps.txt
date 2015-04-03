@@ -1,8 +1,14 @@
+mock_ls TEST_BUILD_OUT_DIR
+mock_mkdir -p TEST_BUILD_OUT_DIR
+mock_ls TEST_BUILD_WORK_DIR
+mock_mkdir -p TEST_BUILD_WORK_DIR
 mock_cat TEST_BUILD_ROOT/src/main/java/some/work/BLD
 mock_cat TEST_BUILD_ROOT/cc/samples/BLD
 mock_cat TEST_BUILD_ROOT/src/test/java/some/work/BLD
 mock_cat TEST_BUILD_ROOT/src/main/java/some/other/work/BLD
 mock_cat TEST_BUILD_ROOT/cc/common/BLD
+mock_ls TEST_BUILD_ROOT/cc/common/echo_utils.cc
+mock_isfile TEST_BUILD_ROOT/cc/common/echo_utils.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/common
 mkdir -p TEST_BUILD_WORK_DIR/cc/common/echo_utils
 mock_cd TEST_BUILD_WORK_DIR/cc/common/echo_utils
@@ -10,12 +16,16 @@ mkdir -p ./cc/common
 ln -f -s TEST_BUILD_ROOT/cc/common/echo_utils.cc ./cc/common/echo_utils.cc
 ln -f -s TEST_BUILD_ROOT/cc/common/echo_utils.h ./cc/common/echo_utils.h
 TEST_CC_COMPILER -I. -c ./cc/common/echo_utils.cc -o TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
+mock_ls DUMMY_CC_FILE
+mock_isfile DUMMY_CC_FILE
 mkdir -p TEST_BUILD_OUT_DIR/cc/common
 mkdir -p TEST_BUILD_WORK_DIR/cc/common/shared_headers
 mock_cd TEST_BUILD_WORK_DIR/cc/common/shared_headers
 mkdir -p ./cc/common
 ln -f -s TEST_BUILD_ROOT/cc/common/global_macros.h ./cc/common/global_macros.h
 TEST_CC_COMPILER -I. -c DUMMY_CC_FILE -o TEST_BUILD_OUT_DIR/cc/common/shared_headers.o
+mock_ls TEST_BUILD_ROOT/cc/common/some_lib.cc
+mock_isfile TEST_BUILD_ROOT/cc/common/some_lib.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/common
 mkdir -p TEST_BUILD_WORK_DIR/cc/common/some_lib
 mock_cd TEST_BUILD_WORK_DIR/cc/common/some_lib
@@ -23,12 +33,18 @@ mkdir -p ./cc/common
 ln -f -s TEST_BUILD_ROOT/cc/common/some_lib.cc ./cc/common/some_lib.cc
 ln -f -s TEST_BUILD_ROOT/cc/common/some_lib.h ./cc/common/some_lib.h
 TEST_CC_COMPILER -I. -c ./cc/common/some_lib.cc -o TEST_BUILD_OUT_DIR/cc/common/some_lib.o
+mock_ls TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_00.txt
+mock_isfile TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_00.txt
 mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/other/work
 mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/other/work/prod_files_first
 mkdir -p ./src/main/java/some/other/work
 ln -f -s TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_00.txt ./src/main/java/some/other/work/prod_data_00.txt
 mkdir -p ./META-INF
 TEST_JAVA_HOME/bin/jar cf TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_first.jar ./mock_file1 ./mock_file2
+mock_ls TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_01.txt
+mock_isfile TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_01.txt
+mock_ls TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_02.txt
+mock_isfile TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_02.txt
 mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/other/work
 mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/other/work/prod_files_second
 mkdir -p ./some/where
@@ -43,6 +59,7 @@ mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/AnotherMavenDep/code
 mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/AnotherMavenDep/target
 mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/AnotherMavenDep/code
 mock_jar_merger [([], [], ['TEST_JAR_SEARCH_PATH/another/group/test/another_artifact/imaginary/another_artifact-imaginary.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar', 'java_fake_main_class']
+mock_export_mvn_deps ['TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar.mvn_deps.json', [], []]
 mock_ls TEST_JAR_SEARCH_PATH/some/external/library.jar
 mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
 mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeExternalLibrary/clsdeps
@@ -50,6 +67,28 @@ mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeExternalLibrary/code
 mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeExternalLibrary/target
 mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/SomeExternalLibrary/code
 mock_jar_merger [(['some/external/pkg1/SomeClass1.class', 'some/external/pkg1/SomeClass2.class'], ['some/external/pkg2', 'some/external/pkg3'], ['TEST_JAR_SEARCH_PATH/some/external/library.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar', 'java_fake_main_class']
+mock_export_mvn_deps ['TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar.mvn_deps.json', [], []]
+mock_ls TEST_BUILD_ROOT/src/main/java/some/work/files_00.txt
+mock_isfile TEST_BUILD_ROOT/src/main/java/some/work/files_00.txt
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/files_0
+mkdir -p ./some/resource/dir
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/files_00.txt ./some/resource/dir/files_00.txt
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_OUT_DIR/src/main/java/some/work/files_0.jar ./mock_file1 ./mock_file2
+mock_ls TEST_BUILD_ROOT/src/main/java/some/work/files_10.txt
+mock_isfile TEST_BUILD_ROOT/src/main/java/some/work/files_10.txt
+mock_ls TEST_BUILD_ROOT/src/main/java/some/work/files_11.txt
+mock_isfile TEST_BUILD_ROOT/src/main/java/some/work/files_11.txt
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/files_1
+mkdir -p ./some/resource/dir
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/files_10.txt ./some/resource/dir/files_10.txt
+ln -f -s TEST_BUILD_ROOT/src/main/java/some/work/files_11.txt ./some/resource/dir/files_11.txt
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_OUT_DIR/src/main/java/some/work/files_1.jar ./mock_file1 ./mock_file2
+mock_ls TEST_BUILD_ROOT/cc/samples/factorial.cc
+mock_isfile TEST_BUILD_ROOT/cc/samples/factorial.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/samples
 mkdir -p TEST_BUILD_WORK_DIR/cc/samples/factorial
 mock_cd TEST_BUILD_WORK_DIR/cc/samples/factorial
@@ -60,6 +99,10 @@ mkdir -p ./cc/common
 ln -f -s TEST_BUILD_ROOT/cc/common/some_lib.h ./cc/common/some_lib.h
 TEST_CC_COMPILER -I. -c ./cc/samples/factorial.cc -o TEST_BUILD_OUT_DIR/cc/samples/factorial.o
 mock_java_version_comparison version1 bad_version
+mock_ls TEST_BUILD_ROOT/src/main/java/some/other/work/HelloUtils.java
+mock_isfile TEST_BUILD_ROOT/src/main/java/some/other/work/HelloUtils.java
+mock_ls TEST_BUILD_ROOT/src/main/java/some/other/work/HelloWorld.java
+mock_isfile TEST_BUILD_ROOT/src/main/java/some/other/work/HelloWorld.java
 mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/other/work
 mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/clsdeps
 mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/code
@@ -74,6 +117,15 @@ mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/target
 mkdir -p ./META-INF
 TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/.temp.HelloWorld.jar ./mock_file1 ./mock_file2
 mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/other/work/HelloWorld/.temp.HelloWorld.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_first.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar', 'java_fake_main_class']
+mock_export_mvn_deps ['TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar.mvn_deps.json', [], []]
+mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
+mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/files_all
+mock_extract_jar TEST_BUILD_OUT_DIR/src/main/java/some/work/files_0.jar
+mock_extract_jar TEST_BUILD_OUT_DIR/src/main/java/some/work/files_1.jar
+mkdir -p ./META-INF
+TEST_JAVA_HOME/bin/jar cf TEST_BUILD_OUT_DIR/src/main/java/some/work/files_all.jar ./mock_file1 ./mock_file2
+mock_ls TEST_BUILD_ROOT/cc/samples/factorial_main.cc
+mock_isfile TEST_BUILD_ROOT/cc/samples/factorial_main.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/samples
 mkdir -p TEST_BUILD_WORK_DIR/cc/samples/factorial_main
 mock_cd TEST_BUILD_WORK_DIR/cc/samples/factorial_main
@@ -87,6 +139,8 @@ ln -f -s TEST_BUILD_ROOT/cc/common/some_lib.h ./cc/common/some_lib.h
 TEST_CC_COMPILER -I. -I/usr/include1 -I/usr/include2 ./cc/samples/factorial_main.cc TEST_BUILD_OUT_DIR/cc/common/echo_utils.o TEST_BUILD_OUT_DIR/cc/samples/factorial.o TEST_BUILD_OUT_DIR/cc/common/shared_headers.o TEST_BUILD_OUT_DIR/cc/common/some_lib.o -lm -lre2 -lxml2 -pthread -o TEST_BUILD_OUT_DIR/cc/samples/factorial_main
 mock_ls TEST_GTEST_MAIN_LIB
 mock_ls TEST_GTEST_MOCK_LIB
+mock_ls TEST_BUILD_ROOT/cc/samples/factorial_test.cc
+mock_isfile TEST_BUILD_ROOT/cc/samples/factorial_test.cc
 mkdir -p TEST_BUILD_OUT_DIR/cc/samples
 mkdir -p TEST_BUILD_WORK_DIR/cc/samples/factorial_test
 mock_cd TEST_BUILD_WORK_DIR/cc/samples/factorial_test
@@ -101,6 +155,10 @@ mock_java_version_comparison version4 version1
 mock_java_version_comparison version4 bad_version
 mock_java_version_comparison version4 bad_version
 mock_ls TEST_JAR_SEARCH_PATH/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar
+mock_ls TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
+mock_isfile TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
+mock_ls TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+mock_isfile TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
 mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
 mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/clsdeps
 mkdir -p TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/code
@@ -119,9 +177,12 @@ mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/target
 mkdir -p ./META-INF
 TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/.temp.Driver.jar ./mock_file1 ./mock_file2
 mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/main/java/some/work/Driver/.temp.Driver.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/other/work/prod_files_second.jar', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar', 'TEST_JAR_SEARCH_PATH/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar']), 'TEST_BUILD_OUT_DIR/src/main/java/some/work/Driver.jar', 'some.work.Driver']
+mock_export_mvn_deps ['TEST_BUILD_OUT_DIR/src/main/java/some/work/Driver.jar.mvn_deps.json', [], [('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')]]
 mock_java_version_comparison bad_version version4
 mock_ls TEST_JAR_SEARCH_PATH/com/beust/jcommander/1.27/jcommander-1.27.jar
 mock_ls TEST_JAR_SEARCH_PATH/org/testng/testng/6.8/testng-6.8.jar
+mock_ls TEST_BUILD_ROOT/src/test/java/some/work/DriverTest.java
+mock_isfile TEST_BUILD_ROOT/src/test/java/some/work/DriverTest.java
 mkdir -p TEST_BUILD_OUT_DIR/src/test/java/some/work
 mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps
 mkdir -p TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/code
@@ -137,11 +198,13 @@ ln -f -s TEST_JAR_SEARCH_PATH/com/beust/jcommander/1.27/jcommander-1.27.jar TEST
 ln -f -s TEST_JAR_SEARCH_PATH/org/testng/testng/6.8/testng-6.8.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f5.jar
 ln -f -s test_default1.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f6.jar
 ln -f -s test_default2.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f7.jar
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/f8.jar
 TEST_JAVA_HOME/bin/javac -Xlint -source bad_version -target bad_version -bootclasspath TEST_JAVA_HOME/jre/lib/rt.jar -Werror -cp TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/clsdeps/* -d TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/target ./src/test/java/some/work/DriverTest.java
 mock_cd TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/target
 mkdir -p ./META-INF
 TEST_JAVA_HOME/bin/jar cf TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/.temp.DriverTest.jar ./mock_file1 ./mock_file2
 mock_jar_merger [([], [], ['TEST_BUILD_WORK_DIR/src/test/java/some/work/DriverTest/.temp.DriverTest.jar']), 'TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar', 'java_fake_main_class']
+mock_export_mvn_deps ['TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar.mvn_deps.json', [], [('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')]]
 mkdir -p TEST_BUILD_OUT_DIR/src/main/java/some/work
 echo Testing mool.cc.samples.factorial_test
 TEST_BUILD_OUT_DIR/cc/samples/factorial_test
@@ -150,6 +213,8 @@ TEST_BU_SCRIPT_DIR/mool/jar_testng_runner.py -j TEST_BUILD_OUT_DIR/src/test/java
 mock_cd TEST_BUILD_WORK_DIR/src/main/java/some/work/complete_package
 mkdir -p ./src/main/java/some/work
 ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/Driver.jar ./src/main/java/some/work/Driver.jar
+mkdir -p ./src/main/java/some/work
+ln -f -s TEST_BUILD_OUT_DIR/src/main/java/some/work/files_all.jar ./src/main/java/some/work/files_all.jar
 mkdir -p ./cc/samples
 ln -f -s TEST_BUILD_OUT_DIR/cc/samples/factorial_main ./cc/samples/factorial_main
 mock_zip_all_currdir ['TEST_BUILD_OUT_DIR/src/main/java/some/work/complete_package.zip']

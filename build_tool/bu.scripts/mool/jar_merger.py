@@ -1,6 +1,5 @@
 """Jar merger utility."""
 import hashlib
-import logging
 import os
 import shutil
 import subprocess
@@ -8,20 +7,50 @@ import subprocess
 import mool.shared_utils as su
 
 
-# We delete a few temporary files in this module. Let's make
-# sure that the files are at least in the working directories
-# of the current build step. It makes sense to ignore symbolic
-# names in this check.
-BUILD_OUT_DIR = os.path.realpath(su.BUILD_OUT_DIR)
-BUILD_WORK_DIR = os.path.realpath(su.BUILD_WORK_DIR)
-
 BLOCK_SIZE = (1L << 20)
 MAX_CLEANUP_DEPTH = 20
 MAX_DEBUG_LEN = 4
 
 
-class Error(Exception):
+SERVICE_HEADER = '# Service files merged by mool.'
+
+
+class Error(su.Error):
   """The exception class for this module."""
+
+
+def _merge_service_file(src_file, dst_file):
+  """Merge contents of src and dst files and store in dst file."""
+  def _get_lines(file_path):
+    """Removes commented and blank lines in a file and returns a list."""
+    return set([line for line in su.read_file(file_path).split('\n')
+                if not line.startswith('#') and line])
+
+  src_lines = _get_lines(src_file)
+  dst_lines = _get_lines(dst_file)
+  data = '{}\n{}'.format(SERVICE_HEADER,
+                         '\n'.join(sorted(dst_lines.union(src_lines))))
+  su.write_file(dst_file, data)
+
+
+def _merge_manifests(src_manifest, dst_manifest):
+  """Merges the files inside META-INF/services directories."""
+  su.createdir(os.path.join(dst_manifest, su.JAR_MANIFEST_PATH))
+  src_path = os.path.join(
+      src_manifest, su.JAR_MANIFEST_PATH, su.JAR_MANIFEST_SERVICE_KEY)
+  dst_path = os.path.join(
+      dst_manifest, su.JAR_MANIFEST_PATH, su.JAR_MANIFEST_SERVICE_KEY)
+  if not os.path.exists(src_path):
+    return
+
+  su.createdir(dst_path)
+  dst_files = os.listdir(dst_path)
+  for service in os.listdir(src_path):
+    if service not in dst_files:
+      shutil.copy(os.path.join(src_path, service), dst_path)
+    else:
+      _merge_service_file(os.path.join(src_path, service),
+                          os.path.join(dst_path, service))
 
 
 def _hash_file_text(file_path):
@@ -72,12 +101,9 @@ def _get_temp_dir(jar_out_file, prefix):
 def _check_and_remove(file_path):
   """Check if file exists and remove it."""
   file_path = os.path.realpath(file_path)
-  ok_to_delete = (
-      file_path.startswith(BUILD_WORK_DIR) or
-      file_path.startswith(BUILD_OUT_DIR))
-  if not ok_to_delete:
-    logging.error('%s is not safe to delete.', file_path)
-  assert ok_to_delete
+  if not su.is_temporary_path(file_path):
+    raise Error('{} is not safe to delete.'.format(file_path))
+
   if os.path.exists(file_path):
     if os.path.isdir(file_path):
       shutil.rmtree(file_path)
@@ -92,7 +118,8 @@ def _do_cleanup(dir_path, inclusions, exclusions):
   if inclusions:
     inclusions = [os.path.join(dir_path, f) for f in inclusions]
     all_files = [f[0] for f in _get_all_files_in_dir('.')]
-    files_to_delete = [f for f in all_files if f not in inclusions]
+    files_to_delete = [f for f in all_files
+                       if all([not f.startswith(path) for path in inclusions])]
     for file_path in files_to_delete:
       _check_and_remove(file_path)
   # A somewhat inefficient mechanism of recursively cleaning up empty
@@ -147,9 +174,7 @@ def _ensure_no_repetition(jar_files, inclusions, exclusions, jar_out_file):
       dir_path = os.path.join(temp_dir, str(index))
       os.makedirs(dir_path)
       os.chdir(dir_path)
-      subprocess.check_call([su.JAR_BIN, 'xf', jar_files[index]])
-      if os.path.exists(su.JAR_MANIFEST_PATH):
-        shutil.rmtree(su.JAR_MANIFEST_PATH)
+      su.extract_all_currdir(jar_files[index])
       _do_cleanup('.', inclusions, exclusions)
       new_files_with_sig = _real_new_files(all_files_with_sig,
                                            _get_all_files_in_dir('.'))
@@ -180,11 +205,15 @@ def _merge_jars(jar_files, inclusions, exclusions, main_class, jar_out_file):
     return
   orig_dir = os.getcwd()
   temp_dir = _get_temp_dir(jar_out_file, 'final')
+  merged_manifest = _get_temp_dir(jar_out_file, 'final_manifest')
   os.chdir(temp_dir)
   try:
     for jar_file in jar_files:
-      subprocess.check_call([su.JAR_BIN, 'xf', jar_file])
+      # Extract a jar and merge manifest files.
+      su.extract_all_currdir(jar_file, delete_manifest=False)
+      _merge_manifests('.', merged_manifest)
       _check_and_remove(su.JAR_MANIFEST_PATH)
+    shutil.move(os.path.join(merged_manifest, su.JAR_MANIFEST_PATH), '.')
     _do_cleanup('.', inclusions, exclusions)
     _check_and_remove(jar_out_file)
     if need_main:
@@ -195,6 +224,7 @@ def _merge_jars(jar_files, inclusions, exclusions, main_class, jar_out_file):
     subprocess.check_call(merge_command)
   finally:
     shutil.rmtree(temp_dir)
+    shutil.rmtree(merged_manifest)
   os.chdir(orig_dir)
 
 

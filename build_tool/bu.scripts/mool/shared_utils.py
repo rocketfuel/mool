@@ -5,13 +5,18 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 import time
-import urllib2
+import urllib
+import zipfile
+
+from collections import OrderedDict
 
 CACHE_FILE_NAME = '.project.cache'
 COMMENT_CHAR = '#'
 DIR_ROOT_KEY = 'dir_root'
 LOCK_FILE_NAME = '.bu.lock'
+QUOTE_CHAR = '"'
 RULE_KEY = 'build_rules'
 
 # These environment variables are always required.
@@ -40,6 +45,7 @@ SCALA_DEFAULT_VERSION = os.environ.get('SCALA_DEFAULT_VERSION', 'false')
 SUBMITQ_DEBUG_MODE = os.environ.get('SUBMITQ_DEBUG_MODE', '').lower() == 'true'
 SUBMIT_QUEUE_FILE_NAME = 'SUBMITQ'
 DEVELOPER_MODE = os.environ.get('DEVELOPER_MODE', 'false')
+MAVEN_PREFER_LOCAL_REPO = os.environ.get('MAVEN_PREFER_LOCAL_REPO', '')
 
 
 # These constants are functionally dependent on the previous set of
@@ -57,6 +63,7 @@ ALL_DEPS_KEY = '_all_deps'
 ALL_LIGHT_RULES_KEY = 'LIGHTRULES'
 ALL_RULES_KEY = 'ALL'
 ALL_SRCS_KEY = 'all_sources_key'
+ARCHIVE_TYPE = 'archive_type'
 BUILD_FILE_NAME = 'BLD'
 CC_BIN_TYPE = 'cc_bin'
 CC_LIB_TYPE = 'cc_lib'
@@ -68,14 +75,23 @@ COMPILE_DEPS_KEY = 'compileDeps'
 COMPILE_IGNORE_WARNINGS_KEY = 'ignore_compiler_warnings'
 COMPILE_LIBS_KEY = 'compile_libs'
 COMPILE_PARAMS_KEY = 'compile_params'
+CREATE_ARCHIVE_ALL_CURRDIR = 'create_archive_all_currdir'
+DEFAULT_FILE_COLL_ARCHIVE_TYPE = 'jar'
 DEPS_KEY = 'deps'
 DOWNLOAD_CHUNK_SIZE = 1024
+EXPORT_MVN_DEPS = 'export_mvn_deps'
+EXPORTED_MVN_DEPS_FILE_KEY = 'exported_mvn_deps_file_key'
+EXTRACT_ARCHIVE_IN_CURRDIR = 'extract_archive_in_currdir'
+EXTRACT_IN_ZIP = 'extract_in_zip'
 EXTRACT_RESOURCES_DEP_KEY = 'extract_deps'
 FILE_COLL_TYPE = 'file_coll'
 FILE_PACKAGE_KEY = 'file_package'
+FILE_COLL_DEPS_KEY = 'file_coll_deps'
 HDRS_KEY = 'hdrs'
 JAR_INCLUDE_KEY = 'jar_include_paths'
-JAR_MANIFEST_PATH = os.path.join('.', 'META-INF')
+JAR_MANIFEST_KEY = 'META-INF'
+JAR_MANIFEST_SERVICE_KEY = 'services'
+JAR_MANIFEST_PATH = os.path.join('.', JAR_MANIFEST_KEY)
 JAR_EXCLUDE_KEY = 'jar_exclude_paths'
 JAVA_BIN_TYPE = 'java_bin'
 JAVA_FAKE_MAIN_CLASS = 'java_fake_main_class'
@@ -97,6 +113,7 @@ MAIN_CLASS_KEY = 'main_class'
 MAIN_METHOD_KEY = 'main_method'
 MAVEN_ARTIFACT_ID_KEY = 'artifact_id'
 MAVEN_CLASSIFIER_KEY = 'classifier'
+MAVEN_DEPS_KEY = 'maven_deps'
 MAVEN_GROUP_ID_KEY = 'group_id'
 MAVEN_IDENTIFIERS_KEY = 'maven_id'
 MAVEN_REPO_URL_KEY = 'repo_url'
@@ -115,7 +132,6 @@ PATH_SUBDIR_KEY = 'path_subdir'
 PC_DEPS_KEY = 'precompiled_deps'
 PC_DEPS_PREFIX = 'env.'
 PERFORM_JAVA_LINK_ALL_CURRDIR = 'perform_java_link_all_currdir'
-PERFORM_ZIP_ALL_CURRDIR = 'perform_zip_all_currdir'
 POSSIBLE_PREFIXES_KEY = 'possible_prefixes'
 PRECOMPILE_COMMANDS_KEY = 'precompile_commands'
 PROTO_OUTDIR_KEY = 'proto_outdir_key'
@@ -132,6 +148,7 @@ PYTHON_SKIPLINT_KEY = 'py_skiplint'
 PYTHON_TEST_TYPE = 'py_test'
 RELEASE_PACKAGE_TYPE = 'release_package'
 RELEASE_TEST_COMMANDS_KEY = 'release_test_commands'
+RULE_FILE_PATH = 'rule_file_path'
 RULE_NORMALIZED_KEY = 'is_normalized'
 RULE_ROOT_NAME = 'mool'
 RULE_SEPARATOR = '.'
@@ -148,7 +165,9 @@ SRCS_KEY = 'srcs'
 SYMBOL_KEY = 'rule_symbol'
 SYS_DEPS_KEY = 'sys_deps'
 TEMP_OUT_KEY = 'temp_output'
+
 TEST_CLASS_KEY = 'test_class'
+TEST_CLASSES_KEY = 'test_classes'
 TEST_COMMANDS_KEY = 'test_command_list'
 TEST_MODE_EXECUTION = False
 TYPE_KEY = 'rule_type'
@@ -161,10 +180,13 @@ TRUE_REPR = 'true'
 FALSE_REPR = 'false'
 
 BUILD_RULE_PREFIX = '{}{}'.format(RULE_ROOT_NAME, RULE_SEPARATOR)
+PROGRESS_BAR = '\rDownload: [{}{}] {:>3}%'
+PROGRESS_BAR_SIZE = 50
 
 
 class Error(Exception):
-  """Generic error class."""
+  """Generic error class for mool.
+  All other modules should use this as base class."""
 
 
 def print_rule_details_debug(rule_details):
@@ -190,35 +212,63 @@ def get_epoch_milliseconds():
   return int(time.time() * 1000)
 
 
+def child_contained_in(child, parent):
+  """Checks if a child directory is somewhere deep inside parent."""
+  parent = os.path.join(os.path.realpath(parent), '')
+  child = os.path.join(os.path.realpath(child), '')
+  return child.startswith(parent)
+
+
+def is_temporary_path(item_path):
+  """Checks if file or directory is temporary (safe to delete)."""
+  return ((child_contained_in(item_path, BUILD_OUT_DIR)) or
+          (child_contained_in(item_path, BUILD_WORK_DIR)))
+
+
 def cleandir(dir_path):
   """Clean and create directory."""
-  assert ((dir_path.startswith(BUILD_OUT_DIR)) or
-          (dir_path.startswith(BUILD_WORK_DIR)))
+  assert is_temporary_path(dir_path)
+  assert os.path.realpath(dir_path) != os.path.realpath(os.path.curdir)
   if path_exists(dir_path):
     shutil.rmtree(dir_path)
   os.makedirs(dir_path)
 
 
+def createdir(dir_path, clean=False):
+  """Create a given directory and optionally clean an existing one."""
+  assert is_temporary_path(dir_path)
+  if not path_exists(dir_path):
+    os.makedirs(dir_path)
+  elif clean:
+    cleandir(dir_path)
+
+
 def download_cached_item(url, file_path):
   """Download url to file path."""
-  # Assuming all real cached items would be at least 5 bytes. This check for
-  # file size is needed when accidentally zero length files have been
-  # downloaded.
-  if path_exists(file_path) and os.stat(file_path).st_size > 5:
+  if path_exists(file_path):
     return
+
+  def report_hook(count, block_size, total_size):
+    """Handler for urllib report hook."""
+    if total_size <= 0:
+      # Ignore progress bar for non-existent links. Currently used in
+      # development mode for downloading source jars.
+      return
+    bar_size = PROGRESS_BAR_SIZE
+    done = min((block_size * count * bar_size / total_size), bar_size)
+    print PROGRESS_BAR.format('=' * done, ' ' * (bar_size - done), done * 2),
+    sys.stdout.flush()
+
   subprocess.check_call(get_mkdir_command(os.path.dirname(file_path)))
   temp_path = file_path + '.temp'
-  with open(temp_path, 'wb') as file_object:
-    try:
-      response = urllib2.urlopen(url)
-    except urllib2.HTTPError as exc:
-      raise Error('{} {} {}'.format(exc.code, exc.reason, url))
-    while True:
-      chunk = response.read(DOWNLOAD_CHUNK_SIZE)
-      if not chunk:
-        break
-      file_object.write(chunk)
-      file_object.flush()
+  try:
+    logging.debug('Downloading file from %s.', url)
+    opener = urllib.URLopener()
+    opener.retrieve(url, temp_path, reporthook=report_hook)
+    print
+  except IOError as exc:
+    logging.error('Download from %s failed!', url)
+    raise exc
   shutil.move(temp_path, file_path)
 
 
@@ -267,6 +317,11 @@ def path_exists(file_path):
   return os.path.exists(file_path)
 
 
+def path_isfile(file_path):
+  """Shim for os.path.isfile that can be mocked during tests."""
+  return os.path.isfile(file_path)
+
+
 def expand_env_vars(dep_path):
   """Retrieve dependency file path by expanding environment variables."""
   path_parts = dep_path.split(os.sep)
@@ -289,6 +344,15 @@ def prefix_transform(possible_prefixes):
   possible_prefixes = sorted(list(set(possible_prefixes)))
   assert all([(not p.endswith(os.sep)) for p in possible_prefixes])
   return [p + os.sep for p in possible_prefixes]
+
+
+def find_all_bld_files(path):
+  """Search BLD files recursively."""
+  bld_files = []
+  for root, _, filenames in os.walk(os.path.abspath(path)):
+    if BUILD_FILE_NAME in filenames:
+      bld_files.append(os.path.join(root, BUILD_FILE_NAME))
+  return bld_files
 
 
 def get_relative_path(possible_prefixes, file_path):
@@ -379,8 +443,8 @@ def read_build_file(file_path):
   def _ascii_encoder(obj):
     """Convert UNICODE strings to ASCII recursively."""
     if isinstance(obj, dict):
-      obj = dict([(k.encode('ascii'), _ascii_encoder(v))
-                 for (k, v) in obj.iteritems()])
+      obj = OrderedDict(sorted([(k.encode('ascii'), _ascii_encoder(v))
+                                for (k, v) in obj.iteritems()]))
     elif isinstance(obj, list):
       obj = [_ascii_encoder(i) for i in obj]
     elif isinstance(obj, unicode):
@@ -557,3 +621,53 @@ def get_affected_rules(changed_files_list):
 def is_developer_mode():
   """Returns true if mool set to run in developer mode."""
   return DEVELOPER_MODE.strip().lower() == 'true'
+
+
+def _force_jar_extract_cwd(jar_path):
+  """Forcefully extracts the jar to current working directory. It resolves the
+  filename collisions on case insensitive file system and skips those files
+  with a warning."""
+  curdir = os.path.abspath('.')
+
+  def _manual_unzip_to_cwd(jar_file):
+    """Unzip each file manually if the file at same path doesn't exist."""
+    with zipfile.ZipFile(jar_file, 'r') as zipfile_obj:
+      all_files = sorted(zipfile_obj.namelist())
+      for name in all_files:
+        lower_name = name.lower().rstrip('/')
+        full_path = os.path.join(curdir, lower_name)
+        if os.path.exists(lower_name) or os.path.isdir(lower_name):
+          logging.debug('Skipping %s, file/directory already exists!', name)
+        elif not os.path.isdir(os.path.dirname(full_path)):
+          logging.debug('File with name %s exists, cannot extract %s!',
+                        log_normalize(os.path.dirname(full_path)), name)
+        else:
+          zipfile_obj.extract(name)
+
+  try:
+    subprocess.check_output(
+        [JAR_BIN, 'xf', jar_path], stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError as exc:
+    msg = exc.output
+    if 'sun.tools.jar.Main.extractFile' in msg and (
+       'could not create directory' in msg or '(Is a directory)' in msg):
+      logging.warn('Forcefully extracting %s in %s!',
+                   log_normalize(jar_path), log_normalize(curdir))
+      _manual_unzip_to_cwd(jar_path)
+    else:
+      raise exc
+
+
+def extract_all_currdir(jar_path, delete_manifest=True):
+  """Extracts the given jar into current directory and deletes manifest
+  files."""
+  # Minor check to confirm it is a valid zip so that 404-downloads from urllib
+  # does not prevent the build success.
+  # TODO: Add md5 verification logic after jar download so that this
+  # verification is not needed everytime before using the jar.
+  with zipfile.ZipFile(jar_path, 'r') as zip_obj:
+    zip_obj.testzip()
+
+  _force_jar_extract_cwd(jar_path)
+  if delete_manifest and os.path.exists(JAR_MANIFEST_PATH):
+    shutil.rmtree(JAR_MANIFEST_PATH)

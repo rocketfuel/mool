@@ -60,6 +60,7 @@ mool.src.main.java.some.work.Driver
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
     -->FILE: TEST_JAR_SEARCH_PATH/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar
+    -->MVNC: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')
 
 mool.src.main.java.some.work.DriverFromDriverLibWithExcludedCompileDeps
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverFromDriverLibWithExcludedCompileDeps.jar
@@ -67,6 +68,7 @@ mool.src.main.java.some.work.DriverFromDriverLibWithExcludedCompileDeps
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+    -->MVNC: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')
 
 mool.src.main.java.some.work.DriverFromDriverLibWithExcludedDeps
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
@@ -82,6 +84,7 @@ mool.src.main.java.some.work.DriverFromDriverLibWithExcludedDeps
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+    -->MVNI: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')
 
 mool.src.main.java.some.work.DriverFromDriverLibWithIncludedCompileDeps
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedCompileDeps.jar
@@ -89,6 +92,9 @@ mool.src.main.java.some.work.DriverFromDriverLibWithIncludedCompileDeps
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+    -->MVNC: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')
+    -->MVNC: ('maven_artifact', '-maven_classifier', 'maven.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/MavenDepWithClassifier.jar')
+    -->MVNI: ('some_included_artifact', '', 'some.group.test', 'maven_repo_url_test', 'awesome', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeIncludedMavenDep.jar')
 
 mool.src.main.java.some.work.DriverFromDriverLibWithIncludedDeps
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverFromDriverLibWithIncludedDeps.jar
@@ -96,6 +102,7 @@ mool.src.main.java.some.work.DriverFromDriverLibWithIncludedDeps
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+    -->MVNI: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')
 
 mool.src.main.java.some.work.DriverFromMavenSpec
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
@@ -109,6 +116,7 @@ mool.src.main.java.some.work.DriverFromMavenSpec
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+    -->MVNI: ('some_artifact', '', 'some.group.test', 'maven_repo_url_test', 'ultimate', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeMavenDep.jar')
 
 mool.src.main.java.some.work.DriverLibWithExcludedCompileDeps
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
@@ -119,6 +127,7 @@ mool.src.main.java.some.work.DriverLibWithExcludedCompileDeps
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+    -->MVNC: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')
 
 mool.src.main.java.some.work.DriverLibWithExcludedDeps
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
@@ -133,6 +142,7 @@ mool.src.main.java.some.work.DriverLibWithExcludedDeps
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+    -->MVNI: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')
 
 mool.src.main.java.some.work.DriverLibWithIncludedCompileDeps
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
@@ -141,9 +151,13 @@ mool.src.main.java.some.work.DriverLibWithIncludedCompileDeps
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/DriverLibWithIncludedCompileDeps.jar
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/MavenDepWithClassifier.jar
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeIncludedMavenDep.jar
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+    -->MVNC: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')
+    -->MVNC: ('maven_artifact', '-maven_classifier', 'maven.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/MavenDepWithClassifier.jar')
+    -->MVNI: ('some_included_artifact', '', 'some.group.test', 'maven_repo_url_test', 'awesome', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeIncludedMavenDep.jar')
 
 mool.src.main.java.some.work.DriverLibWithIncludedDeps
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
@@ -158,6 +172,21 @@ mool.src.main.java.some.work.DriverLibWithIncludedDeps
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
+    -->MVNI: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')
+
+mool.src.main.java.some.work.LibThatIncludesAMavenDep
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/LibThatIncludesAMavenDep.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeIncludedMavenDep.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/SomeClass.java
+    -->MVNI: ('some_included_artifact', '', 'some.group.test', 'maven_repo_url_test', 'awesome', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeIncludedMavenDep.jar')
+
+mool.src.main.java.some.work.LibThatUsesACompileDepWithMavenDep
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/LibThatIncludesAMavenDep.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/LibThatUsesACompileDepWithMavenDep.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/SomeOtherClass.java
+    -->MVNC: ('some_included_artifact', '', 'some.group.test', 'maven_repo_url_test', 'awesome', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeIncludedMavenDep.jar')
 
 mool.src.main.java.some.work.MavenDepWithClassifier
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/MavenDepWithClassifier.jar
@@ -176,6 +205,11 @@ mool.src.main.java.some.work.SomeExternalLibrary
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
     -->FILE: TEST_JAR_SEARCH_PATH/some/external/library.jar
 
+mool.src.main.java.some.work.SomeIncludedMavenDep
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeIncludedMavenDep.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
+    -->FILE: TEST_JAR_SEARCH_PATH/some/group/test/some_included_artifact/awesome/some_included_artifact-awesome.jar
+
 mool.src.main.java.some.work.SomeMavenDep
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeMavenDep.jar
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/BLD
@@ -189,6 +223,17 @@ mool.src.test.java.some.other.work.HelloWorldTest
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/HelloWorld.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_01.txt
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/prod_data_02.txt
+    -->FILE: TEST_BUILD_ROOT/src/test/java/some/other/work/BLD
+    -->FILE: TEST_BUILD_ROOT/src/test/java/some/other/work/HelloWorldTest.java
+    -->FILE: test_default1.jar
+    -->FILE: test_default2.jar
+
+mool.src.test.java.some.other.work.MultipleTestClasses
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/test/java/some/other/work/MultipleTestClasses.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/HelloUtils.java
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/other/work/HelloWorld.java
+    -->FILE: TEST_BUILD_ROOT/src/test/java/some/other/work/AnotherHelloWorldTest.java
     -->FILE: TEST_BUILD_ROOT/src/test/java/some/other/work/BLD
     -->FILE: TEST_BUILD_ROOT/src/test/java/some/other/work/HelloWorldTest.java
     -->FILE: test_default1.jar
@@ -212,6 +257,7 @@ mool.src.test.java.some.work.DriverTest
     -->FILE: TEST_JAR_SEARCH_PATH/org/testng/testng/6.8/testng-6.8.jar
     -->FILE: test_default1.jar
     -->FILE: test_default2.jar
+    -->MVNC: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')
 
 mool.src.test.java.some.work.DriverTestIntegration
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
@@ -229,3 +275,4 @@ mool.src.test.java.some.work.DriverTestIntegration
     -->FILE: TEST_BUILD_ROOT/src/test/java/some/work/DriverTest.java
     -->FILE: test_default1.jar
     -->FILE: test_default2.jar
+    -->MVNC: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')

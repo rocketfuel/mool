@@ -15,6 +15,7 @@ mool.py.first_service.first_module.address_py_proto
 mool.py.first_service.first_module.first_main
 mool.py.first_service.first_module.main_lib
 mool.py.first_service.first_module.main_lib_test
+mool.py.first_service.first_module.zipped_archive
 mool.py.second_service.another_module.another_lib
 mool.py.second_service.another_module.another_lib_test
 mool.py.second_service.another_module.person_main
@@ -38,9 +39,15 @@ mool.src.main.java.some.work.DriverLibWithExcludedCompileDeps
 mool.src.main.java.some.work.DriverLibWithExcludedDeps
 mool.src.main.java.some.work.DriverLibWithIncludedCompileDeps
 mool.src.main.java.some.work.DriverLibWithIncludedDeps
+mool.src.main.java.some.work.LibThatIncludesAMavenDep
+mool.src.main.java.some.work.LibThatUsesACompileDepWithMavenDep
 mool.src.main.java.some.work.MavenDepWithClassifier
 mool.src.main.java.some.work.ProtoSampleMain
 mool.src.main.java.some.work.SomeExternalLibrary
+mool.src.main.java.some.work.SomeIncludedMavenDep
 mool.src.main.java.some.work.SomeMavenDep
 mool.src.main.java.some.work.complete_package
+mool.src.main.java.some.work.files_0
+mool.src.main.java.some.work.files_1
+mool.src.main.java.some.work.files_all
 mool.src.test.java.some.work.DriverTest

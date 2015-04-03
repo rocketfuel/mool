@@ -7,4 +7,15 @@
   "srcs": ["HelloWorldTest.java"],
   "deps": ["mool.src.main.java.some.other.work.HelloWorld"],
   "extract_deps": ["mool.src.main.java.some.other.work.prod_files_second"]
+},
+
+"MultipleTestClasses": {
+  "rule_type": "java_test",
+  "test_classes": [
+      "some.other.work.AnotherHelloWorldTest",
+      "some.other.work.HelloWorldTest"],
+  "srcs": [
+      "AnotherHelloWorldTest.java",
+      "HelloWorldTest.java"],
+  "deps": ["mool.src.main.java.some.other.work.HelloWorld"]
 }

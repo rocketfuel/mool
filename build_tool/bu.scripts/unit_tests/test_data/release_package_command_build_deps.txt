@@ -83,6 +83,7 @@ mool.src.main.java.some.work.Driver
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/Driver.java
     -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/DriverUtils.java
     -->FILE: TEST_JAR_SEARCH_PATH/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar
+    -->MVNC: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')
 
 mool.src.main.java.some.work.SomeExternalLibrary
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar
@@ -101,7 +102,24 @@ mool.src.main.java.some.work.complete_package
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/Driver.jar
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/SomeExternalLibrary.jar
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/complete_package.zip
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/files_0.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/files_1.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/files_all.jar
     -->FILE: TEST_BUILD_OUT_DIR/src/test/java/some/work/DriverTest.jar
+
+mool.src.main.java.some.work.files_0
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/files_0.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/files_00.txt
+
+mool.src.main.java.some.work.files_1
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/files_1.jar
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/files_10.txt
+    -->FILE: TEST_BUILD_ROOT/src/main/java/some/work/files_11.txt
+
+mool.src.main.java.some.work.files_all
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/files_0.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/files_1.jar
+    -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/work/files_all.jar
 
 mool.src.test.java.some.work.DriverTest
     -->FILE: TEST_BUILD_OUT_DIR/src/main/java/some/other/work/HelloWorld.jar
@@ -121,3 +139,4 @@ mool.src.test.java.some.work.DriverTest
     -->FILE: TEST_JAR_SEARCH_PATH/org/testng/testng/6.8/testng-6.8.jar
     -->FILE: test_default1.jar
     -->FILE: test_default2.jar
+    -->MVNC: ('another_artifact', '', 'another.group.test', 'maven_repo_url_test', 'imaginary', 'TEST_BUILD_OUT_DIR/src/main/java/some/work/AnotherMavenDep.jar')

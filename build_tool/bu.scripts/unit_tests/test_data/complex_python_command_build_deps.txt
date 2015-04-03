@@ -24,6 +24,11 @@ mool.py.first_service.first_module.main_lib_test
     -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_class.py
     -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/one_more_class.py
 
+mool.py.first_service.first_module.zipped_archive
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/zipped_archive.zip
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/file1.txt
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/resource2.txt
+
 mool.py.second_service.another_module.another_lib
     -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/main_lib
     -->FILE: TEST_BUILD_OUT_DIR/py/second_service/another_module/another_lib
