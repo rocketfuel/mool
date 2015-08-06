@@ -1,12 +1,12 @@
 # Build rules for java/mvn/com/google/protobuf.
 
 # Libraries.
+# We prefer to use our compiled copy of java protobuf as the same is used
+# by mool for handling java_proto_libs. This keeps the dependency classes
+# same throughout the project.
 "ProtobufJava250": {
     "rule_type": "java_lib",
-    "maven_specs": {
-        "artifact_id": "protobuf-java",
-        "group_id": "com.google.protobuf",
-        "repo_url": "http://repo1.maven.org/maven2",
-        "version": "2.5.0"
-    }
+    "precompiled_deps": [
+        "env.JAVA_PROTOBUF_JAR"
+    ]
 }

@@ -1,0 +1,29 @@
+# Build rules for common/rpcutils.
+
+# Libraries.
+"duplex_protocol_py_proto": {
+    "rule_type": "py_proto_lib",
+    "srcs": [
+        "duplex_protocol.proto"
+    ],
+    "deps": []
+},
+
+"rpc_client": {
+    "rule_type": "py_lib",
+    "srcs": [
+        "rpc_client.py"
+    ],
+    "deps": [
+        ".duplex_protocol_py_proto",
+        ".rpc_header_py_proto"
+    ]
+},
+
+"rpc_header_py_proto": {
+    "rule_type": "py_proto_lib",
+    "srcs": [
+        "rpc_header.proto"
+    ],
+    "deps": []
+}

@@ -16,7 +16,8 @@ class Error(su.Error):
 
 def _raise_warning(msg):
   """Raise warning with given message."""
-  print 'WARN: {}'.format(msg)
+  if su.is_developer_mode():
+    print 'WARN: {}'.format(msg)
 
 
 @su.report_timing
