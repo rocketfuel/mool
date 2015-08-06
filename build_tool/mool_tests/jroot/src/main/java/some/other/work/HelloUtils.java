@@ -26,4 +26,8 @@ public class HelloUtils {
     public int getSpecialNumber() {
         return 31;
     }
+
+    public String getSpecialString() {
+        return "Hello World";
+    }
 }

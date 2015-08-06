@@ -10,15 +10,16 @@ THIS_SCRIPT_DIR = os.path.join(os.environ['BU_SCRIPT_DIR'], 'unit_tests')
 # We need to override the environment variables before loading the shared_utils
 # module.
 MOCKED_ENVIRONS = ('BUILD_OUT_DIR', 'BUILD_ROOT', 'BUILD_WORK_DIR',
-                   'BU_SCRIPT_DIR', 'CC_COMPILER', 'GMOCK_DIR', 'GTEST_DIR',
+                   'BU_SCRIPT_DIR', 'CC_COMPILER', 'CC_INSTALL_PREFIX',
                    'GTEST_MAIN_LIB', 'GTEST_MOCK_LIB', 'JAR_SEARCH_PATH',
                    'JAVA_HOME', 'PEP8_BINARY', 'PROTO_COMPILER',
-                   'PYTHON_PROTOBUF_DIR')
+                   'PYTHON_PROTOBUF_DIR', 'BOOST_DIR', 'THRIFT_DIR')
 os.environ = dict([(k, 'TEST_{}'.format(k)) for k in MOCKED_ENVIRONS])
 os.environ['JAVA_COMPILER'] = 'TEST_JAVA_HOME/bin/javac -Xlint'
 os.environ['JAVA_TEST_DEFAULT_JARS'] = 'test_default1.jar test_default2.jar'
 os.environ['JAVA_PROTOBUF_JAR'] = 'test_java_protobuf.jar'
 os.environ['JAVA_DEFAULT_VERSION'] = 'bad_version'
+os.environ['VALGRIND_PREFIX'] = 'TEST_VALGRIND_PREFIX TEST_VALGRIND_PARAMS'
 
 import shutil
 import subprocess
@@ -26,6 +27,7 @@ import subprocess
 import mool.build_utils as bu
 import mool.core_cmds as cc
 import mool.jar_merger as jm
+import mool.jar_testng_runner as jtr
 import mool.java_common as jc
 import mool.python_common as pc
 import mool.release_package as rp
@@ -88,8 +90,6 @@ def _mock_isfile(filesystem_dict, command_list, file_path):
 
 def _mock_isdir(filesystem_dict, command_list, dir_path):
   """Check if a directory exists."""
-  if not dir_path.startswith('TEST_BUILD_'):
-    return os.path.isdir(dir_path)
   command_list.append(['mock_isdir', dir_path])
   return dir_path in filesystem_dict
 
@@ -130,9 +130,11 @@ def _mock_download_cached_item(command_list, url, file_path):
   command_list.append(['mock_download_cached_item', url, file_path])
 
 
-def _mock_check_call(command_list, command):
+def _mock_check_call(command_list, command, **kargs):
   """Mock command line command."""
-  command_list.append(command)
+  mock_cmd = list(command)
+  mock_cmd.extend(['{}:{}'.format(k, v) for k, v in kargs.iteritems()])
+  command_list.append(mock_cmd)
 
 
 def _mock_read_file(filesystem_dict, command_list, file_path):
@@ -185,6 +187,20 @@ def _mock_compare_java_version(command_list, rule_version, dep_version):
   return True
 
 
+def _mock_check_jar_collisions(command_list, jar_list):
+  """Mock jar collision testing."""
+  mock_cmd = ['mock_check_jar_collisions']
+  mock_cmd.extend(jar_list)
+  command_list.append(mock_cmd)
+
+
+def _mock_extract_files_from_jars(command_list, work_dir, jar_list):
+  """Mock jar extraction in working directory."""
+  mock_cmd = ['mock_extract_files_from_jars', work_dir]
+  mock_cmd.extend(jar_list)
+  command_list.append(mock_cmd)
+
+
 def _mock_export_mvn_deps(command_list, command_parts):
   """Mock export mvn dependencies."""
   command_list.append(['mock_export_mvn_deps', str(command_parts)])
@@ -212,6 +228,10 @@ def _patch_os(monkeypatch, filesystem_dict, command_list):
   monkeypatch.setattr(jc, 'export_mvn_deps',
                       partial(_mock_export_mvn_deps, command_list))
   monkeypatch.setattr(jm, 'do_merge', partial(_mock_do_merge, command_list))
+  monkeypatch.setattr(jm, 'check_jar_collisions',
+                      partial(_mock_check_jar_collisions, command_list))
+  monkeypatch.setattr(jtr, '_extract_files_from_jars',
+                      partial(_mock_extract_files_from_jars, command_list))
   monkeypatch.setattr(su, 'extract_all_currdir',
                       partial(_mock_extract_jar, command_list))
   monkeypatch.setattr(su, 'DUMMY_CC', 'DUMMY_CC_FILE')
@@ -222,9 +242,9 @@ def _patch_os(monkeypatch, filesystem_dict, command_list):
   monkeypatch.setattr(su, 'write_file',
                       partial(_mock_write_file, command_list))
   monkeypatch.setattr(su, 'lock_working_dir', lambda: None)
-  monkeypatch.setattr(su, 'needs_build', lambda _, __: True)
+  monkeypatch.setattr(su, 'needs_build', lambda _, __, ___: True)
   monkeypatch.setattr(su, 'release_working_dir', lambda _: None)
-  monkeypatch.setattr(su, 'save_file_list_cache', lambda _, __: None)
+  monkeypatch.setattr(su, 'save_file_list_cache', lambda _, __, ___: None)
   monkeypatch.setattr(pc, 'compile_all',
                       partial(_mock_python_compile_all, command_list))
   monkeypatch.setattr(pc, 'expand_lib',
@@ -318,12 +338,12 @@ def _test_command_utility(monkeypatch, op_command, rules_text,
   if expected_dep_list != actual_dep_list:
     _write_test_resource(build_deps_file,
                          _get_debug_dep_list(actual_dep_list))
-  assert expected_dep_list == actual_dep_list
+    assert expected_dep_list == actual_dep_list
   actual_commands = actual_commands.strip()
   expected_commands = _read_test_resource(build_commands_file).strip()
   if expected_commands != actual_commands:
     _write_test_resource(build_commands_file, '\n'.join([actual_commands, '']))
-  assert expected_commands == actual_commands
+    assert expected_commands == actual_commands
 
 
 def test_simple_cc_command(monkeypatch):
@@ -370,6 +390,14 @@ def test_complex_java_command(monkeypatch):
                         'complex_java_command_steps.txt')
 
 
+def test_file_coll_command(monkeypatch):
+  """Test file collection rule."""
+  rules_text = 'mool.py.first_service.first_module.zipped_archive'
+  _test_command_utility(monkeypatch, cc.BUILD_COMMAND, rules_text,
+                        'file_coll_build_deps.txt',
+                        'file_coll_steps.txt')
+
+
 def test_release_package_command(monkeypatch):
   """Test release package rule."""
   rules_text = 'mool.src.main.java.some.work.complete_package'
@@ -400,7 +428,9 @@ def test_build_all(monkeypatch):
   _, dependency_list = _get_commands(monkeypatch, filesystem_dict, rules_list)
   expected_list = _read_test_resource('all_rules_list.txt').strip().split()
   actual_list = [d for d in dependency_list if su.RULE_ROOT_NAME in d]
-  assert sorted(expected_list) == sorted(actual_list)
+  if expected_list != actual_list:
+    _write_test_resource('all_rules_list.txt', '\n'.join(actual_list))
+    assert expected_list == actual_list
 
 
 def test_build_lightrules(monkeypatch):
@@ -415,7 +445,9 @@ def test_build_lightrules(monkeypatch):
   _, dependency_list = _get_commands(monkeypatch, filesystem_dict, rules_list)
   expected_list = _read_test_resource('light_rules_list.txt').strip().split()
   actual_list = [d for d in dependency_list if su.RULE_ROOT_NAME in d]
-  assert sorted(expected_list) == sorted(actual_list)
+  if expected_list != actual_list:
+    _write_test_resource('light_rules_list.txt', '\n'.join(actual_list))
+    assert expected_list == actual_list
 
 
 def test_submit_queue_list(monkeypatch):

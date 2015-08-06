@@ -25,14 +25,27 @@ def unzip_all_currdir(file_path):
     zip_obj.extractall()
 
 
+def _check_and_get_outfile(rule_details):
+  """Check that user is trying to pack rules with only one out files."""
+  out_files = rule_details[su.OUT_KEY]
+  if isinstance(out_files, list):
+    if len(out_files) == 1:
+      return out_files[0]
+    msg = ('Rule {} is emitting multiple out files. Rules with multiple out'
+           ' files are not allowed in release package rule!'
+           ).format(rule_details[su.NAME_KEY])
+    raise su.Error(msg)
+  return out_files
+
+
 class ReleasePackage(object):
   """Pre-release test and packaging module."""
   @classmethod
   def _setup_deps(cls, rule_details, details_map):
     """Setup all dependencies."""
-    all_dep_paths = []
-    for rule_symbol in rule_details[su.ALL_DEPS_KEY]:
-      all_dep_paths.append(details_map[rule_symbol][su.OUT_KEY])
+    all_dep_paths = rule_details[su.ALL_DEP_PATHS_KEY][:]
+    for rule_symbol in rule_details[su.PACKAGE_MODULES_KEY]:
+      all_dep_paths.append(_check_and_get_outfile(details_map[rule_symbol]))
     rule_details[su.ALL_DEP_PATHS_KEY] = sorted(list(set(all_dep_paths)))
 
   @classmethod

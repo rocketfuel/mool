@@ -1,0 +1,10 @@
+option java_generic_services = true;
+option java_package = "com.rocketfuel.unused";
+option java_outer_classname = "EmptyProtos";
+
+
+// An empty message. This protobuf definition file is not directly used.
+// We use this to ask mool to provide the right Java protobuf version during
+// compilation of other classes in this directory.
+message EmptyProto {
+}

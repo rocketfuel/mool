@@ -1,0 +1,31 @@
+# Build rules for java/mvn/org/slf4j.
+
+# Libraries.
+"Slf4jSimple": {
+    "rule_type": "java_lib",
+    "maven_specs": {
+        "artifact_id": "slf4j-simple",
+        "group_id": "org.slf4j",
+        "repo_url": "http://repo1.maven.org/maven2",
+        "version": "1.7.7"
+    }
+},
+
+"Slf4jApi": {
+    "rule_type": "java_lib",
+    "maven_specs": {
+        "artifact_id": "slf4j-api",
+        "group_id": "org.slf4j",
+        "repo_url": "http://repo1.maven.org/maven2",
+        "version": "1.7.7"
+    }
+},
+
+# File collections.
+"TestLog4jAppendConsole": {
+    "rule_type": "file_coll",
+    "srcs": [
+        "log4j.properties"
+    ],
+    "file_package": "."
+}

@@ -1,4 +1,4 @@
-package com.testOne;
+package com.testOne
 
 import scala.io.Source
 import java.io.File

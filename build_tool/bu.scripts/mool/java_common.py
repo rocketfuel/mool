@@ -6,6 +6,7 @@ import subprocess
 
 import mool.jar_merger as jm
 import mool.shared_utils as su
+import mool.jar_testng_runner as testng_runner
 
 
 JAVA_VERSION_DEP_RULE_TYPES = [su.JAVA_BIN_TYPE, su.JAVA_LIB_TYPE,
@@ -34,7 +35,7 @@ def perform_java_linkall_currdir(params):
   subprocess.check_call(jar_create_command)
 
 
-def _get_maven_download_paths(maven_identifiers):
+def get_maven_download_paths(maven_identifiers):
   """Returns tuple for jar download url and jar download paths in cache for
   main and sources jars."""
   artifact_id, classifier, group_id, repo_url, version = maven_identifiers
@@ -59,7 +60,7 @@ def export_mvn_deps(params):
     for dep in dep_list:
       artifact_id, classifier, group_id, repo_url, version, file_path = dep
       jar_url, jar_path, srcs_url, srcs_path = (
-          _get_maven_download_paths(dep[0:5]))
+          get_maven_download_paths(dep[0:5]))
       dep_elem = {'artifactId': artifact_id, 'classifier': classifier,
                   'groupId': group_id, 'jarBuildPath': file_path,
                   'jarCachePath': jar_path, 'jarUrl': jar_url,
@@ -74,6 +75,11 @@ def export_mvn_deps(params):
   all_deps = sorted(all_deps, key=lambda x: x['scope'])
   mvn_dict = {'deps': all_deps}
   su.write_file(out_file, json.dumps(mvn_dict, indent=4))
+
+
+def java_testng_runner(args):
+  """Run java tests using TestNg framework."""
+  testng_runner.do_main(args)
 
 
 def get_java_compile_command(rule_details, compile_libs, dir_path, file_list,
@@ -193,7 +199,7 @@ class JavaCommon(object):
     assert not rule_details[su.DEPS_KEY]
     assert rule_details[su.LINK_INCLUDE_DEPS_KEY]
     url, output_path, srcs_url, srcs_output_path = (
-        _get_maven_download_paths(rule_details[su.MAVEN_IDENTIFIERS_KEY]))
+        get_maven_download_paths(rule_details[su.MAVEN_IDENTIFIERS_KEY]))
 
     if su.MAVEN_PREFER_LOCAL_REPO:
       try:
@@ -318,28 +324,27 @@ class JavaCommon(object):
   @classmethod
   def _set_test_commands(cls, rule_details, details_map):
     """Initializing build rule dictionary."""
-    working_dir = os.path.join(rule_details[su.WDIR_KEY], '.test.wdir')
-    testng_groups = rule_details.get(su.JAVA_TESTNG_GROUPS, ['unit'])
-    runtime_params = ','.join(
-        rule_details.get(su.RUNTIME_PARAMS_KEY, []))
-    test_command = [su.JAR_TESTER_SCRIPT, '-j', rule_details[su.OUT_KEY], '-w',
-                    working_dir, '-cpd', rule_details[su.WDIR_CLSDEPS_KEY],
-                    '-tc']
+    test_command = [su.JAVA_TESTNG_RUNNER, rule_details[su.OUT_KEY]]
     if su.TEST_CLASS_KEY in rule_details:
-      test_command.append(rule_details[su.TEST_CLASS_KEY])
+      test_command.append([rule_details[su.TEST_CLASS_KEY]])
     else:
-      test_command.extend(rule_details[su.TEST_CLASSES_KEY])
-    if runtime_params:
-      test_command.extend(['-jp', '\'{}\''.format(runtime_params)])
-    test_command.extend(['-g'] + testng_groups)
-    if rule_details.get(su.EXTRACT_RESOURCES_DEP_KEY, None):
-      jar_files = [details_map[rule][su.OUT_KEY] for rule in rule_details[
-                   su.EXTRACT_RESOURCES_DEP_KEY]]
-      test_command.extend(['-x'] + jar_files)
+      test_command.append(rule_details[su.TEST_CLASSES_KEY])
+    for test_class in test_command[-1]:
+      if test_class.endswith('.java'):
+        raise Error(('Invalid test class name %s! It shouldn\'t end with '
+                     '.java!') % test_class)
+    working_dir = os.path.join(rule_details[su.WDIR_KEY], '.test.wdir')
+    test_command.append(working_dir)
+    test_command.append(rule_details.get(su.JAVA_TESTNG_GROUPS, ['unit']))
+    test_command.append(rule_details[su.WDIR_CLSDEPS_KEY])
+    test_command.append(rule_details.get(su.RUNTIME_PARAMS_KEY, []))
+    ext_jar_files = [details_map[rule][su.OUT_KEY] for rule in rule_details[
+                     su.EXTRACT_RESOURCES_DEP_KEY]]
+    test_command.append(ext_jar_files)
     rule_details[su.TEST_COMMANDS_KEY] = [test_command]
 
   @classmethod
-  def _set_precompile_commands(cls, rule_details):
+  def set_precompile_commands(cls, rule_details):
     """Set precompile link command for dependencies."""
     rule_details[su.PRECOMPILE_COMMANDS_KEY] = []
     if not rule_details[su.SRCS_KEY]:
@@ -426,7 +431,7 @@ class JavaCommon(object):
     rule_details[su.LINK_LIBS_KEY] = link_libs
     rule_details[su.COMPILE_LIBS_KEY] = link_libs[:]
     rule_details[su.COMPILE_LIBS_KEY].extend(compile_libs)
-    cls._set_precompile_commands(rule_details)
+    cls.set_precompile_commands(rule_details)
     rule_details[su.ALL_SRCS_KEY] = rule_details[su.SRCS_KEY][:]
     cls._set_all_dep_paths(rule_details, link_libs, dep_sources)
     cls._set_compile_command(rule_details)

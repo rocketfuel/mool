@@ -7,6 +7,27 @@
   "deps": ["mool.jroot.org.personal.firstlib.MainLib"]
 },
 
+# Library for testing jar extraction on case insensitive file system.
+# Using the Storm library as this has a known problem that you cannot "jar xf"
+# this library on a Mac OS. This is caused because by default Mac OS uses a
+# case insensitive file system and the fact that the jar contains a file and a
+# directory of the same name but different cases.
+"StormCoreRaw": {
+  "rule_type": "java_lib",
+  "maven_specs": {
+      "repo_url": "http://central.maven.org/maven2",
+      "group_id": "org.apache.storm",
+      "artifact_id": "storm-core",
+      "version": "0.9.3"
+    }
+},
+
+"StormCore": {
+  "rule_type": "java_lib",
+  "srcs": [],
+  "jar_exclude_paths": ["META-INF/LICENSE", "META-INF/license"],
+  "deps": [".StormCoreRaw"]
+},
 
 # Unit Tests.
 "SecondMainTest": {
@@ -25,4 +46,15 @@
   "main_class": "org.personal.secondlib.SecondMain",
   "srcs": [],
   "deps": [".SecondMainLib"]
+},
+
+"ThriftJavaDemo": {
+    "rule_type": "java_bin",
+    "srcs": [
+        "JavaThriftDemo.java"
+    ],
+    "deps": [
+        "mool.ccroot.thrift.ThriftSpecificService"
+    ],
+    "main_class": "org.personal.secondlib.JavaThriftDemo"
 }

@@ -1,0 +1,12 @@
+# Build rules for jroot/org/personal/bldChange.
+
+# Libraries.
+"ApacheCommonsLang": {
+    "rule_type": "java_lib",
+    "maven_specs": {
+        "artifact_id": "commons-lang3",
+        "group_id": "org.apache.commons",
+        "repo_url": "http://repo1.maven.org/maven2",
+        "version": "3.0"
+    }
+}

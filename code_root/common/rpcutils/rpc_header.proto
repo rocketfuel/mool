@@ -1,0 +1,6 @@
+// The Rpc implementation we chose uses a protobuf encoding for the header on
+// the socket to inform the other side how many bytes to expect.
+
+message RpcHeader {
+  required int32 byte_count = 1;
+}

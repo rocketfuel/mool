@@ -19,6 +19,13 @@
   "deps": []
 },
 
+# We can have libs compiled using gcc if all the source files are .c files.
+"hello_gcc": {
+  "rule_type": "cc_lib",
+  "srcs": ["hello_gcc.c"],
+  "hdrs": ["hello_gcc.h"]
+},
+
 "shared_headers": {
   "rule_type": "cc_lib",
   "hdrs": ["global_macros.h"]
@@ -31,6 +38,13 @@
   "sys_deps": ["-lm"]
 },
 
+# We support multiple source files for cc rules.
+"multiple_source_lib": {
+  "rule_type": "cc_lib",
+  "srcs": ["some_lib.cc", "echo_utils.cc"],
+  "hdrs": ["some_lib.h", "echo_utils.h"],
+  "sys_deps": ["-lm"]
+},
 
 # Unit Tests.
 "echo_utils_test": {

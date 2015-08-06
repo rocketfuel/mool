@@ -1,7 +1,10 @@
-# Quick bash code for mool commands auto completion. Works for bash and zsh.
-
-__mool_cmds="do_build do_clean do_test do_test_changes"
+# Quick bash code for mool commands auto completition.
+__mool_core_cmds="do_build do_clean do_test do_test_changes"
+__mool_extensions="bld_format build_pom bump_mvn_version dep_tree setup_eclipse_project"
+__mool_cmds="$__mool_core_cmds $__mool_extensions"
 __mool_ret_code=0
+
+#TODO: Improve this script to add suggestions for each sub command.
 
 __echo_error() { echo -e "\033[31mError: $*\033[0m"; }
 
@@ -54,7 +57,9 @@ __mool_autocomplete_main()
     __mool_ret_code=0
 
     case "$prev" in
-        bu)
+        # It is important to match against a wildcard for an aliased bu command
+        # to work properly in zsh shell.
+        bu|*/bu)
             COMPREPLY=( $( compgen -W "$__mool_cmds" -- $cur ) )
             return 0
             ;;

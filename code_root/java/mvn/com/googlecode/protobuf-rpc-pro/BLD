@@ -1,0 +1,21 @@
+# Build rules for java/mvn/com/googlecode/protobuf-rpc-pro.
+
+# Library with implementation for Google's Protocol Buffer RPC services.
+"ProtobufRpcProDuplex": {
+    "rule_type": "java_lib",
+    "maven_specs": {
+        "artifact_id": "protobuf-rpc-pro-duplex",
+        "group_id": "com.googlecode.protobuf-rpc-pro",
+        "repo_url": "http://repo1.maven.org/maven2",
+        "version": "3.2.3"
+    }
+},
+
+"ProtobufRpcProDuplexAll": {
+    "rule_type": "java_lib",
+    "srcs": [],
+    "deps": [
+        ".ProtobufRpcProDuplex",
+        "mool.java.mvn.io.netty.NettyAll"
+    ]
+}

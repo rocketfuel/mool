@@ -1,0 +1,20 @@
+# Build rules for java/com/rocketfuel/ei/common/resources.
+
+# Empty proto is used to pull in protobuf related build rules in Rpc libraries.
+"EmptyProto": {
+    "rule_type": "java_proto_lib",
+    "srcs": [
+        "empty.proto"
+    ],
+    "deps": []
+},
+
+# Test input files.
+
+"RpcTestProto": {
+    "rule_type": "java_proto_lib",
+    "srcs": [
+        "rpc_test.proto"
+    ],
+    "deps": []
+}

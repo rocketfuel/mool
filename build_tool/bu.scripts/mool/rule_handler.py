@@ -1,9 +1,8 @@
 """Rule handler module."""
 import os
 
-import mool.shared_utils as su
-import mool.cc_proto as ccp
 import mool.cc_common as ccc
+import mool.cc_proto as ccp
 import mool.file_collection as fc
 import mool.java_common as jc
 import mool.java_proto as jp
@@ -11,6 +10,10 @@ import mool.python_common as pc
 import mool.python_proto as pp
 import mool.release_package as rp
 import mool.scala_common as sc
+import mool.shared_utils as su
+import mool.thrift.cc_thrift as cc_thrift
+import mool.thrift.java_thrift as java_thrift
+import mool.thrift.python_thrift as python_thrift
 
 
 class Error(su.Error):
@@ -26,15 +29,18 @@ class RuleHandler(object):
         su.CC_LIB_TYPE: ccc.CplusplusLibrary(),
         su.CC_PROTO_LIB_TYPE: ccp.CplusplusProto(),
         su.CC_TEST_TYPE: ccc.CplusplusTest(),
+        su.CC_THRIFT_LIB_TYPE: cc_thrift.CplusplusThrift(),
         su.FILE_COLL_TYPE: fc.FileCollection(),
         su.JAVA_BIN_TYPE: jc.JavaBinary(),
         su.JAVA_LIB_TYPE: jc.JavaLibrary(),
         su.JAVA_PROTO_LIB_TYPE: jp.JavaProtoLibrary(),
         su.JAVA_TEST_TYPE: jc.JavaTest(),
+        su.JAVA_THRIFT_LIB_TYPE: java_thrift.JavaThriftLibrary(),
         su.PYTHON_BIN_TYPE: pc.PyBinary(),
         su.PYTHON_LIB_TYPE: pc.PyLibrary(),
         su.PYTHON_PROTO_LIB_TYPE: pp.PyProtoLibrary(),
         su.PYTHON_TEST_TYPE: pc.PyPyTest(),
+        su.PYTHON_THRIFT_LIB_TYPE: python_thrift.PyThriftLibrary(),
         su.RELEASE_PACKAGE_TYPE: rp.ReleasePackage(),
         su.SCALA_BIN_TYPE: sc.ScalaBinary(),
         su.SCALA_LIB_TYPE: sc.ScalaLibrary(),

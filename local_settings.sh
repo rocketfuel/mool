@@ -22,11 +22,12 @@ set_local_misc() {
 
   export SCALA_DEFAULT_VERSION="2.8"
   export SCALA_HOME_2_8="/wherever/scala-2.8.2.final"
+  export SCALA_HOME_2_10="/wherever/scala-2.10.4"
   export SCALA_HOME_2_11="/wherever/scala-2.11.4"
 
-  export PROTOBUF_DIR="/wherever/protobuf-2.4.1"
-  export PROTO_COMPILER="/wherever/protobuf-2.4.1"
-  export JAVA_PROTOBUF_JAR="${PROTOBUF_DIR}/java/target/protobuf-java-2.4.1.jar"
+  export PROTOBUF_DIR="/wherever/protobuf-2.5.0"
+  export PROTO_COMPILER="/wherever/protobuf-2.5.0"
+  export JAVA_PROTOBUF_JAR="${PROTOBUF_DIR}/java/target/protobuf-java-2.5.0.jar"
   export PYTHON_PROTOBUF_DIR="${PROTOBUF_DIR}/python/build/lib"
 }
 

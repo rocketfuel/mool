@@ -1,0 +1,12 @@
+// A protocol buffer for a Person object.
+package ccroot_samples;
+import "ccroot/common/address.proto";
+
+option java_package = "some.other.work";
+option java_outer_classname = "PersonProto";
+
+message Person {
+  required int32 id = 1;
+  required string name = 2;
+  repeated ccroot_common.Address addresses = 3;
+}

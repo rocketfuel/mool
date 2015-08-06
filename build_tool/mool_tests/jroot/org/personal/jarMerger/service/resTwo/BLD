@@ -1,0 +1,7 @@
+# Build rules for jroot/org/personal/jarMerger/service/resTwo.
+
+"ServiceTwoRes": {
+    "rule_type": "file_coll",
+    "srcs": ["com.example.services.ServiceDemo"],
+    "file_package": "META-INF/services"
+}

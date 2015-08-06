@@ -1,0 +1,16 @@
+mock_ls TEST_BUILD_OUT_DIR
+mock_mkdir -p TEST_BUILD_OUT_DIR
+mock_ls TEST_BUILD_WORK_DIR
+mock_mkdir -p TEST_BUILD_WORK_DIR
+mock_cat TEST_BUILD_ROOT/py/first_service/first_module/BLD
+mock_ls TEST_BUILD_OUT_DIR/py/first_service/first_module/zipped_archive.zip
+mock_ls TEST_BUILD_ROOT/py/first_service/first_module/file1.txt
+mock_isfile TEST_BUILD_ROOT/py/first_service/first_module/file1.txt
+mock_ls TEST_BUILD_ROOT/py/first_service/first_module/resource2.txt
+mock_isfile TEST_BUILD_ROOT/py/first_service/first_module/resource2.txt
+mkdir -p TEST_BUILD_OUT_DIR/py/first_service/first_module
+mock_cd TEST_BUILD_WORK_DIR/py/first_service/first_module/zipped_archive
+mkdir -p ./resources/text_files
+ln -f -s TEST_BUILD_ROOT/py/first_service/first_module/file1.txt ./resources/text_files/file1.txt
+ln -f -s TEST_BUILD_ROOT/py/first_service/first_module/resource2.txt ./resources/text_files/resource2.txt
+mock_zip_all_currdir ['TEST_BUILD_OUT_DIR/py/first_service/first_module/zipped_archive.zip']

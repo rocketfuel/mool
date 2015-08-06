@@ -1,0 +1,32 @@
+# Build rules for jroot/org/personal/jarMerger/service.
+# Reference: http://www.concretepage.com/java/serviceloader-java-example
+
+# Libraries.
+"ServiceInterface": {
+    "rule_type": "java_lib",
+    "srcs": ["ServiceDemo.java"]
+},
+
+"ServiceImplOne": {
+    "rule_type": "java_lib",
+    "srcs": ["ServiceOne.java"],
+    "deps": ["mool.jroot.org.personal.jarMerger.service.resOne.ServiceOneRes"],
+    "compileDeps": [".ServiceInterface"]
+},
+
+"ServiceImplTwo": {
+    "rule_type": "java_lib",
+    "srcs": ["ServiceTwo.java"],
+    "deps": ["mool.jroot.org.personal.jarMerger.service.resTwo.ServiceTwoRes"],
+    "compileDeps": [".ServiceInterface"]
+},
+
+"ServiceLoaderDemo": {
+    "rule_type": "java_bin",
+    "srcs": ["ServiceLoaderDemo.java"],
+    "deps": [
+        ".ServiceInterface",
+        ".ServiceImplOne",
+        ".ServiceImplTwo"],
+    "main_class": "com.example.serviceloaderdemo.ServiceLoaderDemo"
+}

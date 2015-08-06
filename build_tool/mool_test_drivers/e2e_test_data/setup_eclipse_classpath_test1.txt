@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<classpath>
+    <classpathentry kind="output" path="bin"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry including="./" kind="src" path="jroot/src/main/java"/>
+    <classpathentry kind="lib" path="${JAR_SEARCH_PATH}/org/testng/testng/6.8/testng-6.8.jar" sourcepath="${JAR_SEARCH_PATH}/org/testng/testng/6.8/testng-6.8-sources.jar"/>
+    <classpathentry kind="lib" path="${JAR_SEARCH_PATH}/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar" sourcepath="${JAR_SEARCH_PATH}/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0-sources.jar"/>
+    <classpathentry kind="lib" path="${JAR_SEARCH_PATH}/com/beust/jcommander/1.27/jcommander-1.27.jar" sourcepath="${JAR_SEARCH_PATH}/com/beust/jcommander/1.27/jcommander-1.27-sources.jar"/>
+    <classpathentry kind="lib" path="${JAVA_PROTOBUF_JAR}"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/org/personal/firstlib/MainLib.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/src/main/java/some/other/work/HelloWorld.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/src/main/java/some/other/work/PersonJavaProto.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/src/main/java/some/other/work/ProtoSampleUtils.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/src/main/java/some/work/AddressJavaProto.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/src/main/java/some/work/ApacheCommonsLangSubset.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/src/main/java/some/work/DriverLibWithMissingDeps.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/src/main/java/some/work/StrippedCommonLang.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/src/test/java/some/work/TestNgJCommander.jar"/>
+</classpath>

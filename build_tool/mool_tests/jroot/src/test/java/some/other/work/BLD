@@ -8,4 +8,17 @@
   "deps": [
       "mool.jroot.src.main.java.some.other.work.HelloWorld",
       "mool.jroot.src.test.java.some.work.TestNgJCommander"]
+},
+
+"MultipleTestClasses": {
+  "rule_type": "java_test",
+  "test_classes": [
+      "some.other.work.AnotherHelloWorldTest",
+      "some.other.work.HelloWorldTest"],
+  "srcs": [
+      "AnotherHelloWorldTest.java",
+      "HelloWorldTest.java"],
+  "deps": [
+      "mool.jroot.src.main.java.some.other.work.HelloWorld",
+      "mool.jroot.src.test.java.some.work.TestNgJCommander"]
 }

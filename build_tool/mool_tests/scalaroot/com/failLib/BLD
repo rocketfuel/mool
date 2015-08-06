@@ -1,0 +1,54 @@
+# Build rules for scalaroot/com/failLib.
+
+# Libraries.
+"ScalaLib_2_8": {
+    "rule_type": "scala_lib",
+    "srcs": [
+        "ScalaClass.scala"
+    ],
+    "scala_version": "2.8"
+},
+
+"ScalaLib_2_11": {
+    "rule_type": "scala_lib",
+    "srcs": [
+        "ScalaClass.scala"
+    ],
+    "scala_version": "2.11"
+},
+
+"SameVersion": {
+    "rule_type": "scala_bin",
+    "srcs": [
+        "Main.scala"
+    ],
+    "deps": [
+        ".ScalaLib_2_11"
+    ],
+    "main_class": "com.failLib.Main",
+    "scala_version": "2.11"
+},
+
+"LowerVersion": {
+    "rule_type": "scala_bin",
+    "srcs": [
+        "Main.scala"
+    ],
+    "deps": [
+        ".ScalaLib_2_8"
+    ],
+    "main_class": "com.failLib.Main",
+    "scala_version": "2.11"
+},
+
+"HigherVersion": {
+    "rule_type": "scala_bin",
+    "srcs": [
+        "Main.scala"
+    ],
+    "deps": [
+        ".ScalaLib_2_11"
+    ],
+    "main_class": "com.failLib.Main",
+    "scala_version": "2.8"
+}

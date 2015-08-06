@@ -6,6 +6,8 @@ TEST_BUILD_ROOT/cc/common/address.proto
 TEST_BUILD_ROOT/cc/common/echo_utils.cc
 TEST_BUILD_ROOT/cc/common/echo_utils.h
 TEST_BUILD_ROOT/cc/common/echo_utils_test.cc
+TEST_BUILD_ROOT/cc/common/hello_gcc.c
+TEST_BUILD_ROOT/cc/common/hello_gcc.h
 TEST_BUILD_ROOT/cc/common/some_lib.cc
 TEST_BUILD_ROOT/cc/common/some_lib.h
 TEST_BUILD_ROOT/cc/common/some_lib_test.cc
@@ -61,4 +63,5 @@ TEST_BUILD_ROOT/src/test/java/some/other/work/SUBMITQ
 TEST_BUILD_ROOT/src/test/java/some/work/BLD
 TEST_BUILD_ROOT/src/test/java/some/work/DriverTest.java
 TEST_BUILD_ROOT/src/test/java/some/work/SUBMITQ
+TEST_CC_INSTALL_PREFIX/lib/libSomething.a
 TEST_PYTHON_PROTOBUF_DIR

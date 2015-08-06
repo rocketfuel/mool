@@ -22,11 +22,28 @@
   "file_package": "org/personal/firstlib"
 },
 
+"prod_and_test_files": {
+  "rule_type": "file_coll",
+  "srcs": [],
+  "deps": [
+      ".prod_files",
+      ".test_files"]
+},
+
 "JavaVersionDep": {
   "rule_type": "java_lib",
   "srcs": ["EchoHelloWorld.java"],
   "deps": [".MainLib"],
   "java_version": "1.7"
+},
+
+"zip_archive": {
+  "rule_type": "file_coll",
+  "srcs": [
+      "test_data01.txt",
+      "prod_data00.txt"],
+  "file_package": "resources/text_files",
+  "archive_type": "zip"
 },
 
 # Unit Tests.

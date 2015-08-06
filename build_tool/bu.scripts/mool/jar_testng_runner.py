@@ -1,17 +1,19 @@
-#!/usr/bin/env python2.7
 """Jar testng runner utility."""
-import argparse
 import logging
 import os
-import sys
 import subprocess
 import zipfile
 import xml.etree.ElementTree as ElementTree
 
+import mool.jar_merger as jm
 import mool.shared_utils as su
 
 TEST_METHOD_XPATH = './suite/test/class/test-method[@status=\'FAIL\']'
-TRACE_COMMANDS = (os.environ.get('DEBUG_MODE', '') != '')
+
+CLASHING_DEPS_MSG = (
+    'WARN: Clashes have been found in your test dependencies. Your tests may '
+    'be passing/failing due to wrong runtime dependencies you are not aware '
+    'of. FIX this to have sound sleep while your code is in production!!')
 
 
 def _display_details(result_file):
@@ -47,58 +49,34 @@ def _extract_files_from_jars(work_dir, jar_list):
       jar_obj.extractall(path=work_dir)
 
 
-def _parse_command_line():
-  """Parses command line to generate arguments."""
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--jar_path', '-j', type=str, required=True,
-                      help='path to JAR (packed code) to be tested.')
-  parser.add_argument('--test_classes', '-tc', type=str, nargs='+',
-                      required=True, help='list of classes to test.')
-  parser.add_argument('--results_dir', '-w', type=str, required=True,
-                      help='directory to store testng results.')
-  parser.add_argument('--groups', '-g', type=str, nargs='+', required=True,
-                      help='testng groups to be tested.')
-  parser.add_argument('--classpath_dir', '-cpd', type=str, default='',
-                      help='path to directory to be added to classpath.')
-  parser.add_argument('--java_params', '-jp', type=str, default='',
-                      help='java command line args (in quotes).')
-  parser.add_argument('--extract_jars', '-x', type=str, nargs='*',
-                      help=('list of jars to be extracted in working '
-                            'directory before test starts.'))
-  return parser.parse_args()
-
-
 def do_main(args):
   """Execute unit test class and print output."""
-  tracer = logging.info if TRACE_COMMANDS else logging.debug
-  class_path_list = [args.jar_path]
-  if args.classpath_dir:
-    cp_dir = args.classpath_dir
-    class_path_list.extend(
-        [os.path.join(cp_dir, j) for j in os.listdir(cp_dir)])
-  subprocess.check_call(su.get_mkdir_command(args.results_dir))
-  working_dir = os.path.join(args.results_dir, '.wdir')
+  jar_path, test_classes, results_dir, test_groups, classpath_dir = args[0:5]
+  java_params, extract_jars = args[5:7]
+
+  class_path_list = [jar_path]
+  class_path_list.extend(
+      [os.path.join(classpath_dir, j) for j in os.listdir(classpath_dir)])
+  subprocess.check_call(su.get_mkdir_command(results_dir))
+  working_dir = os.path.join(results_dir, '.wdir')
   subprocess.check_call(su.get_mkdir_command(working_dir))
-  if args.extract_jars:
-    _extract_files_from_jars(working_dir, args.extract_jars)
+
+  _extract_files_from_jars(working_dir, extract_jars)
   result_file = None
+  clashes_found = jm.check_jar_collisions(class_path_list)
   try:
     test_command = [su.JAVA_RUNTIME]
-    if args.java_params:
-      test_command.extend(args.java_params.strip('\'').split(','))
+    test_command.extend(java_params)
     test_command.extend(
         ['-ea', '-cp', ':'.join(class_path_list), su.JAVA_TESTNG_ROOT,
-         '-d', args.results_dir, '-groups', ','.join(args.groups),
-         '-testclass', ','.join(args.test_classes)])
-    tracer('Command: %s', ' '.join(test_command))
+         '-d', results_dir, '-groups', ','.join(test_groups),
+         '-testclass', ','.join(test_classes)])
+    logging.debug('Command: %s', ' '.join(test_command))
     subprocess.check_call(test_command, cwd=working_dir)
   except subprocess.CalledProcessError:
-    result_file = os.path.join(args.results_dir, 'testng-results.xml')
-    return 1
+    result_file = os.path.join(results_dir, 'testng-results.xml')
+    _display_details(result_file)
+    raise
   finally:
-    if result_file:
-      _display_details(result_file)
-
-
-if __name__ == '__main__':
-  sys.exit(do_main(_parse_command_line()))
+    if clashes_found:
+      print CLASHING_DEPS_MSG

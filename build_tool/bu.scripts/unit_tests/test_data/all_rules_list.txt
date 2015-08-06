@@ -2,12 +2,15 @@ mool.cc.common.AddressJavaProto
 mool.cc.common.address_cc_proto
 mool.cc.common.echo_utils
 mool.cc.common.echo_utils_test
+mool.cc.common.hello_gcc
+mool.cc.common.multiple_source_lib
 mool.cc.common.shared_headers
 mool.cc.common.some_lib
 mool.cc.common.some_lib_test
 mool.cc.samples.PersonJavaProto
 mool.cc.samples.factorial
 mool.cc.samples.factorial_main
+mool.cc.samples.factorial_multi_src
 mool.cc.samples.factorial_test
 mool.cc.samples.person_cc_proto
 mool.cc.samples.person_proto_main

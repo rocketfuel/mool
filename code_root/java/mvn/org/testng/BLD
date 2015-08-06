@@ -1,0 +1,12 @@
+# Build rules for java/mvn/org/testng.
+
+# Libraries.
+"TestNg": {
+    "rule_type": "java_lib",
+    "maven_specs": {
+        "artifact_id": "testng",
+        "group_id": "org.testng",
+        "repo_url": "http://repo1.maven.org/maven2",
+        "version": "6.8"
+    }
+}

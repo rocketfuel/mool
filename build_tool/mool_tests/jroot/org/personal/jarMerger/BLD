@@ -1,0 +1,28 @@
+# Build rules for jroot/org/personal/jarMerger/service.
+
+"ApacheCommonsCommonLang3_1": {
+  "rule_type": "java_lib",
+  "maven_specs": {
+    "repo_url": "http://repo1.maven.org/maven2",
+    "group_id": "org.apache.commons",
+    "artifact_id": "commons-lang3",
+    "version": "3.1"}
+},
+
+# Repeated classes from same source. This should build successfully.
+"SameClassRepeated": {
+    "rule_type": "java_lib",
+    "deps": [
+        "mool.jroot.org.personal.firstlib.JavaVersionDep",
+        "mool.jroot.org.personal.firstlib.MainLib"
+    ]
+},
+
+# Trying to merge jars with repeated classes. This rule should fail.
+"SameClassDiffVersion": {
+    "rule_type": "java_lib",
+    "deps": [
+        ".ApacheCommonsCommonLang3_1",
+        "mool.jroot.src.main.java.some.work.ApacheCommonsCommonLang"
+    ]
+}

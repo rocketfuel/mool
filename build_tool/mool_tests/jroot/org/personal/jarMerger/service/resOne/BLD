@@ -1,0 +1,7 @@
+# Build rules for jroot/org/personal/jarMerger/service/resOne.
+
+"ServiceOneRes": {
+    "rule_type": "file_coll",
+    "srcs": ["com.example.services.ServiceDemo"],
+    "file_package": "META-INF/services"
+}

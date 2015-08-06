@@ -134,7 +134,7 @@ class ScalaCommon(jc.JavaCommon):
     _check_scala_dependencies(rule_details, details_map)
 
 
-# TODO: Refactor code for max code reuse.
+# TODO: Refactor JavaCommon and ScalaCommon code to make maximum code reuse.
 class ScalaLibrary(ScalaCommon):
   """Handler class for Scala lib build rules."""
 

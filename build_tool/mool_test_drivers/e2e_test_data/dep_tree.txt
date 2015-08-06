@@ -1,0 +1,10 @@
+=============== Dependency tree of mool.jroot.src.main.java.some.work.DriverFromDriverLibWithMissingDeps ===============
+mool.jroot.src.main.java.some.work.DriverFromDriverLibWithMissingDeps
+    |-- mool.jroot.src.main.java.some.other.work.HelloWorld
+    |-- mool.jroot.src.main.java.some.work.DriverLibWithMissingDeps
+    |   |-- mool.jroot.src.main.java.some.other.work.HelloWorld (compileDep)
+    |   `-- mool.jroot.src.main.java.some.work.StrippedCommonLang (compileDep)
+    |       `-- mool.jroot.src.main.java.some.work.ApacheCommonsCommonLang (org.apache.commons:commons-lang3:3.0)
+    |-- mool.jroot.src.main.java.some.work.StrippedCommonLang
+    |   `-- mool.jroot.src.main.java.some.work.ApacheCommonsCommonLang (org.apache.commons:commons-lang3:3.0)
+    `-- mool.jroot.src.main.java.some.work.some_resource_files

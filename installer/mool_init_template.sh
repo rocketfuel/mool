@@ -1,6 +1,10 @@
 #!/bin/bash
 set_misc() {
   export CC_COMPILER='/usr/bin/g++ -Wall'
+  export CC_INSTALL_PREFIX="VAR_CC_INSTALL_PREFIX"
+  export GTEST_MAIN_LIB="${CC_INSTALL_PREFIX}/lib/gtest_main.o"
+  export GTEST_MOCK_LIB="${CC_INSTALL_PREFIX}/lib/libgmock.a"
+  export BOOST_DIR="VAR_BOOST_DIR"
 
   export JAVA_DEFAULT_VERSION="1.7"
   export JAVA_HOME="VAR_JAVA_HOME"
@@ -8,11 +12,16 @@ set_misc() {
 
   export SCALA_DEFAULT_VERSION="VAR_SCALA_DEFAULT_VERSION"
   export SCALA_HOME_2_8="VAR_SCALA_HOME_2_8"
+  export SCALA_HOME_2_10="VAR_SCALA_HOME_2_10"
   export SCALA_HOME_2_11="VAR_SCALA_HOME_2_11"
 
   export PROTO_COMPILER="VAR_PROTO_COMPILER"
   export JAVA_PROTOBUF_JAR="VAR_JAVA_PROTOBUF_JAR"
   export PYTHON_PROTOBUF_DIR="VAR_PYTHON_PROTOBUF_DIR"
+
+  export THRIFT_DIR="VAR_THRIFT_DIR"
+  export THRIFT_COMPILER="${THRIFT_DIR}/bin/thrift"
+  export JAVA_THRIFT_JARS="${THRIFT_DIR}/libthrift-0.9.1.jar"
 }
 
 set_misc

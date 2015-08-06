@@ -1,0 +1,64 @@
+# Build rules for java/com/rocketfuel/ei/common.
+
+# Libraries.
+"NullLogger": {
+    "rule_type": "java_lib",
+    "srcs": [
+        "NullLogger.java"
+    ],
+    "compileDeps": [
+        "mool.java.mvn.com.google.protobuf.ProtobufJava250",
+        "mool.java.mvn.com.googlecode.protobuf-rpc-pro.ProtobufRpcProDuplexAll"
+    ]
+},
+
+# Rpc Stubs.
+"RpcClient": {
+    "rule_type": "java_lib",
+    "srcs": [
+        "RpcClient.java"
+    ],
+    "deps": [
+        ".NullLogger",
+        "mool.java.com.rocketfuel.ei.common.resources.EmptyProto"
+    ],
+    "compileDeps": [
+        "mool.java.mvn.org.slf4j.Slf4jApi",
+        "mool.java.mvn.com.googlecode.protobuf-rpc-pro.ProtobufRpcProDuplexAll"
+    ]
+},
+
+"RpcServer": {
+    "rule_type": "java_lib",
+    "srcs": [
+        "RpcServer.java"
+    ],
+    "deps": [
+        ".NullLogger",
+        "mool.java.com.rocketfuel.ei.common.resources.EmptyProto"
+    ],
+    "compileDeps": [
+        "mool.java.mvn.org.slf4j.Slf4jApi",
+        "mool.java.mvn.com.googlecode.protobuf-rpc-pro.ProtobufRpcProDuplexAll"
+    ]
+},
+
+# Unit tests.
+"RpcTest": {
+    "rule_type": "java_test",
+    "srcs": [
+        "RpcTest.java"
+    ],
+    "deps": [
+        ".RpcClient",
+        ".RpcServer",
+        "mool.java.com.rocketfuel.ei.common.resources.RpcTestProto",
+        "mool.java.mvn.com.beust.JCommander",
+        "mool.java.mvn.com.googlecode.protobuf-rpc-pro.ProtobufRpcProDuplexAll",
+        "mool.java.mvn.org.slf4j.Slf4jApi",
+        "mool.java.mvn.org.slf4j.Slf4jSimple",
+        "mool.java.mvn.org.slf4j.TestLog4jAppendConsole",
+        "mool.java.mvn.org.testng.TestNg"
+    ],
+    "test_class": "com.rocketfuel.ei.common.RpcTest"
+}

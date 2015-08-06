@@ -1,79 +1,67 @@
 mool.cc.common.address_cc_proto
-    -->FILE: TEST_BUILD_ROOT/cc/common/BLD
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/address.pb.h
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/address_cc_proto.o
     -->FILE: TEST_BUILD_ROOT/cc/common/address.proto
-    -->FILE: TEST_BUILD_WORK_DIR/cc/common/address_cc_proto/cc/common/address.pb.cc
-    -->FILE: TEST_BUILD_WORK_DIR/cc/common/address_cc_proto/cc/common/address.pb.h
 
 mool.cc.common.echo_utils
-    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
-    -->FILE: TEST_BUILD_ROOT/cc/common/BLD
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.echo_utils.o
     -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils.cc
     -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils.h
 
 mool.cc.common.echo_utils_test
-    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.echo_utils.o
     -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils_test
-    -->FILE: TEST_BUILD_ROOT/cc/common/BLD
     -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils.h
     -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils_test.cc
     -->FILE: TEST_GTEST_MAIN_LIB
     -->FILE: TEST_GTEST_MOCK_LIB
 
 mool.cc.common.shared_headers
-    -->FILE: DUMMY_CC_FILE
-    -->FILE: TEST_BUILD_OUT_DIR/cc/common/shared_headers.o
-    -->FILE: TEST_BUILD_ROOT/cc/common/BLD
     -->FILE: TEST_BUILD_ROOT/cc/common/global_macros.h
 
 mool.cc.common.some_lib
-    -->FILE: TEST_BUILD_OUT_DIR/cc/common/some_lib.o
-    -->FILE: TEST_BUILD_ROOT/cc/common/BLD
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/some_lib.some_lib.o
     -->FILE: TEST_BUILD_ROOT/cc/common/some_lib.cc
     -->FILE: TEST_BUILD_ROOT/cc/common/some_lib.h
 
 mool.cc.samples.factorial
-    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial.factorial.o
     -->FILE: TEST_BUILD_ROOT/cc/common/some_lib.h
-    -->FILE: TEST_BUILD_ROOT/cc/samples/BLD
     -->FILE: TEST_BUILD_ROOT/cc/samples/factorial.cc
     -->FILE: TEST_BUILD_ROOT/cc/samples/factorial.h
 
 mool.cc.samples.factorial_main
-    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
-    -->FILE: TEST_BUILD_OUT_DIR/cc/common/shared_headers.o
-    -->FILE: TEST_BUILD_OUT_DIR/cc/common/some_lib.o
-    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.echo_utils.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/some_lib.some_lib.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial.factorial.o
     -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial_main
     -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils.h
     -->FILE: TEST_BUILD_ROOT/cc/common/global_macros.h
     -->FILE: TEST_BUILD_ROOT/cc/common/some_lib.h
-    -->FILE: TEST_BUILD_ROOT/cc/samples/BLD
     -->FILE: TEST_BUILD_ROOT/cc/samples/factorial.h
     -->FILE: TEST_BUILD_ROOT/cc/samples/factorial_main.cc
 
 mool.cc.samples.factorial_test
-    -->FILE: TEST_BUILD_OUT_DIR/cc/common/some_lib.o
-    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/some_lib.some_lib.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial.factorial.o
     -->FILE: TEST_BUILD_OUT_DIR/cc/samples/factorial_test
     -->FILE: TEST_BUILD_ROOT/cc/common/some_lib.h
-    -->FILE: TEST_BUILD_ROOT/cc/samples/BLD
     -->FILE: TEST_BUILD_ROOT/cc/samples/factorial.h
     -->FILE: TEST_BUILD_ROOT/cc/samples/factorial_test.cc
     -->FILE: TEST_GTEST_MAIN_LIB
     -->FILE: TEST_GTEST_MOCK_LIB
 
 mool.cc.samples.person_cc_proto
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/address.pb.h
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/person.pb.h
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/person_cc_proto.o
     -->FILE: TEST_BUILD_ROOT/cc/common/address.proto
-    -->FILE: TEST_BUILD_ROOT/cc/samples/BLD
     -->FILE: TEST_BUILD_ROOT/cc/samples/person.proto
-    -->FILE: TEST_BUILD_WORK_DIR/cc/samples/person_cc_proto/cc/samples/person.pb.cc
-    -->FILE: TEST_BUILD_WORK_DIR/cc/samples/person_cc_proto/cc/samples/person.pb.h
 
 mool.cc.samples.person_proto_main
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/address.pb.h
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/address_cc_proto.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/person.pb.h
+    -->FILE: TEST_BUILD_OUT_DIR/cc/samples/person_cc_proto.o
     -->FILE: TEST_BUILD_OUT_DIR/cc/samples/person_proto_main
-    -->FILE: TEST_BUILD_ROOT/cc/samples/BLD
     -->FILE: TEST_BUILD_ROOT/cc/samples/person_proto_main.cc
-    -->FILE: TEST_BUILD_WORK_DIR/cc/common/address_cc_proto/cc/common/address.pb.cc
-    -->FILE: TEST_BUILD_WORK_DIR/cc/common/address_cc_proto/cc/common/address.pb.h
-    -->FILE: TEST_BUILD_WORK_DIR/cc/samples/person_cc_proto/cc/samples/person.pb.cc
-    -->FILE: TEST_BUILD_WORK_DIR/cc/samples/person_cc_proto/cc/samples/person.pb.h
