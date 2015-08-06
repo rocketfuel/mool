@@ -16,7 +16,7 @@ The current implementation has been extended from another implementation of
 #### Installation
 Checkout latest code from this repository and run following command from repo
 root:
-`python2.7 installer/install\_mooltool.py`
+`python2.7 installer/install_mooltool.py`
 
 Above command takes some time and creates a complete working setup in your
 current working directory. For more installation options run installer script
