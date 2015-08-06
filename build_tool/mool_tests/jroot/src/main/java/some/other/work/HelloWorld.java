@@ -11,6 +11,10 @@ class LocalClass {
         utils.forceCompilerWarning();
         return utils.getSpecialNumber();
     }
+
+    public String getHelloString() {
+        return utils.getSpecialString();
+    }
 }
 
 public class HelloWorld {
@@ -18,6 +22,10 @@ public class HelloWorld {
 
     public int getSpecialNumber() {
         return local.getSpecialNumber();
+    }
+
+    public String getSpecialString() {
+        return local.getHelloString();
     }
 
     public void execute() {

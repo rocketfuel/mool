@@ -1,0 +1,14 @@
+# Build rules for jroot/org/personal/bldChange.
+
+# Libraries.
+# This is just an extra comment which shouldn't trigger rebuild of this rule.
+# Rule keys are intentionally kept in unsorted order.
+"ApacheCommonsLang": {
+    "maven_specs": {
+        "version": "3.0",
+        "group_id": "org.apache.commons",
+        "repo_url": "http://repo1.maven.org/maven2",
+        "artifact_id": "commons-lang3"
+    },
+    "rule_type": "java_lib"
+}

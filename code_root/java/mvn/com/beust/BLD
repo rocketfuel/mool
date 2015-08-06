@@ -1,0 +1,11 @@
+# Build rules for java/mvn/com/beust.
+
+"JCommander": {
+    "rule_type": "java_lib",
+    "maven_specs": {
+        "artifact_id": "jcommander",
+        "group_id": "com.beust",
+        "repo_url": "http://repo1.maven.org/maven2",
+        "version": "1.27"
+    }
+}

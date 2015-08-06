@@ -1,0 +1,14 @@
+option java_generic_services = true;
+option java_package = "com.rocketfuel.ei.common.generated";
+option java_outer_classname = "TestSvcProtos";
+option java_generate_equals_and_hash = true;
+option optimize_for = SPEED;
+
+// Health check rpc request.
+message Dummy {
+  required int32 dummyValue = 1;
+}
+
+service RpcTestSvc {
+  rpc echo(Dummy) returns (Dummy);
+}

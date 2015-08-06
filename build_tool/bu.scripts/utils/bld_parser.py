@@ -6,7 +6,7 @@ from collections import OrderedDict
 import json
 import re
 
-# TODO: Move the read_build_file function here from mool.shared_utils.
+#TODO: Move the read_build_file function here from mool.shared_utils.
 import mool.shared_utils as su
 import utils.file_utils as fu
 
@@ -89,7 +89,7 @@ def bld_to_list(file_path):
       formatted.append(line)
     elif line.startswith(QUOTE_CHAR):
       name = _rule_name(line)
-      # TODO: Improve it to retain comments inside a BLD rule as well.
+      #TODO: Improve it to retain comments inside a BLD rule as well.
       formatted.append({RULE_NAME_KEY: name, RULE_BODY_KEY: bld_as_json[name]})
       # Skip remaining lines of this rule now.
       _strip_rule_body(lines)

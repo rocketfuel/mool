@@ -1,0 +1,4 @@
+mool.py.first_service.first_module.zipped_archive
+    -->FILE: TEST_BUILD_OUT_DIR/py/first_service/first_module/zipped_archive.zip
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/file1.txt
+    -->FILE: TEST_BUILD_ROOT/py/first_service/first_module/resource2.txt

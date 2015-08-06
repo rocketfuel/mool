@@ -1,0 +1,49 @@
+# Build rules for jroot/org/personal/compileDeps/BLD
+
+# Java library.
+"DummyLogger": {
+    "rule_type": "java_lib",
+    "srcs": ["DummyLogger.java"],
+    "compileDeps": [
+        ".Slf4jApi",
+        ".Slf4jSimple"
+    ]
+},
+
+"LoggerConfig": {
+    "rule_type": "file_coll",
+    "srcs": ["simplelogger.properties"],
+    "file_package": ""
+},
+
+"Slf4jApi": {
+    "rule_type": "java_lib",
+    "maven_specs": {
+        "artifact_id": "slf4j-api",
+        "group_id": "org.slf4j",
+        "repo_url": "http://central.maven.org/maven2",
+        "version": "1.7.7"
+    }
+},
+
+"Slf4jSimple": {
+    "rule_type": "java_lib",
+    "maven_specs": {
+        "artifact_id": "slf4j-simple",
+        "group_id": "org.slf4j",
+        "repo_url": "http://central.maven.org/maven2",
+        "version": "1.7.7"
+    }
+},
+
+# Java Test.
+"TestDummyLogger": {
+    "rule_type": "java_test",
+    "srcs": ["TestDummyLogger.java"],
+    "deps": [
+      ".DummyLogger",
+      ".LoggerConfig",
+      "mool.jroot.src.test.java.some.work.TestNgJCommander"],
+    "test_class": "org.personal.compileDeps.TestDummyLogger",
+    "extract_deps": [".LoggerConfig"]
+}

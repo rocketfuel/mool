@@ -1,0 +1,52 @@
+# Build rules for ccroot/thrift.
+
+# Libraries.
+"specific_cc_thrift": {
+  "rule_type": "cc_thrift_lib",
+  "srcs": ["specific.thrift"],
+  "deps": ["mool.ccroot.common.kvpair_cc_thrift"]
+},
+
+"specific_py_thrift": {
+  "rule_type": "py_thrift_lib",
+  "srcs": [
+    "specific.thrift"
+  ],
+  "deps": [
+    "mool.ccroot.common.kvpair_py_thrift"
+  ]
+},
+
+"specific": {
+  "rule_type": "cc_lib",
+  "srcs": ["specific.cc"],
+  "hdrs": ["specific.h"],
+  "deps": [".specific_cc_thrift"]
+},
+
+"ThriftSpecificService": {
+    "rule_type": "java_thrift_lib",
+    "srcs": [
+        "specific.thrift"
+    ],
+    "deps": [
+        "mool.ccroot.common.ThriftKVPairService"
+    ],
+    # Java thrift jar needs Slf4j as dependency.
+    "compileDeps": [
+        "mool.jroot.org.personal.compileDeps.Slf4jApi"
+    ]
+},
+
+# Binaries.
+"demo_client": {
+  "rule_type": "cc_bin",
+  "srcs": ["demo_client.cc"],
+  "deps": [".specific_cc_thrift"]
+},
+
+"demo_client_indirect": {
+  "rule_type": "cc_bin",
+  "srcs": ["demo_client_indirect.cc"],
+  "deps": [".specific"]
+}

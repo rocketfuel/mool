@@ -20,14 +20,26 @@
   # to white-list or black-list directories in the jars.
   # "srcs": [],
   "deps": [".ApacheCommonsCommonLang"],
+  "jar_include_paths": ["org/apache/commons/lang3/StringUtils.class"]
+},
 
-  # Technically it is not required to have both inclusion and exclusion rules.
-  # However, there is no harm as both are applied in parallel.
-  "jar_include_paths": ["org/apache/commons/lang3/StringUtils.class"],
-
+"ApacheCommonsLangSubset": {
+  # Build rule to test jar_include_paths and jar_exclude_paths work properly.
+  # It follows set semantics and result is <include_files> - <exclude_files>
+  # where include_files is all the files in case jar_include_paths is missing.
+  "rule_type": "java_lib",
+  "deps": [".ApacheCommonsCommonLang"],
+  "jar_include_paths": [
+      "org/apache/commons/lang3/StringUtils.class",
+      # This class file shouldn't be included in final jar as its parent
+      # directory is excluded.
+      "org/apache/commons/lang3/reflect/MemberUtils.class",
+      "org/apache/commons/lang3/text/translate"],
   "jar_exclude_paths": [
+      # Excluding the event directory is redundant (set semantics).
       "org/apache/commons/lang3/event",
-      "org/apache/commons/lang3/reflect"]
+      "org/apache/commons/lang3/reflect",
+      "org/apache/commons/lang3/text/translate/EntityArrays.class"]
 },
 
 # Demo usage of maven jars. Jars can be downloaded from maven repositories and

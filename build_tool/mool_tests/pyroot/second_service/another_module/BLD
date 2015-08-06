@@ -56,6 +56,15 @@
   "precompiled_deps": ["env.PYTHON_PROTOBUF_DIR"]
 },
 
+"thrift_demo_main": {
+  "rule_type": "py_bin",
+  "srcs": ["thrift_demo_main.py"],
+  "main_method": "pyroot.second_service.another_module.thrift_demo_main.main_func",
+  "deps": ["mool.ccroot.thrift.specific_py_thrift"],
+  # By default we don't pack python thrift main library in the final binary
+  # but one can get that packed using precompiled_deps key.
+  "precompiled_deps": ["env.THRIFT_DIR/pylib"]
+},
 
 # Release packages.
 "second_service_package": {
@@ -65,8 +74,13 @@
       ".second_main",
       ".person_main",
       ".person_main_from_proto_nodeps",
+      "mool.jroot.org.personal.firstlib.prod_files",
+      "mool.jroot.org.personal.firstlib.zip_archive",
       "mool.pyroot.first_service.first_module.first_main"],
   "package_tests": [
       ".another_lib_test",
-      "mool.pyroot.first_service.first_module.main_lib_test"]
+      "mool.pyroot.first_service.first_module.main_lib_test"],
+  "extract_in_zip": [
+      "mool.jroot.org.personal.firstlib.prod_files",
+      "mool.jroot.org.personal.firstlib.zip_archive"]
 }

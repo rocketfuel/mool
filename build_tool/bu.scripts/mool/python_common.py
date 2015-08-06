@@ -84,6 +84,26 @@ def expand_lib(params):
         subprocess.check_call(su.get_mkdir_command(os.path.dirname(dst_file)))
         subprocess.check_call(['cp', src_file, dst_file])
 
+  # Remove any main file in zip root coming from python executable binary.
+  if os.path.exists(MAIN_FILE_NAME):
+    os.remove(MAIN_FILE_NAME)
+
+
+def run_pylint_checks(params):
+  """Run python pylint checking."""
+  # This is done separately as we need to add proto/thrift packages to python
+  # path. This is the only way to run it without modifying user's PYTHONPATH.
+  assert len(params) == 2
+  command = ['pylint']
+  command.extend(params)
+  new_path = '{}:{}'.format(
+      os.path.join(su.THRIFT_INSTALL_DIR, 'pylib'),
+      os.environ['PYTHON_PROTOBUF_DIR'])
+  if 'PYTHONPATH' in os.environ:
+    new_path = '{}:{}'.format(new_path, os.environ['PYTHONPATH'])
+  environment = {'PATH': os.environ.get('PATH', ''), 'PYTHONPATH': new_path}
+  subprocess.check_call(command, env=environment)
+
 
 def _main_file_contents_for_bin(main_class):
   """Get file contents of __main__.py for python binary."""
@@ -164,7 +184,7 @@ def _get_lint_commands(rule_details):
     if INIT_FILE_NAME == os.path.basename(file_path):
       continue
     lint_commands.append(
-        ['pylint', '--rcfile=' + su.PYLINT_RC_FILE, file_path])
+        [su.PYTHON_PYLINT_CHECK, '--rcfile=' + su.PYLINT_RC_FILE, file_path])
     pep8_command = su.PEP8_COMMAND_LINE[:]
     pep8_command.append(file_path)
     lint_commands.append(pep8_command)

@@ -30,7 +30,18 @@
       ".factorial",
       "mool.cc.common.shared_headers",
       "mool.cc.common.echo_utils"],
-  "sys_deps": ["-lre2", "-lxml2", "-pthread"]
+  "sys_deps": ["-lre2", "-lxml2", "-pthread",
+               "env.CC_INSTALL_PREFIX/lib/libSomething.a"]
+},
+
+"factorial_multi_src": {
+  "rule_type": "cc_bin",
+  "srcs": ["factorial.cc", "factorial_main.cc"],
+  "hdrs": ["factorial.h"],
+  "incdirs": ["/usr/include1", "/usr/include2"],
+  "deps": ["mool.cc.common.multiple_source_lib"],
+  "sys_deps": ["-lre2", "-lxml2", "-pthread",
+               "env.CC_INSTALL_PREFIX/lib/libSomething.a"]
 },
 
 "person_proto_main": {

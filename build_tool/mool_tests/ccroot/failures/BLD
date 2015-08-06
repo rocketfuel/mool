@@ -1,0 +1,8 @@
+# Build rules for ccroot/failures.
+
+# Unit Tests.
+"mem_leak_test": {
+  "rule_type": "cc_test",
+  "srcs": ["mem_leak_test.cc"],
+  "deps": []
+}

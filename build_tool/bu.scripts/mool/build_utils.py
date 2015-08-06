@@ -49,11 +49,11 @@ def _generate_help_message():
   header = "Build utility tool with rules driven by BLD files."
   footer = "Run 'bu <command> --help' for more help on that command."
   core_help = []
-  for key, value in core_cmds.CORE_COMMANDS.iteritems():
-    core_help.append(_format_line(key, value[1]))
+  for key in sorted(core_cmds.CORE_COMMANDS.keys()):
+    core_help.append(_format_line(key, core_cmds.CORE_COMMANDS[key][1]))
   ext_help = []
-  for key, value in em.EXTENSION_COMMANDS.iteritems():
-    ext_help.append(_format_line(key, value[1]))
+  for key in sorted(em.EXTENSION_COMMANDS.keys()):
+    ext_help.append(_format_line(key, em.EXTENSION_COMMANDS[key][1]))
 
   message = '{}\n\nCore commands:\n{}\n\nExtensions:\n{}\n\n{}'.format(
       header, '\n'.join(core_help), '\n'.join(ext_help), footer)

@@ -1,4 +1,6 @@
-// A dummy Hello world JAVA example.
+package org.personal.firstlib;
+
+// A dummy Hello World program.
 
 public class EchoHelloWorld{
     public static void main(String argv[]){

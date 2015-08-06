@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<classpath>
+    <classpathentry kind="output" path="bin"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry excluding="org/personal/badjson/|org/personal/faillib/|org/personal/jarMerger/" including="org/personal/" kind="src" path="jroot"/>
+    <classpathentry kind="lib" path="${JAR_SEARCH_PATH}/org/testng/testng/6.8/testng-6.8.jar" sourcepath="${JAR_SEARCH_PATH}/org/testng/testng/6.8/testng-6.8-sources.jar"/>
+    <classpathentry kind="lib" path="${JAR_SEARCH_PATH}/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.jar" sourcepath="${JAR_SEARCH_PATH}/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7-sources.jar"/>
+    <classpathentry kind="lib" path="${JAR_SEARCH_PATH}/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar" sourcepath="${JAR_SEARCH_PATH}/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7-sources.jar"/>
+    <classpathentry kind="lib" path="${JAR_SEARCH_PATH}/org/apache/storm/storm-core/0.9.3/storm-core-0.9.3.jar" sourcepath="${JAR_SEARCH_PATH}/org/apache/storm/storm-core/0.9.3/storm-core-0.9.3-sources.jar"/>
+    <classpathentry kind="lib" path="${JAR_SEARCH_PATH}/com/beust/jcommander/1.27/jcommander-1.27.jar" sourcepath="${JAR_SEARCH_PATH}/com/beust/jcommander/1.27/jcommander-1.27-sources.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/org/personal/compileDeps/DummyLogger.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/org/personal/firstlib/JavaVersionDep.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/org/personal/firstlib/MainLib.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/org/personal/secondlib/SecondMainLib.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/org/personal/secondlib/StormCore.jar"/>
+    <classpathentry kind="lib" path="${BUILD_OUT_DIR}/jroot/src/test/java/some/work/TestNgJCommander.jar"/>
+</classpath>

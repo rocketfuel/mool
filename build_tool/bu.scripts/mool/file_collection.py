@@ -51,7 +51,8 @@ class FileCollection(object):
         su.FILE_PACKAGE_KEY, rule_details[su.PATH_SUBDIR_KEY])
     rule_details[su.FILE_PACKAGE_KEY] = os.path.join(
         '.', rule_details[su.FILE_PACKAGE_KEY])
-    all_dep_paths = rule_details[su.SRCS_KEY][:]
+    all_dep_paths = rule_details[su.ALL_DEP_PATHS_KEY][:]
+    all_dep_paths.extend(rule_details[su.SRCS_KEY])
     all_dep_paths.append(rule_details[su.OUT_KEY])
     rule_details[su.FILE_COLL_DEPS_KEY] = []
     for dep in rule_details.get(su.DEPS_KEY, []):

@@ -1,0 +1,95 @@
+# Build rules for ccroot/samples.
+
+# TODO: Use boost to support regex, xml, commandline flags etc.
+
+# Libraries.
+"factorial": {
+  "rule_type": "cc_lib",
+  "srcs": ["factorial.cc"],
+  "hdrs": ["factorial.h"],
+  "deps": ["mool.ccroot.common.some_lib"],
+  "sys_deps": []
+},
+
+"person_cc_proto": {
+  "rule_type": "cc_proto_lib",
+  "srcs": ["person.proto"],
+  "deps": ["mool.ccroot.common.address_cc_proto"]
+},
+
+"person_utils": {
+  "rule_type": "cc_lib",
+  "srcs": ["person_utils.cc"],
+  "hdrs": ["person_utils.h"],
+  "deps": [".person_cc_proto"]
+},
+
+"use_interface": {
+  "rule_type": "cc_lib",
+  "srcs": ["use_interface.cc"],
+  "hdrs": ["use_interface.h"]
+},
+
+
+# Binaries.
+"factorial_main": {
+  "rule_type": "cc_bin",
+  "srcs": ["factorial_main.cc"],
+  "deps": [
+      ".factorial",
+      "mool.ccroot.common.shared_headers",
+      "mool.ccroot.common.echo_utils"],
+  "incdirs": ["env.BOOST_DIR/include"],
+  "libdirs": ["env.BOOST_DIR/lib"],
+  "sys_deps": ["-lboost_regex", "-pthread"]
+},
+
+# Create a binary using multiple sources.
+"factorial_multi_src": {
+  "rule_type": "cc_bin",
+  "srcs": ["factorial.cc", "factorial_main.cc"],
+  "hdrs": ["factorial.h"],
+  "deps": [
+      "mool.ccroot.common.multiple_source_lib",
+      "mool.ccroot.common.shared_headers"],
+  "incdirs": ["env.BOOST_DIR/include"],
+  "libdirs": ["env.BOOST_DIR/lib"],
+  "sys_deps": ["-lboost_regex", "-pthread"]
+},
+
+"person_proto_main": {
+  "rule_type": "cc_bin",
+  "srcs": ["person_proto_main.cc"],
+  "deps": [".person_cc_proto"],
+  "incdirs": ["env.CC_INSTALL_PREFIX/include"],
+  "libdirs": ["env.CC_INSTALL_PREFIX/lib"],
+  "sys_deps": ["-lm", "-lprotobuf"]
+},
+
+"person_proto_main_indirect": {
+  "rule_type": "cc_bin",
+  "srcs": ["person_proto_main_indirect.cc"],
+  "deps": [
+      ".person_utils", ".person_cc_proto"]
+},
+
+# Unit Tests.
+"factorial_test": {
+  "rule_type": "cc_test",
+  "srcs": ["factorial_test.cc"],
+  "deps": [".factorial"],
+
+  # These precompiled dependency lists show how to add such items. Since these
+  # two are added by default by the build rule implementation, the following
+  # line is not exactly required.
+  "precompiled_deps": ["env.GTEST_MAIN_LIB", "env.GTEST_MOCK_LIB"]
+},
+
+"use_interface_test": {
+  "rule_type": "cc_test",
+  "srcs": ["use_interface_test.cc"],
+  "deps": [".use_interface"],
+
+  # This value in cc_test is not a must-have as it gets added automatically.
+  "sys_deps": ["-pthread"]
+}

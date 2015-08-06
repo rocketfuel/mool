@@ -3,6 +3,7 @@ import fcntl
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -27,33 +28,41 @@ BUILD_WORK_DIR = os.environ['BUILD_WORK_DIR']
 
 # These environment variables are required when they are used in projects.
 # Hence we specify harmless defaults.
+BOOST_INSTALL_DIR = os.environ.get('BOOST_DIR', '/dev/null')
 CC_COMPILER = os.environ.get('CC_COMPILER', 'false')
-GMOCK_DIR = os.environ.get('GMOCK_DIR', '/dev/null')
-GTEST_DIR = os.environ.get('GTEST_DIR', '/dev/null')
+CC_INSTALL_PREFIX = os.environ.get('CC_INSTALL_PREFIX', '/dev/null')
+THRIFT_INSTALL_DIR = os.environ.get('THRIFT_DIR', '/dev/null')
 JAR_SEARCH_PATH = os.environ.get('JAR_SEARCH_PATH', '/dev/null')
 JAVA_DEFAULT_VERSION = os.environ.get('JAVA_DEFAULT_VERSION', 'false')
 JAVA_HOME = os.environ.get('JAVA_HOME', '/dev/null')
 JAVA_PROTOBUF_JAR = os.environ.get('JAVA_PROTOBUF_JAR', '/dev/null')
 JAVA_TEST_DEFAULT_JARS = [
-    f.strip()
-    for f in os.environ.get('JAVA_TEST_DEFAULT_JARS', '').split() if f.strip()]
-PEP8_BINARY = os.environ.get('PEP8_BINARY', 'false')
+    j for j in os.environ.get('JAVA_TEST_DEFAULT_JARS', '').split(' ') if j]
+JAVA_THRIFT_JARS = [
+    j for j in os.environ.get('JAVA_THRIFT_JARS', '/dev/null').split(' ') if j]
+PEP8_BINARY = os.environ.get('PEP8_BINARY', '/dev/null')
 PEP8_COMMAND_LINE = PEP8_BINARY.split()
-PROTO_COMPILER = os.environ.get('PROTO_COMPILER', 'false')
+PROTO_COMPILER = os.environ.get('PROTO_COMPILER', '/dev/null')
 PYLINT_RC_FILE = os.environ.get('PYLINT_RC_FILE', '/dev/null')
 SCALA_DEFAULT_VERSION = os.environ.get('SCALA_DEFAULT_VERSION', 'false')
 SUBMITQ_DEBUG_MODE = os.environ.get('SUBMITQ_DEBUG_MODE', '').lower() == 'true'
 SUBMIT_QUEUE_FILE_NAME = 'SUBMITQ'
+THRIFT_COMPILER = os.environ.get('THRIFT_COMPILER', '/dev/null')
 DEVELOPER_MODE = os.environ.get('DEVELOPER_MODE', 'false')
 MAVEN_PREFER_LOCAL_REPO = os.environ.get('MAVEN_PREFER_LOCAL_REPO', '')
 
+CC_BOOST_INCDIR = os.path.join(BOOST_INSTALL_DIR, 'include')
+CC_BOOST_LIBDIR = os.path.join(BOOST_INSTALL_DIR, 'lib')
+CC_THRIFT_INCDIR = os.path.join(THRIFT_INSTALL_DIR, 'include')
+CC_THRIFT_LIBDIR = os.path.join(THRIFT_INSTALL_DIR, 'lib')
+CC_PROTOBUF_INCDIR = os.path.join(CC_INSTALL_PREFIX, 'include')
+CC_PROTOBUF_LIBDIR = os.path.join(CC_INSTALL_PREFIX, 'lib')
 
 # These constants are functionally dependent on the previous set of
 # environment variables.
 MOOL_SRC_DIR = os.path.join(BU_SCRIPT_DIR, 'mool')
 DUMMY_CC = os.path.join(MOOL_SRC_DIR, 'dummy.cc')
 JAR_BIN = os.path.join(JAVA_HOME, 'bin', 'jar')
-JAR_TESTER_SCRIPT = os.path.join(MOOL_SRC_DIR, 'jar_testng_runner.py')
 JAVA_COMPILER = os.environ.get('JAVA_COMPILER',
                                os.path.join(JAVA_HOME, 'bin', 'javac'))
 JAVA_RUNTIME = os.path.join(JAVA_HOME, 'bin', 'java')
@@ -69,6 +78,7 @@ CC_BIN_TYPE = 'cc_bin'
 CC_LIB_TYPE = 'cc_lib'
 CC_PROTO_LIB_TYPE = 'cc_proto_lib'
 CC_TEST_TYPE = 'cc_test'
+CC_THRIFT_LIB_TYPE = 'cc_thrift_lib'
 CHANGE_CURR_DIR = 'chdir'
 COMPILE_COMMAND_KEY = 'compile_command'
 COMPILE_DEPS_KEY = 'compileDeps'
@@ -97,6 +107,7 @@ JAVA_BIN_TYPE = 'java_bin'
 JAVA_FAKE_MAIN_CLASS = 'java_fake_main_class'
 JAVA_LIB_TYPE = 'java_lib'
 JAVA_LINK_JAR_COMMAND = 'java_link_jar'
+JAVA_TESTNG_RUNNER = 'java_testng_runner'
 JAVA_OUTER_CLASSNAME_KEY = 'java_outer_classname'
 JAVA_PACKAGE_KEY = 'java_package'
 JAVA_PROTO_LIB_TYPE = 'java_proto_lib'
@@ -104,6 +115,7 @@ JAVA_PROTO_LINK_LIBS_KEY = 'java_proto_link_libs'
 JAVA_TEST_TYPE = 'java_test'
 JAVA_TESTNG_GROUPS = 'test_groups'
 JAVA_TESTNG_ROOT = 'org.testng.TestNG'
+JAVA_THRIFT_LIB_TYPE = 'java_thrift_lib'
 JAVA_VERSION_KEY = 'java_version'
 JAVAC_OUTDIR_KEY = 'javac_outdir_key'
 LINK_COMMANDS_KEY = 'link_commands'
@@ -121,6 +133,7 @@ MAVEN_SPECS_KEY = 'maven_specs'
 MAVEN_VERSION_KEY = 'version'
 NAME_KEY = 'rule_name'
 OTHER_INCLUDE_DIRS = 'incdirs'
+OTHER_LIB_DIRS = 'libdirs'
 OUT_CC_KEY = 'out_cc_key'
 OUTDIR_KEY = 'outdir_key'
 OUT_HEADER_KEY = 'out_header_key'
@@ -144,6 +157,7 @@ PYTHON_FAKE_MAIN_METHOD = 'py.fake.main.method'
 PYTHON_LINK_ALL = 'python_link_all'
 PYTHON_LIB_TYPE = 'py_lib'
 PYTHON_PROTO_LIB_TYPE = 'py_proto_lib'
+PYTHON_THRIFT_LIB_TYPE = 'py_thrift_lib'
 PYTHON_SKIPLINT_KEY = 'py_skiplint'
 PYTHON_TEST_TYPE = 'py_test'
 RELEASE_PACKAGE_TYPE = 'release_package'
@@ -165,6 +179,8 @@ SRCS_KEY = 'srcs'
 SYMBOL_KEY = 'rule_symbol'
 SYS_DEPS_KEY = 'sys_deps'
 TEMP_OUT_KEY = 'temp_output'
+THRIFT_SERVICES_KEY = 'thrift_services'
+VALGRIND_PREFIX = os.environ.get('VALGRIND_PREFIX', '').split()
 
 TEST_CLASS_KEY = 'test_class'
 TEST_CLASSES_KEY = 'test_classes'
@@ -182,6 +198,20 @@ FALSE_REPR = 'false'
 BUILD_RULE_PREFIX = '{}{}'.format(RULE_ROOT_NAME, RULE_SEPARATOR)
 PROGRESS_BAR = '\rDownload: [{}{}] {:>3}%'
 PROGRESS_BAR_SIZE = 50
+
+#======= Keys used to refer to function names in other modules.  =========#
+MERGE_CPP_SOURCE_FILES = 'MERGE_CPP_SOURCE_FILES'
+PYTHON_PYLINT_CHECK = 'PYTHON_PYLINT_CHECK'
+THRIFT_CHECK_GENERATED_SOURCE = 'THRIFT_CHECK_GENERATED_SOURCE'
+THRIFT_COMPILE_GENERATED_JAVA = 'THRIFT_COMPILE_GENERATED_JAVA'
+
+
+#================  Keys used in rule_details dictionary.  ================#
+
+# (str) For referring to final out headers directory in thrift cc lib rule.
+OUT_HEADERS_DIR_KEY = 'OUT_HEADERS_DIR_KEY'
+# (list) Full path to all the generated headers are added to this key.
+OUT_HEADERS_KEY = 'OUT_HEADERS_KEY'
 
 
 class Error(Exception):
@@ -324,6 +354,7 @@ def path_isfile(file_path):
 
 def expand_env_vars(dep_path):
   """Retrieve dependency file path by expanding environment variables."""
+  # TODO: Merge logic of _expand_env_vars_if_needed in this function.
   path_parts = dep_path.split(os.sep)
   env_var = path_parts[0]
   assert env_var.startswith(PC_DEPS_PREFIX)
@@ -473,7 +504,7 @@ def string_to_bool(text):
   return text == TRUE_REPR
 
 
-def _get_current_snapshot_text(file_list):
+def _get_current_snapshot_text(file_list, rule_hash):
   """Gets current snapshot text from file list."""
   def _file_signature(file_path):
     """Gets the textual signature of a file version on disk."""
@@ -492,35 +523,37 @@ def _get_current_snapshot_text(file_list):
     curr_snapshot_map[file_path] = _file_signature(file_path)
   curr_snapshot_text = '\n'.join(
       ['{} {}'.format(v, k) for (k, v) in curr_snapshot_map.iteritems()])
-  return found_all, curr_snapshot_text
+  full_snapshot_text = '{}: {}\n{}'.format(
+      'RULE_DETAILS_HASH_VALUE', rule_hash, curr_snapshot_text)
+  return found_all, full_snapshot_text
 
 
-def needs_build(working_dir, file_list):
+def needs_build(working_dir, file_list, rule_hash):
   """Checks file list snapshot for any changes."""
   tracer = logging.debug
   cache_file = os.path.join(working_dir, CACHE_FILE_NAME)
   if not path_exists(cache_file):
     tracer('Did not find cache file at %s', log_normalize(cache_file))
     return True
-  found_all, curr_snapshot_text = _get_current_snapshot_text(file_list)
+  found_all, snapshot_text = _get_current_snapshot_text(file_list, rule_hash)
   if not found_all:
     tracer('Did not find all files present.')
     return True
   cached_text = read_file(cache_file)
-  if curr_snapshot_text != cached_text:
+  if snapshot_text != cached_text:
     tracer('Snapshot mismatch.')
     tracer('\nCache file: \n%s', cached_text)
-    tracer('\nCurrent snapshot: \n%s', curr_snapshot_text)
+    tracer('\nCurrent snapshot: \n%s', snapshot_text)
     return True
   return False
 
 
-def save_file_list_cache(working_dir, file_list):
+def save_file_list_cache(working_dir, file_list, rule_hash):
   """Saves file list snapshot to disk."""
-  found_all, curr_snapshot_text = _get_current_snapshot_text(file_list)
+  found_all, snapshot_text = _get_current_snapshot_text(file_list, rule_hash)
   assert found_all
   cache_file = os.path.join(working_dir, CACHE_FILE_NAME)
-  write_file(cache_file, curr_snapshot_text)
+  write_file(cache_file, snapshot_text)
 
 
 def check_dirname(dir_name):
@@ -671,3 +704,40 @@ def extract_all_currdir(jar_path, delete_manifest=True):
   _force_jar_extract_cwd(jar_path)
   if delete_manifest and os.path.exists(JAR_MANIFEST_PATH):
     shutil.rmtree(JAR_MANIFEST_PATH)
+
+
+def report_timing(func):
+  """Decorator function for capturing function execution timing."""
+  def profileit(*args):
+    """Profiler function to capture execution time."""
+    time1 = time.time()
+    ret = func(*args)
+    time2 = time.time()
+    elapsed = (time2 - time1) * 1000.0
+    logging.debug('%s function took %0.3f ms.', func.func_name, elapsed)
+    return ret
+  return profileit
+
+
+def get_rule_symbol(bld_file_path, build_root, rule_name):
+  """Returns full rule symbol w.r.t to build_root."""
+  rel_path = os.path.relpath(
+      os.path.realpath(bld_file_path), os.path.realpath(build_root)).rstrip(
+          BUILD_FILE_NAME).replace('/', RULE_SEPARATOR)
+  return '{}{}{}{}'.format(RULE_ROOT_NAME, RULE_SEPARATOR, rel_path, rule_name)
+
+
+def get_dictionary_hash(python_dict):
+  """Returns hash of a python dictionary."""
+  return json.dumps(python_dict, sort_keys=True).__hash__()
+
+
+def grep_lines_in_file(file_path, pattern_str):
+  """Python re module based pattern matching and returns list of tuples with
+  line and set of matching groups. """
+  pattern = re.compile(pattern_str)
+  with open(file_path, 'r') as file_obj:
+    for line in file_obj:
+      match = pattern.match(line)
+      if match:
+        yield (match.group(), match.groups())

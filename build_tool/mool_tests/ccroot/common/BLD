@@ -1,0 +1,82 @@
+# Build rules for ccroot/common.
+
+# Libraries.
+"address_cc_proto": {
+  "rule_type": "cc_proto_lib",
+  "srcs": ["address.proto"],
+  "deps": []
+},
+
+"echo_utils": {
+  "rule_type": "cc_lib",
+  "srcs": ["echo_utils.cc"],
+  "hdrs": ["echo_utils.h"]
+},
+
+# We use gcc IFF all sources are .c files.
+"hello_gcc": {
+    "rule_type": "cc_bin",
+    "srcs": ["hello_gcc.c"]
+},
+
+"kvpair_cc_thrift": {
+  "rule_type": "cc_thrift_lib",
+  "srcs": [
+      "kvpair.thrift"
+  ]
+},
+
+"kvpair_py_thrift": {
+  "rule_type": "py_thrift_lib",
+  "srcs": [
+      "kvpair.thrift"
+  ]
+},
+
+"shared_headers": {
+  "rule_type": "cc_lib",
+
+  # A cc_lib without any srcs rule is only used for accumulating headers in
+  # the compilation process.
+  "hdrs": ["global_macros.h"]
+},
+
+"some_lib": {
+  "rule_type": "cc_lib",
+  "srcs": ["some_lib.cc"],
+  "hdrs": ["some_lib.h"],
+  "sys_deps": ["-lm"]
+},
+
+# cc rules can have multiple source/header files. All the sources are compiled
+# and their object files are emitted in out directory prefixed with rule name.
+"multiple_source_lib": {
+  "rule_type": "cc_lib",
+  "srcs": ["some_lib.cc", "echo_utils.cc"],
+  "hdrs": ["some_lib.h", "echo_utils.h"],
+  "sys_deps": ["-lm"]
+},
+
+"ThriftKVPairService": {
+  "rule_type": "java_thrift_lib",
+  "srcs": [
+      "kvpair.thrift"
+   ],
+  # Java thrift jar needs Slf4j as dependency.
+  "compileDeps": [
+      "mool.jroot.org.personal.compileDeps.Slf4jApi"
+  ]
+},
+
+# Unit Tests.
+"echo_utils_test": {
+  "rule_type": "cc_test",
+  "srcs": ["echo_utils_test.cc"],
+  "deps": [".echo_utils"]
+},
+
+"some_lib_test": {
+  "rule_type": "cc_test",
+  "srcs": ["some_lib_test.cc"],
+  "deps": [".some_lib"]
+}

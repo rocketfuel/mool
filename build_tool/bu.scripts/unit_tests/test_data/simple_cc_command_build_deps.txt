@@ -1,13 +1,11 @@
 mool.cc.common.echo_utils
-    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
-    -->FILE: TEST_BUILD_ROOT/cc/common/BLD
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.echo_utils.o
     -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils.cc
     -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils.h
 
 mool.cc.common.echo_utils_test
-    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.o
+    -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils.echo_utils.o
     -->FILE: TEST_BUILD_OUT_DIR/cc/common/echo_utils_test
-    -->FILE: TEST_BUILD_ROOT/cc/common/BLD
     -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils.h
     -->FILE: TEST_BUILD_ROOT/cc/common/echo_utils_test.cc
     -->FILE: TEST_GTEST_MAIN_LIB

@@ -23,4 +23,6 @@ init_working_dirs
 
 cd ${BUILD_ROOT}
 ${BU_SCRIPT_DIR}/bu do_clean
-${BU_SCRIPT_DIR}/bu do_test mool.common.utils.ALL
+${BU_SCRIPT_DIR}/bu do_test \
+    mool.common.utils.ALL \
+    mool.java.com.rocketfuel.ei.common.ALL

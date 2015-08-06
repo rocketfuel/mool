@@ -103,7 +103,7 @@ def check_submitq_test(expected_tests, changed_files):
 
 
 def validate_binary_output(binary_path, grep_items):
-    """Check thae given binary has all the list of patterns."""
+    """Check that given binary has all the list of patterns."""
     LOGGER.debug('Checking output of %s binary.', binary_path)
     try:
         output_file = fu.get_temp_file()
@@ -121,11 +121,11 @@ def validate_binary_output(binary_path, grep_items):
         os.remove(output_file)
 
 
-def validate_build_fails(build_rule, grep_items):
+def validate_build_fails(build_rule, grep_items, operation='do_build'):
     """Verify that the given build_rule fails and errors have grep patterns."""
     try:
         output_file = fu.get_temp_file()
-        build_cmd = [BU_SCRIPT, 'do_build', build_rule]
+        build_cmd = [BU_SCRIPT, operation, build_rule]
         subprocess.check_output(build_cmd, stderr=subprocess.STDOUT)
         raise Error('Build rule "%s" must fail but it passed!', build_rule)
     except subprocess.CalledProcessError as exp:
@@ -170,30 +170,36 @@ def execute_and_log(cmd, grep_str=None):
     return pattern_count
 
 
-def test_touch_bld_file():
-    """Test that a changed BLD file triggers build for all the rules."""
-    build_rule, build_file, rebuilds = tc.BLD_TOUCH_TEST
+def test_bld_file_updates():
+    """Test that a changed BLD file triggers build for a rule only if there
+    is any change in rule details."""
+    build_rule, build_file = tc.BLD_UPDATE_TEST[0:2]
     build_cmd = [BU_SCRIPT, 'do_build', build_rule]
-    execute_and_log(build_cmd)
-    count = execute_and_log(build_cmd, grep_str=EMIT_BUILD_STRING)
-    if count != 0:
-        LOGGER.error('Unexpected number of builds emitted: %s', count)
-        LOGGER.error('  Expected number of builds emitted: 0')
-        raise Error('Skip all builds test failed!!')
-    build_file = os.path.join(BUILD_ROOT, build_file)
-    execute_and_log(['touch', '-f', build_file])
-    count = execute_and_log(build_cmd, grep_str=EMIT_BUILD_STRING)
-    if count != rebuilds:
-        LOGGER.error('Unexpected number of builds emitted: %s', count)
-        LOGGER.error('  Expected number of builds emitted: %s', rebuilds)
-        raise Error('Touching BLD file didn\'t trigger expected builds!!')
+    for bld_file, rebuilds in tc.BLD_UPDATE_TEST[2:]:
+        try:
+            execute_and_log(['cp', bld_file, build_file])
+            count = execute_and_log(build_cmd, grep_str=EMIT_BUILD_STRING)
+            if count == rebuilds:
+                continue
+            LOGGER.error('Unexpected number of builds emitted: %s', count)
+            LOGGER.error('  Expected number of builds emitted: %s', rebuilds)
+            raise Error('Updating BLD file didn\'t trigger expected builds!!')
+        finally:
+            if os.path.exists(build_file):
+                os.remove(build_file)
 
 
 def misc_tests():
     """Run all miscellaneous tests."""
-    test_touch_bld_file()
+    test_bld_file_updates()
     for build_rule, grep_items in tc.BUILD_FAIL_TESTS:
-        validate_build_fails(build_rule, grep_items)
+        validate_build_fails(build_rule, grep_items, 'do_test')
+    test_name = 'mool.ccroot.failures.mem_leak_test'
+    if 'VALGRIND_PREFIX' in os.environ:
+        validate_build_fails(
+            test_name, 'definitely lost: 4 bytes in 1 blocks', 'do_test')
+    else:
+        execute_and_log([BU_SCRIPT, 'do_test', test_name])
 
 
 def adhoc_tests():
@@ -267,8 +273,20 @@ def build_test_all_rules():
         execute_and_log(command)
 
 
+def _set_boost_path():
+    """Set boost path in load library path."""
+    boost_lib_path = os.path.join(os.environ['BOOST_DIR'], 'lib')
+    if sys.platform.startswith('darwin'):
+        os.environ['DYLD_LIBRARY_PATH'] = boost_lib_path
+    elif sys.platform.startswith('linux'):
+        os.environ['LD_LIBRARY_PATH'] = boost_lib_path
+    else:
+        raise Error('Unexpected OS: ' + sys.platform)
+
+
 def do_main():
     """Builds and executes all tests."""
+    _set_boost_path()
     # Start from a clean state.
     execute_and_log([BU_SCRIPT, 'do_clean'])
 
@@ -278,7 +296,7 @@ def do_main():
     misc_tests()
 
     LOGGER.info('---------------------------------------------')
-    LOGGER.info('All java and python code root tests passed!!!')
+    LOGGER.info('All C++, java and python code root tests passed!!!')
 
 
 if __name__ == "__main__":
