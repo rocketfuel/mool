@@ -1,0 +1,247 @@
+# Build rules for cc/net.
+
+# Libraries.
+"assigned_pool": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "assigned_pool.cc"
+    ],
+    "hdrs": [
+        "assigned_pool.h"
+    ],
+    "deps": [
+        "mool.cc.shared.common",
+        "mool.cc.shared.list_node",
+        "mool.cc.shared.mutex"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ]
+},
+
+"epoll_server": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "epoll_server.cc"
+    ],
+    "deps": [
+        ".epoll_shim"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ],
+    "hdrs": [
+        "epoll_server.h"
+    ]
+},
+
+"epoll_shim": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "epoll_shim.cc"
+    ],
+    "deps": [
+        ".socket_utils",
+        "mool.cc.shared.mutex"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ],
+    "hdrs": [
+        "epoll_shim.h"
+    ]
+},
+
+"http_client": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "http_client.cc"
+    ],
+    "deps": [
+        ".http_parser",
+        ".tcp_connected_socket",
+        "mool.cc.shared.string_builder"
+    ],
+    "hdrs": [
+        "http_client.h"
+    ]
+},
+
+"http_parser": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "http_parser.cc"
+    ],
+    "deps": [
+        "mool.cc.shared.common",
+        "mool.cc.shared.string_builder",
+        "mool.cc.third_party.http_parser.http_parser"
+    ],
+    "hdrs": [
+        "http_parser.h"
+    ]
+},
+
+"http_request_instance": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "http_request_instance.cc"
+    ],
+    "hdrs": [
+        "http_request_instance.h"
+    ],
+    "deps": [
+        ".epoll_server",
+        ".http_parser",
+        "mool.cc.shared.common",
+        "mool.cc.shared.string_builder"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ]
+},
+
+"http_server": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "http_server.cc"
+    ],
+    "hdrs": [
+        "http_server.h"
+    ],
+    "deps": [
+        ".assigned_pool",
+        ".epoll_server",
+        ".http_request_instance",
+        "mool.cc.shared.refcounted_lookup",
+        "mool.cc.shared.timer_queue"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ]
+},
+
+"socket_utils": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "socket_utils.cc"
+    ],
+    "deps": [
+        "mool.cc.shared.common"
+    ],
+    "hdrs": [
+        "socket_utils.h"
+    ]
+},
+
+"tcp_connected_socket": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "tcp_connected_socket.cc"
+    ],
+    "deps": [
+        ".socket_utils",
+        "mool.cc.shared.common"
+    ],
+    "hdrs": [
+        "tcp_connected_socket.h"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ]
+},
+
+
+# Unit Tests.
+"assigned_pool_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "assigned_pool_test.cc"
+    ],
+    "deps": [
+        ".assigned_pool"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a"
+    ]
+},
+
+"epoll_server_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "epoll_server_test.cc"
+    ],
+    "deps": [
+        ".epoll_server",
+        "mool.cc.shared.mutex"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a",
+        "env.BOOST_DIR/lib/libboost_thread.a"
+    ]
+},
+
+"http_client_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "http_client_test.cc"
+    ],
+    "deps": [
+        ".http_client"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a",
+        "env.BOOST_DIR/lib/libboost_thread.a"
+    ]
+},
+
+"http_parser_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "http_parser_test.cc"
+    ],
+    "deps": [
+        ".http_parser"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a"
+    ]
+},
+
+"http_server_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "http_server_test.cc"
+    ],
+    "deps": [
+        ".http_client",
+        ".http_server",
+        "mool.cc.shared.string_builder"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a",
+        "env.BOOST_DIR/lib/libboost_thread.a"
+    ]
+},
+
+"socket_utils_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "socket_utils_test.cc"
+    ],
+    "deps": [
+        ".socket_utils"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a"
+    ]
+}

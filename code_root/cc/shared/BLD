@@ -1,0 +1,231 @@
+# Build rules for cc/shared.
+
+# Libraries.
+"common": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "common.cc"
+    ],
+    "hdrs": [
+        "callback.h",
+        "common.h",
+        "scoped_array.h",
+        "scoped_ptr.h"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ]
+},
+
+"list_node": {
+    "rule_type": "cc_lib",
+    "srcs": [
+    ],
+    "deps": [
+        ".common"
+    ],
+    "hdrs": [
+        "list_node.h"
+    ]
+},
+
+"mutex": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "mutex.cc"
+    ],
+    "deps": [
+        ".common"
+    ],
+    "hdrs": [
+        "mutex.h"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ]
+},
+
+"refcounted_lookup": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "refcounted_lookup.cc"
+    ],
+    "hdrs": [
+        "refcounted_lookup.h"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ],
+    "deps": [
+        ".common",
+        ".mutex"
+    ]
+},
+
+"stream_stats": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "stream_stats.cc"
+    ],
+    "hdrs": [
+        "stream_stats.h"
+    ],
+    "deps": [
+        ".common",
+        ".mutex"
+    ]
+},
+
+"string_builder": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "string_builder.cc"
+    ],
+    "deps": [
+        ".common"
+    ],
+    "hdrs": [
+        "string_builder.h"
+    ]
+},
+
+"timer_queue": {
+    "rule_type": "cc_lib",
+    "srcs": [
+        "timer_queue.cc"
+    ],
+    "hdrs": [
+        "timer_queue.h"
+    ],
+    "deps": [
+        ".common",
+        ".mutex"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ]
+},
+
+
+# Unit Tests.
+"callback_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "callback_test.cc"
+    ],
+    "deps": [
+        ".common"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a",
+        "env.BOOST_DIR/lib/libboost_thread.a"
+    ]
+},
+
+"list_node_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "list_node_test.cc"
+    ],
+    "deps": [
+        ".list_node"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a"
+    ]
+},
+
+"mutex_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "mutex_test.cc"
+    ],
+    "deps": [
+        ".mutex"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a"
+    ]
+},
+
+"refcounted_lookup_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "refcounted_lookup_test.cc"
+    ],
+    "deps": [
+        ".refcounted_lookup"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a"
+    ]
+},
+
+"scoped_obj_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "scoped_obj_test.cc"
+    ],
+    "deps": [
+        ".common"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a"
+    ]
+},
+
+"stream_stats_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "stream_stats_test.cc"
+    ],
+    "deps": [
+        ".stream_stats"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a",
+        "env.BOOST_DIR/lib/libboost_thread.a"
+    ]
+},
+
+"string_builder_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "string_builder_test.cc"
+    ],
+    "deps": [
+        ".string_builder"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a"
+    ]
+},
+
+"timer_queue_test": {
+    "rule_type": "cc_test",
+    "srcs": [
+        "timer_queue_test.cc"
+    ],
+    "deps": [
+        ".timer_queue"
+    ],
+    "incdirs": [
+        "env.BOOST_DIR/include"
+    ],
+    "sys_deps": [
+        "env.BOOST_DIR/lib/libboost_system.a",
+        "env.BOOST_DIR/lib/libboost_thread.a"
+    ]
+}
