@@ -1,0 +1,71 @@
+diff --git a/lib/cpp/src/thrift/cxxfunctional.h b/lib/cpp/src/thrift/cxxfunctional.h
+index c24b91b..d9921d7 100644
+--- a/lib/cpp/src/thrift/cxxfunctional.h
++++ b/lib/cpp/src/thrift/cxxfunctional.h
+@@ -86,19 +86,19 @@
+   }}} // apache::thrift::stdcxx
+
+ #elif _THRIFT_USING_CLANG_LIBCXX
+-  #include <functional>
++  #include <boost/tr1/functional.hpp>
+
+   namespace apache { namespace thrift { namespace stdcxx {
+-    using ::std::function;
+-    using ::std::bind;
++    using ::std::tr1::function;
++    using ::std::tr1::bind;
+
+     namespace placeholders {
+-      using ::std::placeholders::_1;
+-      using ::std::placeholders::_2;
+-      using ::std::placeholders::_3;
+-      using ::std::placeholders::_4;
+-      using ::std::placeholders::_5;
+-      using ::std::placeholders::_6;
++      using ::std::tr1::placeholders::_1;
++      using ::std::tr1::placeholders::_2;
++      using ::std::tr1::placeholders::_3;
++      using ::std::tr1::placeholders::_4;
++      using ::std::tr1::placeholders::_5;
++      using ::std::tr1::placeholders::_6;
+     } // apache::thrift::stdcxx::placeholders
+   }}} // apache::thrift::stdcxx
+
+diff --git a/tutorial/cpp/CppClient.cpp b/tutorial/cpp/CppClient.cpp
+index ba71caa..b91df2e 100644
+--- a/tutorial/cpp/CppClient.cpp
++++ b/tutorial/cpp/CppClient.cpp
+@@ -38,9 +38,9 @@ using namespace shared;
+ using namespace boost;
+
+ int main(int argc, char** argv) {
+-  shared_ptr<TTransport> socket(new TSocket("localhost", 9090));
+-  shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+-  shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
++  boost::shared_ptr<TTransport> socket(new TSocket("localhost", 9090));
++  boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
++  boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+   CalculatorClient client(protocol);
+
+   try {
+diff --git a/tutorial/cpp/CppServer.cpp b/tutorial/cpp/CppServer.cpp
+index d0dbad9..db5a9b0 100644
+--- a/tutorial/cpp/CppServer.cpp
++++ b/tutorial/cpp/CppServer.cpp
+@@ -113,11 +113,11 @@ protected:
+
+ int main(int argc, char **argv) {
+
+-  shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+-  shared_ptr<CalculatorHandler> handler(new CalculatorHandler());
+-  shared_ptr<TProcessor> processor(new CalculatorProcessor(handler));
+-  shared_ptr<TServerTransport> serverTransport(new TServerSocket(9090));
+-  shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
++  boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
++  boost::shared_ptr<CalculatorHandler> handler(new CalculatorHandler());
++  boost::shared_ptr<TProcessor> processor(new CalculatorProcessor(handler));
++  boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(9090));
++  boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
+
+   TSimpleServer server(processor,
+                        serverTransport,
