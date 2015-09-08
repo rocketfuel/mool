@@ -9,6 +9,11 @@ Required packages before the script can be used are:
 It is supposed to work on Mac OS, Ubuntu and Centos.
 Please visit mool wiki https://github.com/rocketfuel/mool/wiki for help on
 installation of prerequisites.
+
+Pre-requisites for Ubuntu:
+sudo apt-get install libbz2-dev
+sudo apt-get install mysql-client
+sudo apt-get install libmysqlclient-dev
 """
 import sys
 # Validate minimum python version.
@@ -429,14 +434,19 @@ class Installer(object):
         cur_dir = os.path.join(self._packages_dir(), BOOST_PACKAGE[1])
         os.chdir(cur_dir)
         target_dir = os.path.join(os.path.realpath('.'), 'target')
-        if not os.path.exists(target_dir):
-            done_marker = os.path.realpath('./step.0.done.txt')
-            if not os.path.exists(done_marker):
-                self._execute(['./bootstrap.sh'])
-                self._touch_file(done_marker)
-            self._mkdir(target_dir)
-            self._execute(['./b2', '--prefix=' + target_dir, 'link=static',
+        self._mkdir(target_dir)
+        build_dir = os.path.join(self._temp_dir(), BOOST_PACKAGE[1])
+        self._rmdir(build_dir)
+        self._mkdir(build_dir)
+        done_marker = os.path.realpath('./step.0.done.txt')
+        if not os.path.exists(done_marker):
+            self._execute(['./bootstrap.sh', '--prefix=' + target_dir])
+            self._touch_file(done_marker)
+        done_marker = os.path.realpath('./step.1.done.txt')
+        if not os.path.exists(done_marker):
+            self._execute(['./b2', '--build-dir=' + build_dir, 'link=static',
                            'install'])
+            self._touch_file(done_marker)
         self.vars_to_export['BOOST_DIR'] = target_dir
 
     def _setup_scala(self):
@@ -520,7 +530,7 @@ class Installer(object):
                                            'activate')
             for package, version in PIP_INSTALL_PACKAGES:
                 full_name = '{}=={}'.format(package, version)
-                self._execute('source {} && pip install {}'.format(
+                self._execute('. {} && pip install {}'.format(
                     activate_script, full_name), use_stdout=False,
                     use_shell=True)
         assert os.path.exists(self._virtual_env_dir())
@@ -563,6 +573,20 @@ class Installer(object):
         logging.info(INSTALL_SUCCESS_MSG.format(
             self.args.install_dir, self._virtual_env_dir(), mool_init_script))
 
+    def _copy_script_dir(self):
+        """Copy the script directory to the installation directory."""
+        logging.info('Copying script directory.')
+        basename = 'bu.scripts'
+        dst_dir = os.path.join(self.args.install_dir, basename)
+        if os.path.exists(dst_dir):
+            cached_dir = 'z.unused.%020d.%s' % (
+                int(time.time() * 1000), basename)
+            cached_dir = os.path.join(self.args.install_dir, cached_dir)
+            self._execute(['mv', dst_dir, cached_dir])
+        src_dir = os.path.join(os.path.dirname(self.root_dir), 'build_tool',
+                               basename)
+        self._execute(['cp', '-r', src_dir, dst_dir])
+
     def do_install(self):
         """Entry point for installation steps."""
         if self.args.test_only:
@@ -587,6 +611,7 @@ class Installer(object):
         for _, value in self.vars_to_export.iteritems():
             assert os.path.exists(value)
         self._setup_mool()
+        self._copy_script_dir()
 
     def do_test(self):
         """Execute tests."""
@@ -596,8 +621,11 @@ class Installer(object):
                                        'activate')
         test_script = os.path.join(os.path.dirname(self.root_dir),
                                    'test_all.sh')
-        self._execute('source {} && {}'.format(activate_script, test_script),
-                      use_stdout=True, use_shell=True)
+        export_env = 'export MOOL_INSTALL_LOCATION="{}"'.format(
+            self.args.install_dir)
+        self._execute(
+            '. {} && {} && {}'.format(activate_script, export_env, test_script),
+            use_stdout=True, use_shell=True)
         logging.info('Post-install tests ran successfully.')
 
 

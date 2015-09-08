@@ -7,6 +7,7 @@
 #include "cc/net/epoll_shim.h"
 #include "cc/net/socket_utils.h"
 
+#include <unistd.h>
 
 #ifndef USE_EPOLL
 #include "cc/shared/scoped_array.h"
