@@ -503,9 +503,11 @@ class Installer(object):
                  ('SCALA_HOME_2_11', SCALA_2_11))
         for env, package in items:
             logging.info('Downloading %s', os.path.basename(package[1]))
-            self._download_and_extract_package(package)
             self.vars_to_export[env] = os.path.join(self._packages_dir(),
                                                     package[1])
+            if os.path.exists(self.vars_to_export[env]):
+                continue
+            self._download_and_extract_package(package)
 
     def _setup_thrift(self):
         """Setup Thrift."""
