@@ -27,6 +27,7 @@ import shlex
 import shutil
 import subprocess
 import time
+import traceback
 import urllib
 
 
@@ -88,8 +89,6 @@ VIRTUALENV_PACKAGE = (('https://pypi.python.org/packages/source/v/virtualenv/'
                        'virtualenv-1.11.6.tar.gz'), 'virtualenv-1.11.6',
                       'd3f8e94bf825cc999924e276c8f1c63b8eeb0715')
 
-DOWNLOAD_ITEMS = (BOOST_PACKAGE, GMOCK_PACKAGE, PROTOBUF_PACKAGE, SCALA_2_8,
-                  SCALA_2_10, SCALA_2_11, THRIFT_PACKAGE, VIRTUALENV_PACKAGE)
 
 PIP_INSTALL_PACKAGES = [('pylint', '0.28.0'), ('pep8', '1.4.5'),
                         ('pytest', '2.3.4')]
@@ -158,6 +157,7 @@ class Installer(object):
         self.args = args
         self.args.install_dir = os.path.realpath(self.args.install_dir)
         self.vars_to_export = {}
+        self.lookup = {}
         self.root_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.openssl_install_path = None
         assert _is_valid_path(self.args.java_home), 'Need valid java home.'
@@ -183,6 +183,10 @@ class Installer(object):
         """Get log file path."""
         return os.path.join(self._temp_dir(), 'mool_install.log')
 
+    def _log_err_file_path(self):
+        """Get log file path."""
+        return os.path.join(self._temp_dir(), 'mool_install.error.log')
+
     def _execute(self, command, use_stdout=False, use_shell=False):
         """Executes a given command and logs stdout to file."""
         if use_shell:
@@ -194,8 +198,10 @@ class Installer(object):
         try:
             if not use_stdout:
                 with open(self._log_file_path(), 'a') as log_obj:
-                    subprocess.check_call(
-                        command, stdout=log_obj, shell=use_shell)
+                    with open(self._log_err_file_path(), 'a') as log_err_obj:
+                        subprocess.check_call(
+                            command, stdout=log_obj, stderr=log_err_obj,
+                            shell=use_shell)
             else:
                 subprocess.check_call(command, shell=use_shell)
         except subprocess.CalledProcessError:
@@ -210,23 +216,6 @@ class Installer(object):
         """Recursively copy everything from src_path to dst_path."""
         flags = '-rf' if os.path.isdir(src_path) else '-f'
         self._execute(['cp', flags, src_path, dst_path])
-
-    def _extract(self, source_file, dest_dir):
-        """Extract a package to a directory."""
-        assert os.path.exists(source_file), 'Source does not exist'
-        assert not os.path.exists(dest_dir), 'Destination already exists'
-        target_dir = os.path.dirname(dest_dir)
-        logging.info('Extracting %s', os.path.basename(source_file))
-        if source_file.endswith('.tar.gz'):
-            self._execute(['tar', '-zxf', source_file, '-C', target_dir])
-        elif source_file.endswith('.tgz'):
-            self._execute(['tar', '-zxf', source_file, '-C', target_dir])
-        elif source_file.endswith('.tar.bz2'):
-            self._execute(['tar', '-xf', source_file, '-C', target_dir])
-        elif source_file.endswith('.zip'):
-            self._execute(['unzip', source_file, '-d', target_dir])
-        assert_text = 'Directory "{}" does not exist'.format(dest_dir)
-        assert os.path.exists(dest_dir), assert_text
 
     def _download_item(self, url, file_path, sha_sum):
         """Download url to file path. This function intially checks if the file
@@ -251,6 +240,9 @@ class Installer(object):
         urllib.urlretrieve(url, temp_path, reporthook=_report_hook)
         _check_sha_sum(temp_path, sha_sum)
         shutil.move(temp_path, file_path)
+        # Flush the progress indicator.
+        print
+        sys.stdout.flush()
 
     def _touch_file(self, file_path):
         """Touch a file, typically a done marker file."""
@@ -298,184 +290,244 @@ class Installer(object):
             raise Error('openssl binary not found!')
         logging.info('All dependency checks passed.')
 
-    def _download_packages(self):
-        """Download all required packages in one shot."""
-        logging.info('Downloading packages.')
+    def _download_and_extract_package(self, package):
+        """Downloading and extracting needed package."""
         os.chdir(self._downloads_dir())
-        done_file = './downloads.done.txt'
-        if not os.path.exists(done_file):
-            used_dirs = []
-            for package in DOWNLOAD_ITEMS:
-                url, _, sha_sum = package
-                dest_path = os.path.join(os.path.realpath('.'),
-                                         os.path.basename(url))
-                assert dest_path not in used_dirs
-                logging.info('Downloading %s', os.path.basename(url))
-                self._download_item(url, dest_path, sha_sum)
-                used_dirs.append(dest_path)
-            self._touch_file(done_file)
-
-    def _extract_packages(self):
-        """Expand all required packages in one shot."""
-        logging.info('Extracting packages.')
+        url, dir_name, sha_sum = package
+        download_path = os.path.join(os.path.realpath('.'),
+                                     os.path.basename(url))
+        logging.info('Downloading %s', os.path.basename(url))
+        self._download_item(url, download_path, sha_sum)
+        assert os.path.exists(download_path)
         os.chdir(self._packages_dir())
-        for package in DOWNLOAD_ITEMS:
-            url, dir_name, _ = package
-            source_file = os.path.join(self._downloads_dir(),
-                                       os.path.basename(url))
-            dest_dir = os.path.join(os.path.realpath('.'), dir_name)
-            assert os.path.exists(source_file)
-            if os.path.exists(dest_dir):
-                continue
-            self._extract(source_file, dest_dir)
+        dest_dir = os.path.join(os.path.realpath('.'), dir_name)
+        if os.path.exists(dest_dir):
+            return
+        parent_dir = os.path.dirname(dest_dir)
+        logging.info('Extracting %s', os.path.basename(download_path))
+        if download_path.endswith('.tar.gz'):
+            self._execute(['tar', '-zxf', download_path, '-C', parent_dir])
+        elif download_path.endswith('.tgz'):
+            self._execute(['tar', '-zxf', download_path, '-C', parent_dir])
+        elif download_path.endswith('.tar.bz2'):
+            self._execute(['tar', '-xf', download_path, '-C', parent_dir])
+        elif download_path.endswith('.zip'):
+            self._execute(['unzip', download_path, '-d', parent_dir])
+        assert_text = 'Directory "{}" does not exist'.format(dest_dir)
+        assert os.path.exists(dest_dir), assert_text
 
     def _setup_protobuf(self):
         """Install protobuf."""
         logging.info('Setting up protobuf.')
-        cur_dir = os.path.join(self._packages_dir(), PROTOBUF_PACKAGE[1])
-        os.chdir(cur_dir)
-        # Configure and install.
-        done_marker = os.path.realpath('./step.0.done.txt')
-        if not os.path.exists(done_marker):
+        package_dir = os.path.join(self._packages_dir(), PROTOBUF_PACKAGE[1])
+        target_dir = os.path.join(self._packages_dir(),
+                                  'target.' + PROTOBUF_PACKAGE[1])
+        protoc_binary = os.path.join(target_dir, 'bin', 'protoc')
+        py_target_dir = os.path.join(target_dir, 'pylib')
+        java_protobuf_jar = os.path.basename(package_dir) + '.jar'
+        protobuf_jar_path = os.path.join(target_dir, java_protobuf_jar)
+
+        def _build_cc():
+            """Build protobuf code for C++."""
+            done_file = os.path.join(target_dir, 'done.01.txt')
+            if os.path.exists(done_file):
+                return
+            os.chdir(package_dir)
             # Add missing '<iostream>' include statement.
-            bad_file = 'src/google/protobuf/message.cc'
-            with open(os.path.join(cur_dir, bad_file), 'r+') as file_obj:
+            bad_file = './src/google/protobuf/message.cc'
+            with open(bad_file, 'r+') as file_obj:
                 msg_file_contents = file_obj.readlines()
                 msg_file_contents.insert(35, '#include <iostream>\n')
                 file_obj.seek(0)
                 file_obj.write(''.join(msg_file_contents))
-            self._execute(['./configure', '--prefix={}'.format(cur_dir),
+            self._execute(['./configure', '--prefix={}'.format(target_dir),
                            '--disable-shared', '--enable-static'])
             self._execute(['make', 'install'])
-            self._touch_file(done_marker)
-        assert os.path.exists(done_marker)
-        protoc_binary = os.path.join(cur_dir, 'bin', 'protoc')
-        assert os.path.exists(protoc_binary)
-        self.vars_to_export['PROTO_COMPILER'] = protoc_binary
+            self._touch_file(done_file)
 
-        # Build for python.
-        done_marker = os.path.realpath('./step.1.done.txt')
-        os.chdir(os.path.join(cur_dir, 'python'))
-        if not os.path.exists(done_marker):
+        def _build_py():
+            """Build for python."""
+            done_file = os.path.join(target_dir, 'done.02.txt')
+            if os.path.exists(done_file):
+                return
+            os.chdir(os.path.join(package_dir, 'python'))
             self._execute(['python2.7', 'setup.py', 'build'])
-            self._touch_file(done_marker)
-        self.vars_to_export['PYTHON_PROTOBUF_DIR'] = os.path.join(
-            os.path.realpath('.'), 'build', os.listdir('build')[0])
+            built_dir = os.path.join(
+                os.path.realpath('.'), 'build', os.listdir('build')[0])
+            self._copy_all(built_dir, py_target_dir)
+            self._touch_file(done_file)
 
-        # Build for java.
-        os.chdir(os.path.join(cur_dir, 'java'))
-        java_protobuf_jar = os.path.basename(cur_dir) + '.jar'
-        target_dir = os.path.join(os.path.realpath('.'), 'target')
-        protobuf_jar_path = os.path.join(target_dir, java_protobuf_jar)
-        if not os.path.exists(protobuf_jar_path):
+        def _get_java_files(src_dir):
+            """Return list of all java files in source directory."""
+            src_dir = os.path.realpath(src_dir)
+            return [os.path.join(src_dir, f) for f in os.listdir(src_dir)]
+
+        def _build_java():
+            """Build for java."""
+            done_file = os.path.join(target_dir, 'done.03.txt')
+            if os.path.exists(done_file):
+                return
+            os.chdir(os.path.join(package_dir, 'java'))
+            code_dir = os.path.join(self._temp_dir(), 'java_protobuf_code')
+            self._mkdir(code_dir)
+            class_dir = os.path.join(self._temp_dir(), 'java_protobuf_class')
+            self._mkdir(class_dir)
+
             self._execute([
-                protoc_binary, '--java_out=src/main/java', '-I../src',
-                '../src/google/protobuf/descriptor.proto'])
-            self._mkdir(target_dir)
-            javac_bin = os.path.join(
-                self.vars_to_export['JAVA_HOME'], 'bin', 'javac')
-            jar_bin = os.path.join(
-                self.vars_to_export['JAVA_HOME'], 'bin', 'jar')
-            command = [javac_bin, '-d', target_dir]
-            src_dir = os.path.join(os.path.realpath('.'),
-                                   'src/main/java/com/google/protobuf/')
+                protoc_binary, '--java_out={}'.format(code_dir),
+                '-I../src', '../src/google/protobuf/descriptor.proto'])
+            command = [os.path.join(self.vars_to_export['JAVA_HOME'], 'bin',
+                                    'javac'), '-d', class_dir]
             command.extend(
-                [os.path.join(src_dir, f) for f in os.listdir(src_dir)])
+                _get_java_files(os.path.join(code_dir, 'com/google/protobuf')))
+            command.extend(
+                _get_java_files('./src/main/java/com/google/protobuf'))
             self._execute(command)
-            os.chdir(target_dir)
-            self._execute([jar_bin, '-cf', java_protobuf_jar, 'com'])
+            os.chdir(class_dir)
+            self._execute(
+                [os.path.join(self.vars_to_export['JAVA_HOME'], 'bin', 'jar'),
+                 '-cf', protobuf_jar_path, 'com'])
+            self._rmdir(code_dir)
+            self._rmdir(class_dir)
+            self._touch_file(done_file)
+
+        final_donemarker = os.path.join(target_dir, 'final.done.txt')
+        if not os.path.exists(final_donemarker):
+            os.chdir(self._packages_dir())
+            self._rmdir(package_dir)
+            self._mkdir(target_dir)
+            self._download_and_extract_package(PROTOBUF_PACKAGE)
+            _build_cc()
+            _build_py()
+            _build_java()
+            self._touch_file(final_donemarker)
+        assert os.path.exists(final_donemarker)
+        os.chdir(self._packages_dir())
+        self._rmdir(package_dir)
+        assert os.path.exists(protoc_binary)
         assert os.path.exists(protobuf_jar_path)
+        self.vars_to_export['PROTO_COMPILER'] = protoc_binary
+        self.vars_to_export['PYTHON_PROTOBUF_DIR'] = py_target_dir
         self.vars_to_export['JAVA_PROTOBUF_JAR'] = protobuf_jar_path
+        self.lookup['protobuf_target_dir'] = target_dir
 
     def _setup_cc_libs(self):
         """Setup packages related to C++."""
-        logging.info('Setting up C++ libraries.')
-        assert 'JAVA_PROTOBUF_JAR' in self.vars_to_export
-        os.chdir(self._packages_dir())
         cc_lib_dir = os.path.join(self._packages_dir(), 'cc_lib')
-        proto_dir = os.path.join(self._packages_dir(), PROTOBUF_PACKAGE[1])
         cc_lib_libs = os.path.join(cc_lib_dir, 'lib')
         cc_lib_headers = os.path.join(cc_lib_dir, 'include')
-        gmock_dir = os.path.join(self._packages_dir(), GMOCK_PACKAGE[1])
-        done_file = os.path.join(cc_lib_dir, 'setup.done.txt')
-        if not os.path.exists(done_file):
-            self._mkdir(cc_lib_libs)
-            self._mkdir(cc_lib_headers)
-            for cmd in GMOCK_BUILD_COMMANDS:
-                cmd = cmd.replace('${GTEST_DIR}',
-                                  os.path.join(gmock_dir, 'gtest'))
-                cmd = cmd.replace('${GMOCK_DIR}', os.path.join(gmock_dir))
-                cmd = cmd.replace('${TARGET_DIR}', cc_lib_libs)
-                self._execute(shlex.split(cmd.replace('\n', ' ')),
-                              use_stdout=True)
+        self._mkdir(cc_lib_libs)
+        self._mkdir(cc_lib_headers)
+
+        def _setup_gmock_gtest():
+            """Setup gmock and gtest."""
+            logging.info('Setting up gmock and gtest.')
+            package_dir = os.path.join(self._packages_dir(), GMOCK_PACKAGE[1])
+            done_file = os.path.join(cc_lib_dir, 'gmock.done.txt')
+            if not os.path.exists(done_file):
+                os.chdir(self._packages_dir())
+                self._rmdir(package_dir)
+                self._download_and_extract_package(GMOCK_PACKAGE)
+                for cmd in GMOCK_BUILD_COMMANDS:
+                    cmd = cmd.replace('${GTEST_DIR}',
+                                      os.path.join(package_dir, 'gtest'))
+                    cmd = cmd.replace('${GMOCK_DIR}', os.path.join(package_dir))
+                    cmd = cmd.replace('${TARGET_DIR}', cc_lib_libs)
+                    self._execute(shlex.split(cmd.replace('\n', ' ')))
                 self._copy_all(
-                    os.path.join(gmock_dir, 'include', 'gmock'),
+                    os.path.join(package_dir, 'include', 'gmock'),
                     cc_lib_headers)
                 self._copy_all(
-                    os.path.join(gmock_dir, 'gtest', 'include', 'gtest'),
+                    os.path.join(package_dir, 'gtest', 'include', 'gtest'),
                     cc_lib_headers)
-            for lib in os.listdir(os.path.join(proto_dir, 'lib')):
-                if lib.find('.so') < 0:
-                    self._copy_all(os.path.join(proto_dir, 'lib', lib),
-                                   cc_lib_libs)
-            self._copy_all(os.path.join(proto_dir, 'include', 'google'),
-                           cc_lib_headers)
-            self._touch_file(done_file)
-        assert os.path.exists(done_file)
+                self._touch_file(done_file)
+            os.chdir(self._packages_dir())
+            self._rmdir(package_dir)
+            self.vars_to_export['GTEST_MAIN_LIB'] = os.path.join(cc_lib_libs,
+                                                                 'gtest_main.o')
+            self.vars_to_export['GTEST_MOCK_LIB'] = os.path.join(cc_lib_libs,
+                                                                 'libgmock.a')
+
+        def _setup_protobuf_in_cc_lib():
+            """Install protobuf libs in cc_lib directory."""
+            logging.info('Installing protobuf libs in cc_lib directory.')
+            assert 'JAVA_PROTOBUF_JAR' in self.vars_to_export
+            done_file = os.path.join(cc_lib_dir, 'proto.install.done.txt')
+            if not os.path.exists(done_file):
+                proto_dir = self.lookup['protobuf_target_dir']
+                for lib in os.listdir(os.path.join(proto_dir, 'lib')):
+                    if lib.find('.so') < 0:
+                        self._copy_all(os.path.join(proto_dir, 'lib', lib),
+                                       cc_lib_libs)
+                self._copy_all(os.path.join(proto_dir, 'include', 'google'),
+                               cc_lib_headers)
+                self._touch_file(done_file)
+
+        _setup_gmock_gtest()
+        _setup_protobuf_in_cc_lib()
+        # Installation of other packages to cc_lib (for example re2, libxml) can
+        # go here.
         self.vars_to_export['CC_INSTALL_PREFIX'] = cc_lib_dir
-        self.vars_to_export['GTEST_MAIN_LIB'] = os.path.join(cc_lib_libs,
-                                                             'gtest_main.o')
-        self.vars_to_export['GTEST_MOCK_LIB'] = os.path.join(cc_lib_libs,
-                                                             'libgmock.a')
 
     def _setup_boost(self):
         """Setup Boost directory."""
         logging.info('Setting up Boost.')
-        cur_dir = os.path.join(self._packages_dir(), BOOST_PACKAGE[1])
-        os.chdir(cur_dir)
-        target_dir = os.path.join(os.path.realpath('.'), 'target')
-        self._mkdir(target_dir)
-        build_dir = os.path.join(self._temp_dir(), BOOST_PACKAGE[1])
-        self._rmdir(build_dir)
-        self._mkdir(build_dir)
-        done_marker = os.path.realpath('./step.0.done.txt')
+        package_dir = os.path.join(self._packages_dir(), BOOST_PACKAGE[1])
+        target_dir = os.path.join(self._packages_dir(),
+                                  'target.' + BOOST_PACKAGE[1])
+        done_marker = os.path.join(target_dir, 'final.done.txt')
         if not os.path.exists(done_marker):
+            os.chdir(self._packages_dir())
+            self._rmdir(package_dir)
+            self._rmdir(target_dir)
+            self._download_and_extract_package(BOOST_PACKAGE)
+            os.chdir(package_dir)
+            self._mkdir(target_dir)
+            build_dir = os.path.join(self._temp_dir(), BOOST_PACKAGE[1])
+            self._rmdir(build_dir)
+            self._mkdir(build_dir)
             self._execute(['./bootstrap.sh', '--prefix=' + target_dir])
-            self._touch_file(done_marker)
-        done_marker = os.path.realpath('./step.1.done.txt')
-        if not os.path.exists(done_marker):
             self._execute(['./b2', '--build-dir=' + build_dir, 'link=static',
                            'install'])
+            self._rmdir(build_dir)
             self._touch_file(done_marker)
+        os.chdir(self._packages_dir())
+        self._rmdir(package_dir)
         self.vars_to_export['BOOST_DIR'] = target_dir
 
     def _setup_scala(self):
         """Setup Scala path vars."""
         logging.info('Setting up Scala.')
-        items = (('SCALA_HOME_2_8', SCALA_2_8[1]),
-                 ('SCALA_HOME_2_10', SCALA_2_10[1]),
-                 ('SCALA_HOME_2_11', SCALA_2_11[1]))
-        for env, package_path in items:
+        items = (('SCALA_HOME_2_8', SCALA_2_8),
+                 ('SCALA_HOME_2_10', SCALA_2_10),
+                 ('SCALA_HOME_2_11', SCALA_2_11))
+        for env, package in items:
+            logging.info('Downloading %s', os.path.basename(package[1]))
+            self._download_and_extract_package(package)
             self.vars_to_export[env] = os.path.join(self._packages_dir(),
-                                                    package_path)
+                                                    package[1])
 
     def _setup_thrift(self):
         """Setup Thrift."""
-        logging.info('Setting up thrift.')
-        cur_dir = os.path.join(self._packages_dir(), THRIFT_PACKAGE[1])
-        os.chdir(cur_dir)
-        done_marker = os.path.join(cur_dir, 'thrift.patch.applied.txt')
-        if not os.path.exists(done_marker):
+        def _apply_patch():
+            """Apply thrift patch."""
+            done_marker = os.path.join(package_dir, 'thrift.patch.applied.txt')
+            if os.path.exists(done_marker):
+                return
             patch_file = os.path.join(self.root_dir, 'thrift.patch')
             try:
                 self._execute(
-                    ['patch', '-p1', '-d', '.', '-N', '-i', patch_file],
-                    use_stdout=True)
+                    ['patch', '-p1', '-d', '.', '-N', '-i', patch_file])
             except subprocess.CalledProcessError:
                 logging.info('Assuming thrift patch is already applied!')
             self._touch_file(done_marker)
-        target_dir = os.path.join(cur_dir, 'target')
-        if not os.path.exists(target_dir):
+
+        def _build_thrift(target_dir):
+            """Build thrift code."""
+            done_marker = os.path.join(target_dir, 'done.txt')
+            if os.path.exists(done_marker):
+                return
+            self._rmdir(target_dir)
             openssl_opt = ''
             if self.openssl_install_path is not None:
                 openssl_opt = '--with-openssl={} '.format(
@@ -490,14 +542,17 @@ class Installer(object):
                 '--with-boost={} '.format(self.vars_to_export['BOOST_DIR']))
             command_parts.append('--disable-shared ')
             command_parts.append('--prefix={}'.format(target_dir))
+            command_parts.append(' 2>&1')
             command = ''.join(command_parts)
             self._mkdir(target_dir)
             self._execute(command, use_shell=True)
-            self._execute('make install 2>&1', use_shell=True)
-        assert os.path.exists(target_dir)
+            self._execute(['make', 'install'])
+            self._touch_file(done_marker)
 
-        pylib_target_dir = os.path.join(target_dir, 'pylib')
-        if not os.path.exists(pylib_target_dir):
+        def _build_thrift_py(pylib_target_dir):
+            """Build python modules for thrift."""
+            if os.path.exists(pylib_target_dir):
+                return
             # Python libs are copied to platform specific location.
             lib_dir = os.path.join(target_dir, 'lib')
             lib64_dir = os.path.join(target_dir, 'lib64')
@@ -513,37 +568,60 @@ class Installer(object):
                     break
             self._mkdir(pylib_target_dir)
             self._copy_all(py_dir, pylib_target_dir)
-        assert os.path.exists(pylib_target_dir)
+            assert os.path.exists(pylib_target_dir)
+
+        logging.info('Setting up thrift.')
+        package_dir = os.path.join(self._packages_dir(), THRIFT_PACKAGE[1])
+        target_dir = os.path.join(self._packages_dir(),
+                                  'target.' + THRIFT_PACKAGE[1])
+        final_donemarker = os.path.join(target_dir, 'final.done.txt')
+        if not os.path.exists(final_donemarker):
+            os.chdir(self._packages_dir())
+            self._rmdir(package_dir)
+            self._download_and_extract_package(THRIFT_PACKAGE)
+            os.chdir(package_dir)
+            _apply_patch()
+            _build_thrift(target_dir)
+            _build_thrift_py(os.path.join(target_dir, 'pylib'))
+            self._touch_file(final_donemarker)
+        assert os.path.exists(final_donemarker)
+        os.chdir(self._packages_dir())
+        self._rmdir(package_dir)
         self.vars_to_export['THRIFT_DIR'] = target_dir
 
     def _setup_virtualenv(self):
         """Install and activate python virtual environment."""
         logging.info('Setting up virtualenv.')
-        if not os.path.exists(self._virtual_env_dir()):
+        package_dir = os.path.join(self._packages_dir(), VIRTUALENV_PACKAGE[1])
+        activate_script = os.path.join(self._virtual_env_dir(), 'bin',
+                                       'activate')
+        if not os.path.exists(activate_script):
+            self._download_and_extract_package(VIRTUALENV_PACKAGE)
             virtualenv_py = os.path.join(self._packages_dir(),
                                          VIRTUALENV_PACKAGE[1], 'virtualenv.py')
             assert os.path.exists(virtualenv_py)
             self._execute(
                 [sys.executable, virtualenv_py, '--no-site-packages', '-p',
                  sys.executable, self._virtual_env_dir()])
-            activate_script = os.path.join(self._virtual_env_dir(), 'bin',
-                                           'activate')
+
             for package, version in PIP_INSTALL_PACKAGES:
                 full_name = '{}=={}'.format(package, version)
                 self._execute('. {} && pip install {}'.format(
                     activate_script, full_name), use_stdout=False,
                     use_shell=True)
-        assert os.path.exists(self._virtual_env_dir())
+        os.chdir(self._packages_dir())
+        self._rmdir(package_dir)
+        assert os.path.exists(activate_script)
 
     def _setup_mool(self):
         """Install mool."""
         logging.info('Setting up mool.')
-        mool_rc_file = os.path.join(self.args.install_dir, 'moolrc')
-        if os.path.exists(mool_rc_file):
-            return
         self.vars_to_export['JAR_SEARCH_PATH'] = os.path.join(
             self.args.install_dir, 'jars')
         self.vars_to_export['SCALA_DEFAULT_VERSION'] = SCALA_DEFAULT_VERSION
+        mool_rc_file = os.path.join(self.args.install_dir, 'moolrc')
+        if os.path.exists(mool_rc_file):
+            return
         mool_init_template = os.path.join(
             self.root_dir, MOOL_INIT_TEMPLATE_FILE)
         file_contents = None
@@ -600,8 +678,6 @@ class Installer(object):
         self._mkdir(self._downloads_dir())
         self._mkdir(self._packages_dir())
         self._check_dependencies()
-        self._download_packages()
-        self._extract_packages()
         self._setup_protobuf()
         self._setup_cc_libs()
         self._setup_boost()
@@ -627,6 +703,7 @@ class Installer(object):
             '. {} && {} && {}'.format(activate_script, export_env, test_script),
             use_stdout=True, use_shell=True)
         logging.info('Post-install tests ran successfully.')
+        self._rmdir(self._temp_dir())
 
 
 def do_main():
@@ -657,6 +734,7 @@ def do_main():
         if isinstance(ex, Error):
             logging.debug('Exception: %s', ex.message)
         else:
+            traceback.print_tb(sys.exc_info()[2], limit=5, file=sys.stdout)
             logging.debug('Exception: %s', str(sys.exc_info()))
         print INSTALL_HELP_MSG
         return 1

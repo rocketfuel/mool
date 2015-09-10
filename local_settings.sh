@@ -32,12 +32,12 @@ set_local_misc() {
 }
 
 
-if [ -e "${REPOSITORY_ROOT}/.rfmool/moolrc" ]; then
+if [ -e "${MOOL_INSTALL_LOCATION}/moolrc" ]; then
+    source ${MOOL_INSTALL_LOCATION}/moolrc && mool_init
+elif [ -e "${REPOSITORY_ROOT}/.rfmool/moolrc" ]; then
     source ${REPOSITORY_ROOT}/.rfmool/moolrc && mool_init
 elif [ -e "${HOME}/.rfmool/moolrc" ]; then
     source ${HOME}/.rfmool/moolrc && mool_init
-elif [ -e "${MOOL_INSTALL_LOCATION}/moolrc" ]; then
-    source ${MOOL_INSTALL_LOCATION}/moolrc && mool_init
 else
     set_local_misc
 fi
